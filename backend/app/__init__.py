@@ -1,0 +1,9 @@
+from flask import Flask
+from flask_cors import CORS
+from app.controller import main
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = "bosuna_sayma_yirmi_altı_harfli"
+CORS(app)
+
+app.register_blueprint(main)

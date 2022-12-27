@@ -1,0 +1,13 @@
+1000 ERROR
+
+1001 = invalid username
+1002 = invalid email
+1003 = invalid password
+
+
+
+
+
+
+9000 ERROR
+9001 = api error
