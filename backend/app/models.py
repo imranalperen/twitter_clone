@@ -7,7 +7,6 @@ from sqlalchemy import (
     DateTime,
     Boolean
 )
-from sqlalchemy.sql import func
 
 class Users(Base):
     __tablename__ = "users"

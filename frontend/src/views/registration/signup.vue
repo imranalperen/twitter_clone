@@ -27,7 +27,7 @@
                 <input type="password" placeholder="*******" v-model="verify_password">
             </div>
         </div>
-        <p class="error">{{ error_message }}</p> 
+        <p v-if="error_message" class="error">{{ error_message }}</p> 
         <button type="submit" id="signup_btn" @click="validate_form">Sign Up</button>
         <button type="submit" id="login_btn" @click="login">Login</button>
     </div>
@@ -41,12 +41,12 @@ import { API_URL } from '@/locals';
 export default {
     data() {
         return{
-            name: null,
-            username: null,
-            email: null,
-            password: null,
-            verify_password: null,
-            error_message: null
+            name: '',
+            username: '',
+            email: '',
+            password: '',
+            verify_password: '',
+            error_message: ''
         }
     },
 
@@ -62,7 +62,7 @@ export default {
 
     methods: {
         validate_form() {
-            if( this.name == null || this.username == null || this.email == null || this.password == mull || this.verify_password == null) {
+            if( this.name == '' || this.username == '' || this.email == '' || this.password == '' || this.verify_password == '') {
                 this.error_message = "Please Fill All Form."
             }
             else if (this.username.length > 15 || this.username.length < 5) {
@@ -140,7 +140,10 @@ export default {
 .signup_container {
     display: flex;
     justify-content: center;
-    margin-top: 7em;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    background-color: var(--secondaryBG);
 }
 
 .signup_main {

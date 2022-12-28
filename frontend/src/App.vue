@@ -15,7 +15,9 @@ export default {
 :root {
   --primaryBG: #15202b;
   --secondaryBG: #31404e;
-  --gray: #707d89;
+  /* --gray: #707d89; */
+  --gray: #85919e;
+  --bordergray:#4F575E;
   --background: #14171A;
   --itemBackground: #d9d9d920;
   --colorWhite: #fff;
@@ -23,6 +25,8 @@ export default {
   --tweetBtnDarkBg: #1a8cd8;
   --grayBlue: #195d8d;
   --whiteHover: #b5b5b5;
+  --thirdBG: #1e2732;
+  --searchbarBG: #273340;
 }
 
 * {
@@ -34,6 +38,11 @@ export default {
 }
 
 body {
-  background-color: var(--secondaryBG);
+  background-color: var(--primaryBG);
+}
+.router_view_container {
+  display: flex;
+  justify-content: center;
+  background-color: var(--primaryBG);
 }
 </style>

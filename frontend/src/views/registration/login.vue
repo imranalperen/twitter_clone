@@ -15,7 +15,7 @@
                 <input type="password" placeholder="*******" v-model="password">
             </div>
         </div>
-        <p class="error">{{ error_message }}</p> 
+        <p v-if="error_message" class="error">{{ error_message }}</p> 
         <button type="submit" id="login_btn" @click="login">Login</button>
         <button type="submit" id="signup_btn" @click="sign_up">Sign Up</button>
     </div>
@@ -29,15 +29,31 @@ import { API_URL } from '@/locals'
 export default {
     data() {
         return {
-            username: null,
-            password: null,
-            error_message: null,
+            username: '',
+            password: '',
+            error_message: '',
+        }
+    },
+
+    mounted() {
+        //! enter event listener it will clikc login button when pressed enter
+        window.addEventListener("keypress", function(event) {
+            if(event.key == "Enter") {
+                event.preventDefault()
+                this.document.getElementById("login_btn").click()
+            }
+        })
+    },
+
+    beforeCreate() {
+        if(window.localStorage["access_token"]){
+            this.$router.push({name: "home"})
         }
     },
 
     methods: {
         login(){
-            if(this.username == null || this.password == null) {
+            if(this.username == '' || this.password == '') {
                 this.error_message = "Please Fill All Form."
             }
             else {
@@ -65,6 +81,7 @@ export default {
                         var access_token = response_value["access_token"]
                         window.localStorage.clear("access_token")
                         window.localStorage.setItem("access_token", access_token["token"])
+                        this.$router.push({name: "home"})
                     }
                 })
             }
@@ -84,7 +101,10 @@ export default {
 .login_container {
     display: flex;
     justify-content: center;
-    margin-top: 7em;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    background-color: var(--secondaryBG);
 }
 
 .login_main {

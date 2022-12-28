@@ -1,9 +1,8 @@
 from app.db import session
 from app.models import Users
 from app.utils import password_hasher
-from sqlalchemy import and_
 
-class UserRegistration:
+class UserMain:
     def signup(self, name, username, email, password):
         user_username = (
             session.query(Users)
@@ -58,3 +57,14 @@ class UserRegistration:
             })
         )
         session.commit()
+
+    def get_user_by_acc_token(self, access_token):
+        user = (
+            session.query(Users)
+            .filter(Users.access_token == f"{access_token}")
+            .first()
+        )
+        if not user:
+            return False
+        
+        return user
