@@ -35,16 +35,6 @@ export default {
         }
     },
 
-    mounted() {
-        //! enter event listener it will clikc login button when pressed enter
-        window.addEventListener("keypress", function(event) {
-            if(event.key == "Enter") {
-                event.preventDefault()
-                this.document.getElementById("login_btn").click()
-            }
-        })
-    },
-
     beforeCreate() {
         if(window.localStorage["access_token"]){
             this.$router.push({name: "home"})

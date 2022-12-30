@@ -8,7 +8,7 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         access_token = request.headers.get("access-token")
         if not access_token:
-            return False
+            return jsonify({"response": "Not authorized"}), 401
 
         user = UserMain().get_user_by_acc_token(access_token)
         if not user:

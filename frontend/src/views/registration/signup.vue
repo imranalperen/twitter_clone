@@ -50,16 +50,6 @@ export default {
         }
     },
 
-    mounted() {
-        //! enter event listener it will clikc signup when pressed enter
-        window.addEventListener("keypress", function(event) {
-            if(event.key == "Enter") {
-                event.preventDefault()
-                this.document.getElementById("signup_btn").click()
-            }
-        })
-    },
-
     methods: {
         validate_form() {
             if( this.name == '' || this.username == '' || this.email == '' || this.password == '' || this.verify_password == '') {

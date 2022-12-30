@@ -1,12 +1,14 @@
 from app.db import Base, engine
+from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship
 from sqlalchemy import (
     Column,
     Integer,
     String,
-    ForeignKey,
     DateTime,
-    Boolean
+    ForeignKey
 )
+
 
 class Users(Base):
     __tablename__ = "users"
@@ -19,6 +21,22 @@ class Users(Base):
     access_token = Column(String(100))
     access_token_expire_date = Column(DateTime)
 
+
+class Tweets(Base):
+    __tablename__ = "tweets"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id") ,nullable=False)
+    time_created = Column(DateTime(timezone=True), server_default=func.now())
+    body = Column(String(280), nullable=False)
+
+
+class UsersFollowers(Base):
+    __tablename__ = "users_followers"
+
+    id = Column(Integer, primary_key=True)
+    main_user_id = Column(Integer, ForeignKey("users.id"))
+    following_user_id = Column(Integer, ForeignKey("users.id"))
 
 
 Base.metadata.create_all(engine)

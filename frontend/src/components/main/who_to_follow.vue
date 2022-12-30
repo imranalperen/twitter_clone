@@ -39,7 +39,20 @@
 </template>
 
 <script>
+import { recommend_user_request } from "@/requests"
+
 export default {
+    data() {
+        return {
+            recommend_user_list: [],
+        }
+    },
+
+    async beforeCreate() {
+        //we will recommedn 2 user which main user doesnt follow
+        this.recommend_user_list = await recommend_user_request()
+        console.log(this.recommend_user_list)
+    }
 }
 </script>
 

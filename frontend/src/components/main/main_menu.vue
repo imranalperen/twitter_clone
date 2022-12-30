@@ -130,6 +130,7 @@ export default {
 }
 
 #menu_tweet_btn:hover {
+    transition: .1s;
     background-color: var(--tweetBtnDarkBg);
 }
 

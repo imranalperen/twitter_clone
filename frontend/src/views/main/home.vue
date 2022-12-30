@@ -14,6 +14,9 @@
         <div class="header_container">
             <main_header/>
         </div>
+        <div class="tweet_container">
+            <main_tweet/>
+        </div>
     </div>
 
 
@@ -33,12 +36,14 @@
 </template>
 
 <script>
-import { user_request } from '@/utils'
+import { timeline_request } from '@/requests'
+
 import main_menu from '@/components/main/main_menu.vue';
 import main_trends from '@/components/main/main_trends.vue';
 import who_to_follow from '@/components/main/who_to_follow.vue';
 import searchbar from '@/components/main/searchbar.vue'
 import main_header from '@/components/main/main_header.vue'
+import main_tweet from '@/components/main/main_tweet.vue'
 
 export default {
     components: {
@@ -46,7 +51,8 @@ export default {
         main_trends,
         who_to_follow,
         searchbar,
-        main_header
+        main_header,
+        main_tweet
     },
 
     data() {
@@ -56,27 +62,7 @@ export default {
     },
 
     async beforeCreate() {
-        let route_url = "timeline"
-        this.user = await user_request(route_url)
-
-
-        // const access_token = window.localStorage.getItem("access_token")
-        // if(!access_token){
-        //     this.$router.push({name: "login"})
-        // }
-
-        // fetch(`${API_URL}/timeline`, {
-        //     method: "POST",
-        //     headers: {
-        //         "content-type": "application/json",
-        //         "access-token": access_token
-        //     }
-        // })
-        // .then((response) => response.json())
-        // .then((response_value => {
-        //     this.user = response_value
-        //     console.log(this.user)
-        // }))
+        this.user = await timeline_request()
     }
 }
 

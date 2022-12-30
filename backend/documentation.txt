@@ -1,8 +1,12 @@
-1000 ERROR
+1000 ERROR registration
 
 1001 = invalid username
 1002 = invalid email
 1003 = invalid password
+
+2000 ERROR tweet
+2001 = tweet length
+
 
 
 
