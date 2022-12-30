@@ -1,25 +1,33 @@
 <template>
-<div class="main_who_to_follow">
+<div class="main_who_to_follow" v-if="recommend_user_list">
     <div class="title">
         <h1>Who to follow</h1>
     </div>
-    <div class="profile">
+    <div class="profile" v-for="user in recommend_user_list">
         <div class="left">
             <div class="image">
                 <img src="@/assets/depositphotos_137014128-stock-illustration-user-profile-icon.jpg">
             </div>
             <div class="names">
-                <p class="name">fake1</p>
-                <p class="username">@fakeuser1</p>
+                <p class="name">{{ user.name }}</p>
+                <p class="username">@{{ user.username }}</p>
             </div>
         </div>
         <div class="right">
             <div class="follow_btn_container">
-                <button class="follow_btn">Follow</button>
+                <button class="follow_btn"
+                    v-if="user.is_following == false"    
+                    @click="follow_user_request(user)"
+                >Follow</button>
+                <button class="following_btn"
+                    v-else
+                    @click="unfollow_user_request(user)"
+                >Following</button>
             </div>
+            <div class></div>
         </div>
     </div>
-    <div class="profile">
+    <!-- <div class="profile">
         <div class="left">
             <div class="image">
                 <img src="@/assets/depositphotos_137014128-stock-illustration-user-profile-icon.jpg">
@@ -34,12 +42,12 @@
                 <button class="following_btn">Following</button>
             </div>
         </div>
-    </div>
+    </div> -->
 </div>
 </template>
 
 <script>
-import { recommend_user_request } from "@/requests"
+import { recommend_user_request, follow_request, unfollow_requet } from "@/requests"
 
 export default {
     data() {
@@ -51,7 +59,23 @@ export default {
     async beforeCreate() {
         //we will recommedn 2 user which main user doesnt follow
         this.recommend_user_list = await recommend_user_request()
-        console.log(this.recommend_user_list)
+        // console.log(this.recommend_user_list[0])
+    },
+
+    methods: {
+        async follow_user_request(user) {
+            let response = await follow_request(user.id)
+            if(response) {
+                user.is_following = true
+            }
+        },
+
+        async unfollow_user_request(user) {
+            let response = await unfollow_requet(user.id)
+            if(response) {
+                user.is_following = false
+            }
+        }
     }
 }
 </script>

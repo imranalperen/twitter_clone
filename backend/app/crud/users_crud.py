@@ -2,6 +2,7 @@ from app.db import session
 from app.models import Users, Tweets, UsersFollowers
 from app.utils import password_hasher
 from sqlalchemy.sql import not_, and_
+import random
 
 class UserMain:
     def signup(self, name, username, email, password):
@@ -72,27 +73,7 @@ class UserMain:
         
         return user
 
-    
-    def get_user_by_username(self, username):
-        user = (
-            session.query(Users)
-            .filter(Users.username == f"{username}")
-            .first()
-        )
 
-        if not user:
-            return False
-        
-        return user
-
-    
-    def follow_user(self, main_user, following_user):
-        query = UsersFollowers(user_id = main_user.id, follower_id = following_user.id)
-        session.add(query)
-        session.commit()
-        return{"status": True}
-
-    
     def get_user_follow_list_by_id(self, user_id):
         following_list = (
             session.query(UsersFollowers)
@@ -103,17 +84,47 @@ class UserMain:
         return following_list
 
     
-    def recommend_user_by_follow_list(self, follow_list, main_user_id):
-        print(main_user_id)
+    def recommend_two_user(self, follow_list, main_user_id):
         if not follow_list:
-            recommended_users = (
+            recommended_users_temp = (
                 session.query(Users)
                 .filter(Users.id != f"{main_user_id}")
+                .limit(2)
                 .all()
             )
-            print(recommended_users[0])
-            # burada 2 user onerilecek BURADAN DEVAM ET
-            return recommended_users
+
+        
+        recommended_users = {}
+        for i in range(2):
+            recommended_users[i] = {
+                "id": recommended_users_temp[i].id,
+                "name": recommended_users_temp[i].name,
+                "username": recommended_users_temp[i].username,
+                "is_following": False
+            }
+
+        return recommended_users
+
+    
+    def follow_user(self, main_user, following_user_id):
+        query = UsersFollowers(
+            main_user_id = main_user.id,
+            following_user_id = following_user_id
+        )
+        session.add(query)
+        session.commit()
+        return {"status": True}
+
+
+    def unfollow_user(self, main_user, unfollowing_user_id):
+        query = UsersFollowers(
+            main_user_id = main_user.id,
+            following_user_id = unfollowing_user_id
+        )
+        session.delete(query)
+        session.commit()
+
+        return {"status": True}
 
 
 

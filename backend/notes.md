@@ -1,0 +1,1 @@
+recommedn_two_users method da follow listin bos olmadigi durumlari ayarlamak gerek

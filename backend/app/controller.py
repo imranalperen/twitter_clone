@@ -64,26 +64,30 @@ def tweet():
     return jsonify({"response": tweet_response["message"]})
 
 
-@main.route("follow_user", methods=["POST"])
-@login_required
-def follow_user():
-    main_user = g.user
-    following_username = request.headers.get("following-user")
-    following_user = UserMain().get_user_by_username(following_username)
-    if not following_user:
-        return jsonify({"response": 1001})
-
-    UserMain().follow_user(main_user, following_user)
-    return jsonify({"response": True})
-
-
 @main.route("recommend_follow_user", methods=["GET"])
 @login_required
 def recommend_follow_user():
     main_user = g.user
     main_user_follow_list = UserMain().get_user_follow_list_by_id(main_user.id)
     print(main_user_follow_list)
-    recommended_users = UserMain().recommend_user_by_follow_list(main_user_follow_list, main_user.id)
-    print(recommended_users)
+    recommended_users = UserMain().recommend_two_user(main_user_follow_list, main_user.id)
 
     return jsonify({"response": recommended_users})
+
+
+@main.route("follow_user", methods=["GET"])
+@login_required
+def follow_user():
+    main_user = g.user
+    following_user_id = request.headers.get("user-id")
+    UserMain().follow_user(main_user, following_user_id)
+    return jsonify({"response": True})
+
+
+@main.route("unfollow_user", methods=["GET"])
+@login_required
+def unfollow_user():
+    main_user = g.user
+    unfollowing_user_id = request.headers.get("user-id")
+    UserMain().unfollow_user(main_user, unfollowing_user_id)
+    return jsonify({"response": True})
