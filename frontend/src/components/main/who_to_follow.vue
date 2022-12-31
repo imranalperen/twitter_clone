@@ -15,11 +15,14 @@
         </div>
         <div class="right">
             <div class="follow_btn_container">
-                <button class="follow_btn"
+                <button
+                    class="follow_btn"
                     v-if="user.is_following == false"    
                     @click="follow_user_request(user)"
                 >Follow</button>
-                <button class="following_btn"
+                
+                <button
+                    class="following_btn"
                     v-else
                     @click="unfollow_user_request(user)"
                 >Following</button>
@@ -59,7 +62,6 @@ export default {
     async beforeCreate() {
         //we will recommedn 2 user which main user doesnt follow
         this.recommend_user_list = await recommend_user_request()
-        // console.log(this.recommend_user_list[0])
     },
 
     methods: {

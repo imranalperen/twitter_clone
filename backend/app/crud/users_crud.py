@@ -3,12 +3,13 @@ from app.models import Users, Tweets, UsersFollowers
 from app.utils import password_hasher
 from sqlalchemy.sql import not_, and_
 import random
+from sqlalchemy import func
 
 class UserMain:
     def signup(self, name, username, email, password):
         user_username = (
             session.query(Users)
-            .filter(Users.username == f"{username}")
+            .where(Users.username == f"{username}")
             .first()
         )
         if user_username:
@@ -16,7 +17,7 @@ class UserMain:
 
         user_email = (
             session.query(Users)
-            .filter(Users.email == f"{email}")
+            .where(Users.email == f"{email}")
             .first()
         )
         if user_email:
@@ -36,7 +37,7 @@ class UserMain:
     def login(self, username, password):
         user_query = (
             session.query(Users)
-            .filter(Users.username == f"{username}")
+            .where(Users.username == f"{username}")
             .first()
         )
         if not user_query:
@@ -53,7 +54,7 @@ class UserMain:
     def update_acces_token(self, username, access_token):
         (
             session.query(Users)
-            .filter(Users.username == f"{username}")
+            .where(Users.username == f"{username}")
             .update({
                 "access_token": access_token["token"],
                 "access_token_expire_date": access_token["end_date"]
@@ -65,7 +66,7 @@ class UserMain:
     def get_user_by_acc_token(self, access_token):
         user = (
             session.query(Users)
-            .filter(Users.access_token == f"{access_token}")
+            .where(Users.access_token == f"{access_token}")
             .first()
         )
         if not user:
@@ -73,27 +74,16 @@ class UserMain:
         
         return user
 
-
-    def get_user_follow_list_by_id(self, user_id):
-        following_list = (
-            session.query(UsersFollowers)
-            .filter(UsersFollowers.main_user_id == f"{user_id}")
+    
+    def recommend_two_user(self, main_user_id):
+        #! DEVELOPMENT
+        recommended_users_temp = (
+            session.query(Users)
+            .where(Users.id != f"{main_user_id}")
+            .order_by(func.random())
             .all()
         )
-        print(following_list)
-        return following_list
 
-    
-    def recommend_two_user(self, follow_list, main_user_id):
-        if not follow_list:
-            recommended_users_temp = (
-                session.query(Users)
-                .filter(Users.id != f"{main_user_id}")
-                .limit(2)
-                .all()
-            )
-
-        
         recommended_users = {}
         for i in range(2):
             recommended_users[i] = {
@@ -117,11 +107,14 @@ class UserMain:
 
 
     def unfollow_user(self, main_user, unfollowing_user_id):
-        query = UsersFollowers(
-            main_user_id = main_user.id,
-            following_user_id = unfollowing_user_id
+        (
+            session.query(UsersFollowers)
+            .where(and_(
+                UsersFollowers.main_user_id == f"{main_user.id}",
+                UsersFollowers.following_user_id == f"{unfollowing_user_id}"
+            ))
+            .delete()
         )
-        session.delete(query)
         session.commit()
 
         return {"status": True}

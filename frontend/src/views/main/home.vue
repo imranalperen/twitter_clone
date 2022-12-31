@@ -3,9 +3,7 @@
 
     <div class="left">
         <div class="menu_container">
-            <main_menu
-                :user="user"
-            />
+            <main_menu/>
         </div>
     </div>
 
@@ -17,6 +15,9 @@
         <div class="tweet_container">
             <main_tweet/>
         </div>
+        <div class="timeline">
+            timeline
+        </div> 
     </div>
 
 
@@ -36,8 +37,6 @@
 </template>
 
 <script>
-import { timeline_request } from '@/requests'
-
 import main_menu from '@/components/main/main_menu.vue';
 import main_trends from '@/components/main/main_trends.vue';
 import who_to_follow from '@/components/main/who_to_follow.vue';
@@ -62,7 +61,7 @@ export default {
     },
 
     async beforeCreate() {
-        this.user = await timeline_request()
+        
     }
 }
 

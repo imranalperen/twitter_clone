@@ -13,10 +13,10 @@ function access_token_control() {
 }
 
 //! standart user request
-function timeline_request() {
+function user_request() {
     const access_token = access_token_control()
 
-    const fetched_data = fetch(`${API_URL}/timeline`, {
+    const fetched_data = fetch(`${API_URL}/user`, {
         method: "POST",
         headers: {
             "content-type": "application/json",
@@ -102,7 +102,7 @@ function unfollow_requet(user_id) {
 
 
 export {
-    timeline_request,
+    user_request,
     add_tweet_request,
     recommend_user_request,
     follow_request,
