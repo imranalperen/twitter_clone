@@ -1,1 +1,0 @@
-recommend_two_users da takip edilen userlerin onerilmemesini ayarla

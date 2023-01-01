@@ -1,5 +1,36 @@
 import { API_URL } from "./locals";
 
+
+//!signup request
+function signup_request(request_body) {
+    const fetched_data = fetch(`${API_URL}/signup`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+
+//!login request
+function login_request(request_body) {
+    const fetched_data = fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json"
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+
 function access_token_control() {
     const access_token = window.localStorage.getItem("access_token")
 
@@ -11,6 +42,7 @@ function access_token_control() {
     }
 
 }
+
 
 //! standart user request
 function user_request() {
@@ -83,6 +115,7 @@ function follow_request(user_id) {
     return fetched_data
 }
 
+
 //! unfollow user request
 function unfollow_requet(user_id) {
     const access_token = access_token_control()
@@ -102,6 +135,8 @@ function unfollow_requet(user_id) {
 
 
 export {
+    signup_request,
+    login_request,
     user_request,
     add_tweet_request,
     recommend_user_request,

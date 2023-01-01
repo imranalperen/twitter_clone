@@ -24,7 +24,7 @@
     
     
 <script>
-import { API_URL } from '@/locals'
+import { login_request } from '@/requests'
 
 export default {
     data() {
@@ -42,38 +42,29 @@ export default {
     },
 
     methods: {
-        login(){
+
+        async login() {
             if(this.username == '' || this.password == '') {
-                this.error_message = "Please Fill All Form."
+                this.error_message = "Please Fill All From"
             }
             else {
                 let request_body = {
-                "username": this.username,
-                "password": this.password,
+                    "username": this.username,
+                    "password": this.password,
                 }
-                
-                fetch(`${API_URL}/login`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(request_body)
-                })
-                .then((response) => response.json())
-                .then((response_value) => {
-                    if(response_value.response == 1001) {
-                        this.error_message = "No Such User Found"
-                    }
-                    else if(response_value.response == 1003) {
-                        this.error_message = "Wrong Password"
-                    }
-                    else {
-                        var access_token = response_value["access_token"]
-                        window.localStorage.clear("access_token")
-                        window.localStorage.setItem("access_token", access_token["token"])
-                        this.$router.push({name: "home"})
-                    }
-                })
+                let response_value = await login_request(request_body)
+                if(response_value.response == 1001) {
+                    this.error_message = "No Such User Found"
+                }
+                else if(response_value.response == 1003) {
+                    this.error_message = "Wrong Password"
+                }
+                else {
+                    var access_token = response_value["access_token"]
+                    window.localStorage.clear("access_token")
+                    window.localStorage.setItem("access_token", access_token["token"])
+                    this.$router.push({name: "home"})
+                }
             }
         },
 

@@ -36,7 +36,7 @@
 
 
 <script>
-import { API_URL } from '@/locals';
+import { signup_request } from '@/requests';
 
 export default {
     data() {
@@ -89,33 +89,24 @@ export default {
             }
         },
 
-        send_from() {
+        async send_from() {
             let request_body = {
                 "name": this.name,
                 "username": this.username,
                 "email": this.email,
                 "password": this.password,
                 }
-                
-            fetch(`${API_URL}/signup`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(request_body)
-            })
-            .then((response) => response.json())
-            .then((response_value) => {
-                if(response_value.response == 1001) {
-                    this.error_message = "Username already registered."
-                }
-                else if (response_value.response == 1002) {
-                    this.error_message = "Email already registered."
-                }
-                else {
-                    this.login()
-                }
-            })
+            
+            let response_value = await signup_request(request_body)
+            if(response_value.response == 1001) {
+                this.error_message = "Username already registered."
+            }
+            else if (response_value.response == 1002) {
+                this.error_message = "Email already registered."
+            }
+            else {
+                this.login()
+            }
         },
 
         login() {

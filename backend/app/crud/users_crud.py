@@ -1,11 +1,10 @@
 from app.db import session
-from app.models import Users, Tweets, UsersFollowers
+from app.models import Users, UsersFollowers
 from app.utils import password_hasher
-from sqlalchemy.sql import not_, and_
-import random
+from sqlalchemy.sql import and_
 from sqlalchemy import func
 
-class UserMain:
+class UserRegistration:
     def signup(self, name, username, email, password):
         user_username = (
             session.query(Users)
@@ -13,7 +12,7 @@ class UserMain:
             .first()
         )
         if user_username:
-            return {"status": False, "message": 1001}
+            return {"status": False, "error": 1001}
 
         user_email = (
             session.query(Users)
@@ -21,7 +20,7 @@ class UserMain:
             .first()
         )
         if user_email:
-            return {"status": False, "message": 1002}
+            return {"status": False, "error": 1002}
         
         user = Users(
             name = name,
@@ -41,12 +40,12 @@ class UserMain:
             .first()
         )
         if not user_query:
-            return {"status": False, "message": 1001}
+            return {"status": False, "error": 1001}
 
 
         hashed_password = password_hasher(password, username)
         if(user_query.hashed_password != hashed_password):
-            return {"status": False, "message": 1003}
+            return {"status": False, "error": 1003}
         
         return {"status": True}
 
@@ -74,24 +73,32 @@ class UserMain:
         
         return user
 
-    
-    def recommend_two_user(self, main_user_id):
-        #! DEVELOPMENT
-        recommended_users_temp = (
+
+class UserFollow:
+    def recommend_two_user(self, main_user_id):       
+        query = (
             session.query(Users)
-            .where(Users.id != f"{main_user_id}")
+            .outerjoin(UsersFollowers, and_(
+                UsersFollowers.following_user_id==Users.id,
+                UsersFollowers.main_user_id==main_user_id
+                )
+            )
+            .where(UsersFollowers.id==None)
+            .where(Users.id!=main_user_id)
             .order_by(func.random())
+            .limit(2)
             .all()
         )
-
-        recommended_users = {}
-        for i in range(2):
-            recommended_users[i] = {
-                "id": recommended_users_temp[i].id,
-                "name": recommended_users_temp[i].name,
-                "username": recommended_users_temp[i].username,
+        # from sqlalchemy.dialects import postgresql
+        # x = str(q.statement.compile(dialect=postgresql.dialect()))
+        recommended_users = []
+        for user in query:
+            recommended_users.append({
+                "id": user.id,
+                "name": user.name,
+                "username": user.username,
                 "is_following": False
-            }
+            })
 
         return recommended_users
 
@@ -119,14 +126,4 @@ class UserMain:
 
         return {"status": True}
 
-
-
-class TweetMain:
-    def add_tweet(self, user, tweet_body):
-        if(len(tweet_body) > 280 or len(tweet_body) < 1):
-            return {"status": False, "message": 2001}
-        
-        tweet = Tweets(user_id = user.id, body = tweet_body)
-        session.add(tweet)
-        session.commit()
-        return {"status": True}
+ 

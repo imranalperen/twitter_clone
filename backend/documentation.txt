@@ -1,17 +1,8 @@
 1000 ERROR registration
-
 1001 = invalid username
 1002 = invalid email
 1003 = invalid password
-
 2000 ERROR tweet
 2001 = tweet length
-
-
-
-
-
-
-
 9000 ERROR
 9001 = api error

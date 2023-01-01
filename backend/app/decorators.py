@@ -1,5 +1,5 @@
 from flask import request, jsonify, g
-from app.crud.users_crud import UserMain
+from app.crud.users_crud import UserRegistration
 from functools import wraps
 from datetime import datetime
 
@@ -10,7 +10,7 @@ def login_required(f):
         if not access_token:
             return jsonify({"response": "Not authorized"}), 401
 
-        user = UserMain().get_user_by_acc_token(access_token)
+        user = UserRegistration().get_user_by_acc_token(access_token)
         if not user:
             return jsonify({"response": "Not authorized"}), 401
 

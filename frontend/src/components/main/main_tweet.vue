@@ -71,9 +71,14 @@ export default {
                 console.log("tweet uzun veya kisa")
             }
             else {
-                await add_tweet_request(this.tweet_text_body)
-                this.tweet_text_body = ""
-                this.calculate_percent()
+                let response_value = await add_tweet_request(this.tweet_text_body)
+                if(response_value == 2001) {
+                    console.log("api tweeet length error")
+                }
+                else {
+                    this.tweet_text_body = ""
+                    this.calculate_percent()
+                }
             }
         }
     },
