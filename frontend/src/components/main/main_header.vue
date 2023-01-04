@@ -1,13 +1,15 @@
 <template>
 <div class="header_main">
     <div class="header_title">
-        <h1>Home</h1>
+        <h1 v-if="current_url == '/home'">Home</h1>
     </div>
 </div>
 </template>
 
 <script>
-
+export default {
+    props: ["current_url"]
+}
 </script>
 
 <style scoped>

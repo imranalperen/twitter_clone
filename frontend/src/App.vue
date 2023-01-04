@@ -1,12 +1,25 @@
 <template>
   <div class="router_view_container">
-    <router-view/>
+    <router-view
+      :current_url="current_url"
+    />
   </div>
 </template>
 
 
 <script>
 export default {
+  data() {
+    return {
+      current_url: null
+    }
+  },
+
+  watch: {
+    $route(to, from) {
+      this.current_url = to.fullPath
+    }
+  }
 }
 </script>
 

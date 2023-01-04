@@ -147,7 +147,6 @@ export default {
 .menu_element:hover {
     background-color: var(--itemBackground);
     border-radius: 15px;
-    margin-right: 4em;
 }
 
 .user_info_bottom {
