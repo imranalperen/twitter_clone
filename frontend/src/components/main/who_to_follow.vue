@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { recommend_user_request, follow_request, unfollow_requet } from "@/requests"
+import { recommend_user_request, follow_request, unfollow_request } from "@/requests"
 
 export default {
     data() {
@@ -73,7 +73,7 @@ export default {
         },
 
         async unfollow_user_request(user) {
-            let response = await unfollow_requet(user.id)
+            let response = await unfollow_request(user.id)
             if(response) {
                 user.is_following = false
             }

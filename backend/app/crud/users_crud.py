@@ -1,7 +1,7 @@
 from app.db import session
-from app.models import Users, UsersFollowers
+from app.models import Users, UsersFollowers, Tweets
 from app.utils import password_hasher
-from sqlalchemy.sql import and_
+from sqlalchemy.sql import and_, label, union, subquery
 from sqlalchemy import func
 
 class UserRegistration:
@@ -126,4 +126,76 @@ class UserFollow:
 
         return {"status": True}
 
- 
+
+class UserMain:
+    def create_timeline(self, user):
+        #raw sql
+        # select (
+        #     users.id,
+        #        users.name,
+        #        users.username,
+        #        tweets.time_created,
+        #        tweets.body
+        #            ) from users
+        # inner join tweets on tweets.user_id = users.id
+        # inner join users_followers on users_followers.following_user_id = users.id
+        # where users_followers.main_user_id = 4
+        # union
+        # select (
+        #     users.id,
+        #        users.name,
+        #        users.username,
+        #        tweets.time_created,
+        #        tweets.body
+        #            ) from users
+        # inner join tweets on tweets.user_id = users.id
+        # inner join users_followers on users_followers.main_user_id = users.id
+        # where users_followers.main_user_id = 4
+
+        #tweets of following users
+        q1 = (
+            session.query(
+                Users.id,
+                Users.name,
+                Users.username,
+                Tweets.time_created,
+                Tweets.body,
+                Tweets.id.label("tweet_id")
+            )
+            .join(Tweets, Tweets.user_id == Users.id)
+            .join(UsersFollowers, UsersFollowers.following_user_id == Users.id)
+            .where(UsersFollowers.main_user_id == user.id)
+            
+        )
+        #tweets of main user
+        q2 = (
+            session.query(
+                Users.id,
+                Users.name,
+                Users.username,
+                Tweets.time_created,
+                Tweets.body,
+                Tweets.id.label("tweet_id")
+            )
+            .join(Tweets, Tweets.user_id == Users.id)
+            .join(UsersFollowers, UsersFollowers.main_user_id == Users.id)
+            .where(UsersFollowers.main_user_id == user.id)
+            
+        )
+        #mergeing 2 queries and sort results descending tweet create time
+        q = q1.union(q2).order_by(Tweets.time_created.desc()).all()
+        if not q:
+            return {"status": False, "error": 2002}
+
+        tweets = []
+        for tweet in q:
+            tweets.append({
+                "tweet_id": tweet.tweet_id,
+                "user_id": tweet.id,
+                "name": tweet.name,
+                "username": tweet.username,
+                "time_created": tweet.time_created,
+                "body": tweet.body,
+            })
+        
+        return {"status": True, "tweets": tweets}

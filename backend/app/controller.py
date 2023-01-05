@@ -4,7 +4,7 @@ from flask import(
     jsonify,
     g
 )
-from app.crud.users_crud import UserFollow, UserRegistration
+from app.crud.users_crud import UserFollow, UserRegistration, UserMain
 from app.crud.tweet_crud import TweetMain
 from app.utils import create_access_token
 from app.decorators import login_required
@@ -88,3 +88,15 @@ def tweet():
         return jsonify({"response": True})
     
     return jsonify({"response": tweet_response["error"]})
+
+
+@main.route("timeline", methods=["GET"])
+@login_required
+def timeline():
+    #imranalperen fakueser1
+    user = g.user
+    tweets = UserMain().create_timeline(user)
+    if not tweets["status"]:
+        return jsonify({"response": tweets["error"]})
+    
+    return jsonify({"response": tweets["tweets"]})

@@ -35,7 +35,9 @@ function access_token_control() {
     const access_token = window.localStorage.getItem("access_token")
 
     if(!access_token) {
-        this.$router.push({name: "logn"})
+        window.localStorage.clear()
+        console.log(1)
+        location.href = 'http://localhost:8080/login'
     }
     else {
         return access_token
@@ -117,7 +119,7 @@ function follow_request(user_id) {
 
 
 //! unfollow user request
-function unfollow_requet(user_id) {
+function unfollow_request(user_id) {
     const access_token = access_token_control()
 
     const fetched_data = fetch(`${API_URL}/unfollow_user`, {
@@ -133,6 +135,22 @@ function unfollow_requet(user_id) {
     return fetched_data
 }
 
+//! timeline request
+function timeline_request() {
+    const access_token = access_token_control()
+
+    const fetched_data = fetch(`${API_URL}/timeline`, {
+        methods: "GET",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        }
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
 
 export {
     signup_request,
@@ -141,5 +159,6 @@ export {
     add_tweet_request,
     recommend_user_request,
     follow_request,
-    unfollow_requet
+    unfollow_request,
+    timeline_request
 }

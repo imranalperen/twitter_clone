@@ -9,12 +9,6 @@
 
 <script>
 export default {
-
-    methods: {
-        test() {
-            console.log(1)
-        }
-    }
 }
 
 </script>

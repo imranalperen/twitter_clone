@@ -54,12 +54,6 @@ export default {
         main_header,
         home,
     },
-    
-    data() {
-        return {
-            
-        }
-    },
 }
     
 </script>
