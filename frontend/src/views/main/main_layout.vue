@@ -1,8 +1,15 @@
 <template>
-<div class="main_layout_container">
+<div class="main_layout_container" v-if="first_vizit">
+    <registration_info/>
+</div>
+
+<div class="main_layout_container" v-else>
+    {{first_vizit}}
     <div class="left">
         <div class="menu_container">
-            <main_menu/>
+            <main_menu
+                :user="user"
+            />
         </div>
     </div>
 
@@ -14,7 +21,10 @@
             />
         </div>
         <div class="route_container">
-            <home v-if="current_url == '/home'"></home>
+            <home
+                v-if="current_url == '/home'"
+                :user="user"
+            ></home>
         </div>
     </div>
 
@@ -27,7 +37,9 @@
             <main_trends/>
         </div>
         <div class="who_to_follow_container">
-            <who_to_follow/>
+            <who_to_follow
+                :user="user"
+            />
         </div>
     </div>
 
@@ -35,18 +47,20 @@
 </template>
     
 <script>
+import registration_info from '@/components/registration/registration_info.vue'
 import main_menu from '@/components/main/main_menu.vue';
 import main_trends from '@/components/main/main_trends.vue';
 import who_to_follow from '@/components/main/who_to_follow.vue';
 import searchbar from '@/components/main/searchbar.vue'
 import main_header from '@/components/main/main_header.vue'
-
 import home from '@/views/main/home.vue'
+import { user_request } from '@/requests'
     
 export default {
     props: ["current_url"],
 
     components: {
+        registration_info,
         main_menu,
         main_trends,
         who_to_follow,
@@ -54,6 +68,21 @@ export default {
         main_header,
         home,
     },
+
+    data() {
+        return {
+            first_vizit: null,
+            user: null,
+        }
+    },
+
+    async beforeCreate() {
+        if(window.localStorage.getItem("first_vizit")) {
+            this.first_vizit = await true
+        }
+        this.user = await user_request()
+    },
+
 }
     
 </script>

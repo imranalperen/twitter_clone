@@ -1,8 +1,8 @@
 <template>
 <div class="tweet_container">
     <div class="left">
-        <div class="profile_image">
-            <img src="@/assets/depositphotos_137014128-stock-illustration-user-profile-icon.jpg">
+        <div class="profile_image" v-if="user">
+            <img :src="user.image">
         </div>
     </div>
     <div class="right">

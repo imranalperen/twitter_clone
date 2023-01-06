@@ -151,6 +151,34 @@ function timeline_request() {
     return fetched_data
 }
 
+//! registration_info_request
+function registration_info_request(request_body) {
+    const access_token = access_token_control()
+    const fetched_data = fetch(`${API_URL}/registration_info`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+
+// const fetched_data = fetch(`${API_URL}/signup`, {
+//     method: "POST",
+//     headers: {
+//         "Content-Type": "application/json"
+//     },
+//     body: JSON.stringify(request_body)
+// })
+// .then((response) => response.json())
+
+// return fetched_data
+
 
 export {
     signup_request,
@@ -160,5 +188,6 @@ export {
     recommend_user_request,
     follow_request,
     unfollow_request,
-    timeline_request
+    timeline_request,
+    registration_info_request
 }

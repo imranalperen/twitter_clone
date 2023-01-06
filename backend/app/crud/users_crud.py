@@ -72,6 +72,28 @@ class UserRegistration:
             return False
         
         return user
+    
+
+    def update_user_info(self, user, image, date_of_birth, gender):
+        if(gender and date_of_birth):
+            (
+                session.query(Users)
+                .where(Users.id == user.id)
+                .update({
+                    "profile_image": image,
+                    "date_of_birth": date_of_birth,
+                    "gender": gender
+                })
+            )
+        else:
+            (
+                session.query(Users)
+                .where(Users.id == user.id)
+                .update({
+                    "profile_image": image
+                })
+            )
+        session.commit()
 
 
 class UserFollow:
@@ -97,7 +119,8 @@ class UserFollow:
                 "id": user.id,
                 "name": user.name,
                 "username": user.username,
-                "is_following": False
+                "is_following": False,
+                "image": user.profile_image
             })
 
         return recommended_users

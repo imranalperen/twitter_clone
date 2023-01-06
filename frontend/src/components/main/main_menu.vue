@@ -48,7 +48,7 @@
     <div class="user_info_bottom" v-if="user">
         <div class="user_info_left">
             <div class="user_info_image">
-                <img src="@/assets/depositphotos_137014128-stock-illustration-user-profile-icon.jpg" alt="">
+                <img :src="user.image" alt="">
             </div>
             <div class="user_info_right">
                 <p id="name">{{ user.name }}</p>
@@ -65,18 +65,8 @@
 
 
 <script>
-import { user_request } from '@/requests'
 export default {
-    
-    data() {
-        return {
-            user: null,
-        }
-    },
-
-    async beforeCreate() {
-        this.user = await user_request()
-    },
+    props: ["user"],
 
     methods: {
         logout() {

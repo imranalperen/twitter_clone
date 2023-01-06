@@ -6,7 +6,7 @@
     <div class="profile" v-for="user in recommend_user_list">
         <div class="left">
             <div class="image">
-                <img src="@/assets/depositphotos_137014128-stock-illustration-user-profile-icon.jpg">
+                <img :src="user.image">
             </div>
             <div class="names">
                 <p class="name">{{ user.name }}</p>

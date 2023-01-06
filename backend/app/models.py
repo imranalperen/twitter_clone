@@ -5,6 +5,7 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
+    Boolean,
     DateTime,
     ForeignKey
 )
@@ -18,6 +19,10 @@ class Users(Base):
     username = Column(String(15), nullable=False, unique=True)
     email = Column(String(30), nullable=False, unique=True)
     hashed_password = Column(String(100), nullable=False)
+    profile_image = Column(String)
+    date_of_birth = Column(String(30))
+    gender = Column(String(10))
+    verified_accaunt = Column(Boolean, default=False)
     access_token = Column(String(100))
     access_token_expire_date = Column(DateTime)
 
@@ -29,6 +34,7 @@ class Tweets(Base):
     user_id = Column(Integer, ForeignKey("users.id") ,nullable=False)
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     body = Column(String(280), nullable=False)
+    image = Column(String)
 
 
 class UsersFollowers(Base):

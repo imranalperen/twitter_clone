@@ -37,6 +37,7 @@
 
 <script>
 import { signup_request } from '@/requests';
+import { login_request } from '@/requests';
 
 export default {
     data() {
@@ -105,7 +106,26 @@ export default {
                 this.error_message = "Email already registered."
             }
             else {
-                this.login()
+                //same function with login.vue
+                let request_body = {
+                    "username": this.username,
+                    "password": this.password,
+                }
+                let response_value = await login_request(request_body)
+                if(response_value.response == 1001) {
+                    this.error_message = "No Such User Found"
+                }
+                else if(response_value.response == 1003) {
+                    this.error_message = "Wrong Password"
+                }
+                else {
+                    var access_token = response_value["access_token"]
+                    window.localStorage.clear("access_token")
+                    window.localStorage.setItem("access_token", access_token["token"])
+                    window.localStorage.setItem("first_vizit", true)
+                    this.$router.push({name: "home"})
+                }
+                // this.$router.push({name: "login"})
             }
         },
 

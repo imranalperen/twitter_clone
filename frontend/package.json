@@ -7,6 +7,7 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@vuepic/vue-datepicker": "^3.6.4",
     "core-js": "^3.8.3",
     "light-icons": "^1.0.10",
     "lightvue": "^1.5.1",

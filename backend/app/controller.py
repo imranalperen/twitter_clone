@@ -42,13 +42,26 @@ def login():
     return jsonify({"response": login_response["error"]})
 
 
+@main.route("registration_info", methods=["POST"])
+@login_required
+def registration_info():
+    user = g.user
+    image = request.json.get("profile_image")
+    date_of_birth = request.json.get("date_of_birth")
+    gender = request.json.get("gender")
+    UserRegistration().update_user_info(user, image, date_of_birth, gender)
+    return jsonify({"response": True})
+
+
+
 @main.route("user", methods=["POST"])
 @login_required
 def user():
     user = g.user
     return jsonify({
         "username": user.username,
-        "name": user.name
+        "name": user.name,
+        "image": user.profile_image
     })
 
 
