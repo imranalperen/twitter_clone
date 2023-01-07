@@ -183,7 +183,8 @@ class UserMain:
                 Users.username,
                 Tweets.time_created,
                 Tweets.body,
-                Tweets.id.label("tweet_id")
+                Tweets.id.label("tweet_id"),
+                Tweets.image
             )
             .join(Tweets, Tweets.user_id == Users.id)
             .join(UsersFollowers, UsersFollowers.following_user_id == Users.id)
@@ -198,7 +199,8 @@ class UserMain:
                 Users.username,
                 Tweets.time_created,
                 Tweets.body,
-                Tweets.id.label("tweet_id")
+                Tweets.id.label("tweet_id"),
+                Tweets.image
             )
             .join(Tweets, Tweets.user_id == Users.id)
             .join(UsersFollowers, UsersFollowers.main_user_id == Users.id)
@@ -219,6 +221,7 @@ class UserMain:
                 "username": tweet.username,
                 "time_created": tweet.time_created,
                 "body": tweet.body,
+                "image": tweet.image
             })
         
         return {"status": True, "tweets": tweets}

@@ -95,8 +95,9 @@ def unfollow_user():
 @login_required
 def tweet():
     user = g.user
-    tweet_body = request.headers.get("tweet-body")
-    tweet_response = TweetMain().add_tweet(user, tweet_body)
+    tweet_body = request.json.get("tweet_body")
+    tweet_image = request.json.get("tweet_image")
+    tweet_response = TweetMain().add_tweet(user, tweet_body, tweet_image)
     if tweet_response["status"]:
         return jsonify({"response": True})
     

@@ -22,7 +22,7 @@
                 >Follow</button>
                 
                 <button
-                    class="following_btn"
+                    class="unfollow_btn"
                     v-else
                     @click="unfollow_user_request(user)"
                 >Following</button>
@@ -30,22 +30,6 @@
             <div class></div>
         </div>
     </div>
-    <!-- <div class="profile">
-        <div class="left">
-            <div class="image">
-                <img src="@/assets/depositphotos_137014128-stock-illustration-user-profile-icon.jpg">
-            </div>
-            <div class="names">
-                <p class="name">fake1</p>
-                <p class="username">@fakeuser1</p>
-            </div>
-        </div>
-        <div class="right">
-            <div class="follow_btn_container">
-                <button class="following_btn">Following</button>
-            </div>
-        </div>
-    </div> -->
 </div>
 </template>
 
@@ -97,6 +81,7 @@ h1 {
 
 .image > img {
     width: 50px;
+    height: 50px;
     border-radius: 50%;
 }
 .profile {
@@ -149,7 +134,7 @@ h1 {
     cursor: pointer;
 }
 
-.following_btn {
+.unfollow_btn {
     margin: .5em 0 .5em .4em;
     color: white;
     background-color: var(--thirdBG);
@@ -163,7 +148,7 @@ h1 {
     cursor: pointer;
 }
 
-.following_btn:hover {
+.unfollow_btn:hover {
     color: crimson;
     border-color: crimson;
     background-color: rgba(220, 20, 60, .2);

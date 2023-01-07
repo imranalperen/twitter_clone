@@ -33,7 +33,7 @@ class Tweets(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id") ,nullable=False)
     time_created = Column(DateTime(timezone=True), server_default=func.now())
-    body = Column(String(280), nullable=False)
+    body = Column(String(280))
     image = Column(String)
 
 

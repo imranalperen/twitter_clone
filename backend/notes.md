@@ -1,1 +1,0 @@
-onerilen user profil fotosu

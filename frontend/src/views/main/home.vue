@@ -14,11 +14,12 @@
             {{ tweet.username }}
             {{ tweet.time_created }}
             {{ tweet.body }}
+            <!-- <img :src="tweet.image"> -->
             =====================================================================
         </div>
     </div> 
     <div class="timeline" v-else>
-        user follows noone recommend users for user
+        user follows noone recommend users for user 
     </div>
 </div>
 </template>

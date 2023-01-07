@@ -7,6 +7,8 @@
     </div>
     <div class="right">
         <div class="tweet_text_container">
+            <img v-if="preview_image" :src="preview_image" class="image_preview"/>
+            {{ character_limitor }}
             <textarea
                 id="tweet_textarea"
                 placeholder="What's happening?"
@@ -17,7 +19,13 @@
         <div class="tweet_footer">
             <div class="footer_left">
                 <div class="icon_container">
-                    <img class="icon" src="@/assets/image-outline.svg">
+                    <input type="file"
+                    id="selected_file"
+                    style="display: none;"
+                    @change="validagte_image_size"
+                />
+                <!-- input type file shows file name to ignore this we can do: -->
+                <img class="icon" src="@/assets/image-outline.svg" onclick="document.getElementById('selected_file').click();">
                 </div>
             </div>
             <div class="footer_right">
@@ -30,7 +38,7 @@
                             :border-width="3"
                         />
                     </div>
-                    <button id="tweet_btn" @click="add_tweet">Tweet</button>
+                    <button id="tweet_btn" @click="validate_tweet">Tweet</button>
                 </div>
             </div>
         </div>
@@ -54,8 +62,10 @@ export default {
     data() {
         return {
             tweet_text_body: "",
+            tweet_text_body_trash: "",
             tweet_percent: 0,
             tweet_character_limit: 280,
+            preview_image: null,
         }
     },
 
@@ -66,22 +76,69 @@ export default {
             this.tweet_percent = len*(100/280)
         },
 
-        async add_tweet() {
-            if(this.tweet_text_body.length < 1 || this.tweet_text_body > 280) {
-                console.log("tweet uzun veya kisa")
+        validagte_image_size(e) {
+            const file_size = e.target.files[0]
+            if(file_size.size > 2097152) {
+                console.log("File size shuld be less then 2 mb")
             }
-            else {
-                let response_value = await add_tweet_request(this.tweet_text_body)
-                if(response_value == 2001) {
-                    console.log("api tweeet length error")
+            else{
+                this.upload_image(e)
+            }
+        },
+
+        upload_image(e){
+            const image = e.target.files[0];
+            const reader = new FileReader();
+            reader.readAsDataURL(image);
+            reader.onload = e =>{
+                //preview_image ll we saved database
+                this.preview_image = e.target.result;
+            };
+        },
+
+        validate_tweet() {
+            if(this.preview_image) {
+                if(this.tweet_text_body.length > 280) {
+                    console.log("tweet length is too much")
                 }
                 else {
-                    this.tweet_text_body = ""
-                    this.calculate_percent()
+                    this.add_tweet()
                 }
+            }
+            else {
+                if(this.tweet_text_body.length < 1 || this.tweet_text_body.length > 280) {
+                    console.log("no tweet or long tweet")
+                }
+                else {
+                    this.add_tweet()
+                }
+            }
+        },
+
+        async add_tweet() {
+            const request_body = {
+                "tweet_body": this.tweet_text_body,
+                "tweet_image": this.preview_image
+            }
+            let response_value = await add_tweet_request(request_body)
+            if(response_value == 2001) {
+                console.log("api tweeet length error")
+            }
+            else {
+                this.tweet_text_body = ""
+                this.preview_image = null
+                this.calculate_percent()
             }
         }
     },
+
+    computed: {
+        character_limitor() {
+            if(this.tweet_text_body.length > 280){
+                this.tweet_text_body = this.tweet_text_body.substring(0, 280)
+            }
+        }
+    }
 }
 
 </script>
@@ -98,6 +155,7 @@ export default {
 
 .profile_image > img {
     width: 50px;
+    height: 50px;
     border-radius: 50%;
     margin: .8em;
 }
@@ -170,5 +228,10 @@ export default {
     display: flex;
     align-items: center;
     margin-right: 1em;
+}
+
+.image_preview{
+    max-width: 250px;
+    max-height: 250px;
 }
 </style>
