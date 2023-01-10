@@ -44,19 +44,22 @@
                             <p class="comment_count">34</p>
                         </div>
 
-                        <div class="retweet_container">
+                        <div class="retweet_container" v-if="tweet.is_retweeted" @click="unretweet(tweet.tweet_id)">
+                            <img src="@/assets/icons8-retweet-24.png" class="unretweet_image">
+                            <p class="retweet_count">3</p>
+                        </div>
+                        <div class="retweet_container" v-else @click="retweet(tweet.tweet_id)">
                             <img src="@/assets/icons8-retweet-24.png" class="retweet_image">
                             <p class="retweet_count">3</p>
                         </div>
 
-                        <!-- <div class="like_container" v-if="compute_is_liked(tweet.tweet_id)" @click="unlike_tweet(tweet.tweet_id)"> -->
                         <div class="like_container" v-if="tweet.is_liked" @click="unlike_tweet(tweet.tweet_id)">
                             <img src="@/assets/icons8-heart-50.png" class="unlike_image">
-                            <p class="like_count">123</p>
+                            <p class="like_count">{{ tweet.like_count }}</p>
                         </div>
                         <div class="like_container" v-else @click="like_tweet(tweet.tweet_id)">
                             <img src="@/assets/icons8-heart-50.png" class="like_image">
-                            <p class="like_count">123</p>
+                            <p class="like_count">{{ tweet.like_count }}</p>
                         </div>
                     </div>
                 </div>
@@ -74,7 +77,13 @@
 <script>
 import main_tweet from '@/components/main/main_tweet.vue'
 
-import { timeline_request, like_request, main_user_liked_tweets, unlike_request } from '@/requests'
+import {
+    timeline_request,
+    like_request,
+    main_user_liked_tweets,
+    unlike_request,
+    retweet_request
+} from '@/requests'
 
 
 export default {
@@ -122,6 +131,7 @@ export default {
                 for(let i = 0; i < this.timeline_elements.length; i++) {
                     if(this.timeline_elements[i].tweet_id == tweet_id) {
                         this.timeline_elements[i].is_liked = true
+                        this.timeline_elements[i].like_count += 1
                     }
                 }
             }
@@ -137,16 +147,20 @@ export default {
                 for(let i = 0; i < this.timeline_elements.length; i++) {
                     if(this.timeline_elements[i].tweet_id == tweet_id) {
                         this.timeline_elements[i].is_liked = false
+                        this.timeline_elements[i].like_count -= 1
                     }
                 }
             }
         },
 
-        compute_is_liked(tweet_id) {
-            for(let i = 0; i < this.user_liked_tweets.length; i++) {
-                if(this.user_liked_tweets[i] == tweet_id) {
-                    return true
-                }
+        async retweet(tweet_id) {
+            let request_body = {
+                "tweet_id": tweet_id
+            }
+            
+            let response_value = await retweet_request(request_body)
+            if(response_value) {
+                console.log(1)
             }
         }
     },
@@ -244,7 +258,7 @@ a {
     cursor: pointer;
 }
 
-.comment_image, .retweet_image, .like_image, .unlike_image {
+.comment_image, .retweet_image, .like_image, .unlike_image, .unretweet_image {
     width: 24px;
     height: 24px;
     filter: invert(32%) sepia(6%) saturate(811%) hue-rotate(166deg) brightness(97%) contrast(89%);
@@ -252,6 +266,10 @@ a {
 
 .unlike_image {
     filter: invert(30%) sepia(76%) saturate(1852%) hue-rotate(310deg) brightness(94%) contrast(90%);
+}
+
+.unretweet_image {
+    filter: invert(61%) sepia(47%) saturate(424%) hue-rotate(95deg) brightness(97%) contrast(89%);
 }
 .comment_container:hover, .like_container:hover, .retweet_container:hover {
     padding: .3em;

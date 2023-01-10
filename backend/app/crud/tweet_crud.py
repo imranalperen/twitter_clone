@@ -1,5 +1,5 @@
 from app.db import session
-from app.models import Tweets, TweetsLikes
+from app.models import Tweets, TweetsLikes, Retweets
 from sqlalchemy.sql import and_
 
 
@@ -34,3 +34,12 @@ class TweetMain:
         )
         session.commit()
         return {"status": True}
+
+    def retweet_tweet(self, user_id, tweet_id):
+        query = Retweets(
+            Retweets.rt_user_user == user_id,
+            Retweets.tweet_id == tweet_id
+        )
+        session.add(query)
+        session.commit()
+        return {"satatus": True}

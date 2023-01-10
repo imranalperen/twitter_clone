@@ -142,6 +142,7 @@ def like_tweet():
     TweetMain().tweet_like(user_id, tweet_id)
     return jsonify({"response": True})
 
+
 @main.route("unlike_tweet", methods=["POST"])
 @login_required
 def unlike_tweet():
@@ -149,3 +150,14 @@ def unlike_tweet():
     tweet_id = request.json.get("tweet_id")
     TweetMain().unlike_tweet(user_id, tweet_id)
     return jsonify({"resposne": True})
+
+
+@main.route("retweet", methods=["POST"])
+@login_required
+def retweet():
+    user_id = g.user.id
+    tweet_id = request.json.get("tweet_id")
+    print(user_id)
+    print(tweet_id)
+    TweetMain().retweet_tweet(user_id, tweet_id)
+    return jsonify({"response": True})

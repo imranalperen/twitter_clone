@@ -1,7 +1,7 @@
 from app.db import session
 from app.models import Users, UsersFollowers, Tweets, TweetsLikes
 from app.utils import password_hasher
-from sqlalchemy.sql import and_, label, union, subquery
+from sqlalchemy.sql import and_
 from sqlalchemy import func
 
 class UserRegistration:
@@ -197,6 +197,12 @@ class UserMain:
 
         tweets = []
         for tweet in q:
+            like_count = (
+                session.query(TweetsLikes)
+                .where(TweetsLikes.tweet_id == tweet.tweet_id)
+                .count()
+            )
+
             tweets.append({
                 "tweet_id": tweet.tweet_id,
                 "user_id": tweet.id,
@@ -205,7 +211,8 @@ class UserMain:
                 "profile_image": tweet.profile_image,
                 "time_created": tweet.time_created,
                 "body": tweet.body,
-                "image": tweet.image
+                "image": tweet.image,
+                "like_count": like_count
             })
 
         return {"status": True, "tweets": tweets}

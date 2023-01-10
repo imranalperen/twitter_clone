@@ -42,9 +42,7 @@ function access_token_control() {
     else {
         return access_token
     }
-
 }
-
 
 //! standart user request
 function user_request() {
@@ -215,6 +213,22 @@ function unlike_request(request_body) {
     return fetched_data
 }
 
+function retweet_request(request_body) {
+    const access_token = access_token_control()
+
+    const fetched_data = fetch(`${API_URL}/retweet`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access_token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
 
 export {
     signup_request,
@@ -228,5 +242,6 @@ export {
     registration_info_request,
     like_request,
     main_user_liked_tweets,
-    unlike_request
+    unlike_request,
+    retweet_request
 }

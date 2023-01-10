@@ -17,6 +17,7 @@ class FakeMain():
         session.commit()
         password = "qweasd"
         username = "user2"
+        hashed_password = password_hasher(password, username)
         user2 = Users(
             name = "user2",
             username = "user2",
@@ -27,6 +28,7 @@ class FakeMain():
         session.commit()
         password = "qweasd"
         username = "user3"
+        hashed_password = password_hasher(password, username)
         user3 = Users(
             name = "user3",
             username = "user3",
@@ -37,6 +39,7 @@ class FakeMain():
         session.commit()
         password = "qweasd"
         username = "user4"
+        hashed_password = password_hasher(password, username)
         user4 = Users(
             name = "user4",
             username = "user4",
@@ -47,6 +50,7 @@ class FakeMain():
         session.commit()
         password = "qweasd"
         username = "user5"
+        hashed_password = password_hasher(password, username)
         user5 = Users(
             name = "user5",
             username = "user5",

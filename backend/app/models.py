@@ -1,6 +1,5 @@
 from app.db import Base, engine
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
 from sqlalchemy import (
     Column,
     Integer,
@@ -38,7 +37,6 @@ class Tweets(Base):
     likes = Column(Integer)
     retweets = Column(Integer)
     comments = Column(Integer)
-    releted_tweet = Column(Integer, ForeignKey("tweets.id"))
 
 
 class UsersFollowers(Base):
@@ -58,7 +56,7 @@ class TweetsLikes(Base):
 
 
 class Retweets(Base):
-    __tablename__ = "retweet"
+    __tablename__ = "retweets"
 
     id = Column(Integer, primary_key=True)
     tweet_id = Column(Integer, ForeignKey("tweets.id"))
