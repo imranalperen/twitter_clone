@@ -18,6 +18,10 @@
         <p v-if="error_message" class="error">{{ error_message }}</p> 
         <button type="submit" id="login_btn" @click="login">Login</button>
         <button type="submit" id="signup_btn" @click="sign_up">Sign Up</button>
+        <br>
+        <hr>
+        <br>
+        <button @click="create_fake_users">CREATE FAKE USERS</button>
     </div>
 </div>
 </template>
@@ -25,6 +29,7 @@
     
 <script>
 import { login_request } from '@/requests'
+import { API_URL } from '@/locals'
 
 export default {
     data() {
@@ -42,7 +47,6 @@ export default {
     },
 
     methods: {
-
         async login() {
             if(this.username == '' || this.password == '') {
                 this.error_message = "Please Fill All From"
@@ -70,6 +74,16 @@ export default {
 
         sign_up() {
             this.$router.push({name: "signup"})
+        },
+
+        create_fake_users() {
+            fetch(`${API_URL}/create_fake_users`, {
+                method: "GET",
+                headers: {
+                    "content-type": "application/json",
+                }
+            })
+            .then((response) => response.json())
         }
     }
 

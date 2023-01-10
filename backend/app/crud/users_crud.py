@@ -1,5 +1,5 @@
 from app.db import session
-from app.models import Users, UsersFollowers, Tweets
+from app.models import Users, UsersFollowers, Tweets, TweetsLikes
 from app.utils import password_hasher
 from sqlalchemy.sql import and_, label, union, subquery
 from sqlalchemy import func
@@ -152,35 +152,17 @@ class UserFollow:
 
 class UserMain:
     def create_timeline(self, user):
-        #raw sql
-        # select (
-        #     users.id,
-        #        users.name,
-        #        users.username,
-        #        tweets.time_created,
-        #        tweets.body
-        #            ) from users
-        # inner join tweets on tweets.user_id = users.id
-        # inner join users_followers on users_followers.following_user_id = users.id
-        # where users_followers.main_user_id = 4
-        # union
-        # select (
-        #     users.id,
-        #        users.name,
-        #        users.username,
-        #        tweets.time_created,
-        #        tweets.body
-        #            ) from users
-        # inner join tweets on tweets.user_id = users.id
-        # inner join users_followers on users_followers.main_user_id = users.id
-        # where users_followers.main_user_id = 4
-
-        #tweets of following users
+        #user own tweets
+        #user foloowing users tweets
+        #user following users retweets
+        #user following users likes
+        #user following users releted tweets
         q1 = (
             session.query(
                 Users.id,
                 Users.name,
                 Users.username,
+                Users.profile_image,
                 Tweets.time_created,
                 Tweets.body,
                 Tweets.id.label("tweet_id"),
@@ -197,6 +179,7 @@ class UserMain:
                 Users.id,
                 Users.name,
                 Users.username,
+                Users.profile_image,
                 Tweets.time_created,
                 Tweets.body,
                 Tweets.id.label("tweet_id"),
@@ -219,9 +202,23 @@ class UserMain:
                 "user_id": tweet.id,
                 "name": tweet.name,
                 "username": tweet.username,
+                "profile_image": tweet.profile_image,
                 "time_created": tweet.time_created,
                 "body": tweet.body,
                 "image": tweet.image
             })
-        
+
         return {"status": True, "tweets": tweets}
+
+    def user_liked_tweets(self, user_id):
+        q = (
+        session.query(TweetsLikes)
+        .where(TweetsLikes.like_user_id == user_id)
+        )
+        liked_tweets = []
+        for like in q:
+            liked_tweets.append({
+                "tweet_id": like.tweet_id,
+            })
+
+        return {"status": True, "liked_tweets": liked_tweets}

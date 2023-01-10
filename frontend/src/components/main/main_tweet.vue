@@ -7,7 +7,10 @@
     </div>
     <div class="right">
         <div class="tweet_text_container">
-            <img v-if="preview_image" :src="preview_image" class="image_preview"/>
+            <div class="image_container" v-if="preview_image">
+                <img :src="preview_image" class="image_preview"/>
+                <img id="clear_image_btn" src="@/assets/icons8-xbox-x-50.png" @click="clear_preview_image">
+            </div>
             {{ character_limitor }}
             <textarea
                 id="tweet_textarea"
@@ -129,6 +132,10 @@ export default {
                 this.preview_image = null
                 this.calculate_percent()
             }
+        },
+
+        clear_preview_image() {
+            return this.preview_image = null
         }
     },
 
@@ -230,8 +237,22 @@ export default {
     margin-right: 1em;
 }
 
+.image_container {
+    position: relative;
+}
+
 .image_preview{
-    max-width: 250px;
-    max-height: 250px;
+    margin-top: 1em;
+    max-width: 550px;
+    max-height: 550px;
+    border-radius: 25px;
+}
+
+#clear_image_btn {
+    filter: invert(99%) sepia(55%) saturate(453%) hue-rotate(256deg) brightness(122%) contrast(87%);
+    width: 30px;
+    position: absolute;
+    top: 1.3em;
+    left: .3em;
 }
 </style>

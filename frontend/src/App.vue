@@ -28,7 +28,6 @@ export default {
 :root {
   --primaryBG: #15202b;
   --secondaryBG: #31404e;
-  /* --gray: #707d89; */
   --gray: #85919e;
   --bordergray:#4F575E;
   --background: #14171A;
@@ -40,6 +39,8 @@ export default {
   --whiteHover: #b5b5b5;
   --thirdBG: #1e2732;
   --searchbarBG: #273340;
+  --retweet: rgb(85, 188, 133);
+  --like: rgb(229, 57, 127);
 }
 
 * {

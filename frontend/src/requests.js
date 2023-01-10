@@ -21,7 +21,7 @@ function login_request(request_body) {
     const fetched_data = fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
-            "content-type": "application/json"
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(request_body)
     })
@@ -166,7 +166,54 @@ function registration_info_request(request_body) {
     return fetched_data
 }
 
+//!like request
+function like_request(request_body) {
+    const access_token = access_token_control()
 
+    const fetched_data = fetch(`${API_URL}/like_tweet`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access_token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+//!like request
+function main_user_liked_tweets() {
+    const access_token = access_token_control()
+
+    const fetched_data = fetch(`${API_URL}/main_user_liked_tweets`, {
+        method: "GET",
+        headers: {
+            "content-type": "application/json",
+            "access_token": access_token
+        },
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+function unlike_request(request_body) {
+    const access_token = access_token_control()
+
+    const fetched_data = fetch(`${API_URL}/unlike_tweet`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access_token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
 
 
 export {
@@ -178,5 +225,8 @@ export {
     follow_request,
     unfollow_request,
     timeline_request,
-    registration_info_request
+    registration_info_request,
+    like_request,
+    main_user_liked_tweets,
+    unlike_request
 }

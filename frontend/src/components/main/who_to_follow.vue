@@ -17,7 +17,7 @@
             <div class="follow_btn_container">
                 <button
                     class="follow_btn"
-                    v-if="user.is_following == false"    
+                    v-if="user.is_following == false"
                     @click="follow_user_request(user)"
                 >Follow</button>
                 

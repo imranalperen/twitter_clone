@@ -35,6 +35,10 @@ class Tweets(Base):
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     body = Column(String(280))
     image = Column(String)
+    likes = Column(Integer)
+    retweets = Column(Integer)
+    comments = Column(Integer)
+    releted_tweet = Column(Integer, ForeignKey("tweets.id"))
 
 
 class UsersFollowers(Base):
@@ -43,6 +47,23 @@ class UsersFollowers(Base):
     id = Column(Integer, primary_key=True)
     main_user_id = Column(Integer, ForeignKey("users.id"))
     following_user_id = Column(Integer, ForeignKey("users.id"))
+
+
+class TweetsLikes(Base):
+    __tablename__ = "tweets_likes"
+
+    id = Column(Integer, primary_key=True)
+    tweet_id = Column(Integer, ForeignKey("tweets.id"))
+    like_user_id = Column(Integer, ForeignKey("users.id"))
+
+
+class Retweets(Base):
+    __tablename__ = "retweet"
+
+    id = Column(Integer, primary_key=True)
+    tweet_id = Column(Integer, ForeignKey("tweets.id"))
+    rt_user_user = Column(Integer, ForeignKey("users.id"))
+
 
 
 Base.metadata.create_all(engine)

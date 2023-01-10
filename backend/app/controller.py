@@ -6,12 +6,22 @@ from flask import(
 )
 from app.crud.users_crud import UserFollow, UserRegistration, UserMain
 from app.crud.tweet_crud import TweetMain
+from app.crud.fake_crud import FakeMain
 from app.utils import create_access_token
 from app.decorators import login_required
 
 
 main = Blueprint("main", __name__, url_prefix="/api")
 
+@main.route("create_fake_users", methods=["POST", "GET"])
+def create_fake_user():
+    fake_user_response = (
+        FakeMain().create_fake_users(),
+        FakeMain().follow_fake_users(),
+        FakeMain().create_fake_tweets()
+    )
+    
+    return jsonify({"response": fake_user_response})
 
 @main.route("signup", methods=["POST"])
 def signup():
@@ -59,6 +69,7 @@ def registration_info():
 def user():
     user = g.user
     return jsonify({
+        "id": user.id,
         "username": user.username,
         "name": user.name,
         "image": user.profile_image
@@ -114,3 +125,27 @@ def timeline():
         return jsonify({"response": tweets["error"]})
     
     return jsonify({"response": tweets["tweets"]})
+
+@main.route("main_user_liked_tweets", methods=["GET"])
+@login_required
+def main_user_liked_tweets():
+    user = g.user
+    liked_tweets = UserMain().user_liked_tweets(user.id)
+    return jsonify({"response": liked_tweets["liked_tweets"]})
+
+
+@main.route("like_tweet", methods=["POST"])
+@login_required
+def like_tweet():
+    user_id = g.user.id
+    tweet_id = request.json.get("tweet_id")
+    TweetMain().tweet_like(user_id, tweet_id)
+    return jsonify({"response": True})
+
+@main.route("unlike_tweet", methods=["POST"])
+@login_required
+def unlike_tweet():
+    user_id = g.user.id
+    tweet_id = request.json.get("tweet_id")
+    TweetMain().unlike_tweet(user_id, tweet_id)
+    return jsonify({"resposne": True})
