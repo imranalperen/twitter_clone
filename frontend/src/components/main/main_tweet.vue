@@ -62,6 +62,8 @@ export default {
 
     props: ["user"],
 
+    emits: ["refresh_tweets"],
+
     data() {
         return {
             tweet_text_body: "",
@@ -131,6 +133,7 @@ export default {
                 this.tweet_text_body = ""
                 this.preview_image = null
                 this.calculate_percent()
+                this.$emit("refresh_tweets")
             }
         },
 
@@ -151,10 +154,6 @@ export default {
 </script>
 
 <style scoped>
-.lv-textarea {
-    background-color: red;
-    color: blue;
-}
 .tweet_container {
     display: flex;
     border-bottom: 1px solid var(--bordergray);

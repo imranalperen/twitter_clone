@@ -229,6 +229,53 @@ function retweet_request(request_body) {
     return fetched_data
 }
 
+function unretweet_request(request_body) {
+    const access_token = access_token_control()
+
+    const fetched_data = fetch(`${API_URL}/unretweet`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access_token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+
+function main_user_retweeted_tweets() {
+    const access_token = access_token_control()
+
+    const fetched_data = fetch(`${API_URL}/main_user_retweeted_tweets`, {
+        method: "GET",
+        headers: {
+            "content-type": "application/json",
+            "access_token": access_token
+        },
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+function last_tweet_of_user_request() {
+    const access_token = access_token_control()
+
+    const fetched_data = fetch(`${API_URL}/user_last_tweet`, {
+        method: "GET",
+        headers: {
+            "content-type": "application/json",
+            "access_token": access_token
+        },
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
 
 export {
     signup_request,
@@ -243,5 +290,8 @@ export {
     like_request,
     main_user_liked_tweets,
     unlike_request,
-    retweet_request
+    retweet_request,
+    unretweet_request,
+    main_user_retweeted_tweets,
+    last_tweet_of_user_request
 }

@@ -60,7 +60,7 @@ class Retweets(Base):
 
     id = Column(Integer, primary_key=True)
     tweet_id = Column(Integer, ForeignKey("tweets.id"))
-    rt_user_user = Column(Integer, ForeignKey("users.id"))
+    rt_user_id = Column(Integer, ForeignKey("users.id"))
 
 
 

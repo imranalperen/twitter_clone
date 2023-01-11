@@ -2,6 +2,7 @@
 <div class="home_container">
     <main_tweet
         :user="user"
+        @refresh_tweets="add_new_tweet()"
     />
     <div class="timeline" v-if="timeline_elements != 2002">
         <div v-for="tweet in timeline_elements" class="timeline_tweet_container">
@@ -23,7 +24,7 @@
                             <div class="name"><p>{{ tweet.name }}</p></div>
                         </a>
                         <div class="username"><p>@{{ tweet.username }}</p></div>
-                        <div class="tweet_time"><p>1h</p></div>
+                        <div class="tweet_time"><p>{{ tweet.time_created }}</p></div>
                         </div>
                         <div class="delete_tweet_container" v-if="tweet.user_id == user.id">
                             <!-- only tweet owner can delete tweet -->
@@ -43,14 +44,13 @@
                             <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image">
                             <p class="comment_count">34</p>
                         </div>
-
                         <div class="retweet_container" v-if="tweet.is_retweeted" @click="unretweet(tweet.tweet_id)">
                             <img src="@/assets/icons8-retweet-24.png" class="unretweet_image">
-                            <p class="retweet_count">3</p>
+                            <p class="retweet_count">{{ tweet.retweet_count }}</p>
                         </div>
                         <div class="retweet_container" v-else @click="retweet(tweet.tweet_id)">
                             <img src="@/assets/icons8-retweet-24.png" class="retweet_image">
-                            <p class="retweet_count">3</p>
+                            <p class="retweet_count">{{ tweet.retweet_count }}</p>
                         </div>
 
                         <div class="like_container" v-if="tweet.is_liked" @click="unlike_tweet(tweet.tweet_id)">
@@ -82,7 +82,10 @@ import {
     like_request,
     main_user_liked_tweets,
     unlike_request,
-    retweet_request
+    retweet_request,
+    unretweet_request,
+    main_user_retweeted_tweets,
+    last_tweet_of_user_request
 } from '@/requests'
 
 
@@ -96,7 +99,6 @@ export default {
     data() {
         return {
             timeline_elements: [],
-            user_liked_tweets: []
         }
     },
 
@@ -104,12 +106,11 @@ export default {
         let response_value = await timeline_request()
         this.timeline_elements = response_value.response
 
+        //icon color change for liked tweets
         let liked_tweets_object = await main_user_liked_tweets()
         //includes() function cant use to numbers we need to convert string
         let liked_tweets_string = []
-        // console.log(liked_tweets_object.response[0].tweet_id)
         for(let i = 0; i < liked_tweets_object.response.length; i++) {
-            // console.log(liked_tweets_object.response[i].tweet_id)
             liked_tweets_string.push(liked_tweets_object.response[i].tweet_id)
         }
         //we r adding is_liked to timeline element
@@ -119,9 +120,30 @@ export default {
                 this.timeline_elements[i].is_liked = true
             }
         }
+
+        //icon color change for retweeted tweets
+        let retweeted_tweets_object = await main_user_retweeted_tweets()
+        let retweeted_tweets_string = []
+        for(let i = 0; i < retweeted_tweets_object.response.length; i++) {
+            retweeted_tweets_string.push(retweeted_tweets_object.response[i].tweet_id)
+        }
+        for(let i = 0; i < this.timeline_elements.length; i++) {
+            this.timeline_elements[i].is_retweeted = false
+            if(retweeted_tweets_string.includes(this.timeline_elements[i].tweet_id)) {
+                this.timeline_elements[i].is_retweeted = true
+            }
+        }
+
     },
 
     methods: {
+        async add_new_tweet() {
+            //we will get users last tweet from database
+            //and we add this tweet to timeline_elements
+            let new_tweet_object = await last_tweet_of_user_request()
+            this.timeline_elements = [new_tweet_object.response[0]].concat(this.timeline_elements)
+        },
+
         async like_tweet(tweet_id) {
             let request_body = {
                 "tweet_id": tweet_id
@@ -157,12 +179,32 @@ export default {
             let request_body = {
                 "tweet_id": tweet_id
             }
-            
             let response_value = await retweet_request(request_body)
-            if(response_value) {
-                console.log(1)
+            if(response_value.response) {
+                for(let i = 0; i < this.timeline_elements.length; i++) {
+                    if(this.timeline_elements[i].tweet_id == tweet_id) {
+                        this.timeline_elements[i].is_retweeted = true
+                        this.timeline_elements[i].retweet_count += 1
+                    }
+                }
             }
-        }
+        },
+
+        async unretweet(tweet_id) {
+            let request_body = {
+                "tweet_id": tweet_id
+            }
+            let response_value = await unretweet_request(request_body)
+            if(response_value.response) {
+                for(let i = 0; i < this.timeline_elements.length; i++) {
+                    if(this.timeline_elements[i].tweet_id == tweet_id) {
+                        this.timeline_elements[i].is_retweeted = false
+                        this.timeline_elements[i].retweet_count -= 1
+                    }
+                }
+            }
+        },
+
     },
 }
 

@@ -1,5 +1,5 @@
 from app.db import session
-from app.models import Users, UsersFollowers, Tweets, TweetsLikes
+from app.models import Users, UsersFollowers, Tweets, TweetsLikes, Retweets
 from app.utils import password_hasher
 from sqlalchemy.sql import and_
 from sqlalchemy import func
@@ -203,6 +203,12 @@ class UserMain:
                 .count()
             )
 
+            retweet_count = (
+                session.query(Retweets)
+                .where(Retweets.tweet_id == tweet.tweet_id)
+                .count()
+            )
+
             tweets.append({
                 "tweet_id": tweet.tweet_id,
                 "user_id": tweet.id,
@@ -212,7 +218,8 @@ class UserMain:
                 "time_created": tweet.time_created,
                 "body": tweet.body,
                 "image": tweet.image,
-                "like_count": like_count
+                "like_count": like_count,
+                "retweet_count": retweet_count
             })
 
         return {"status": True, "tweets": tweets}
@@ -229,3 +236,17 @@ class UserMain:
             })
 
         return {"status": True, "liked_tweets": liked_tweets}
+
+    
+    def user_retweeted_tweets(self, user_id):
+        q = (
+            session.query(Retweets)
+            .where(Retweets.rt_user_id == user_id)
+        )
+        retweeted_tweets = []
+        for retweet in q:
+            retweeted_tweets.append({
+                "tweet_id": retweet.tweet_id
+            })
+
+        return {"status": True, "retweeted_tweets": retweeted_tweets}

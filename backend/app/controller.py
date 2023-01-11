@@ -9,6 +9,7 @@ from app.crud.tweet_crud import TweetMain
 from app.crud.fake_crud import FakeMain
 from app.utils import create_access_token
 from app.decorators import login_required
+import datetime
 
 
 main = Blueprint("main", __name__, url_prefix="/api")
@@ -118,20 +119,12 @@ def tweet():
 @main.route("timeline", methods=["GET"])
 @login_required
 def timeline():
-    #imranalperen fakueser1
     user = g.user
     tweets = UserMain().create_timeline(user)
     if not tweets["status"]:
         return jsonify({"response": tweets["error"]})
     
     return jsonify({"response": tweets["tweets"]})
-
-@main.route("main_user_liked_tweets", methods=["GET"])
-@login_required
-def main_user_liked_tweets():
-    user = g.user
-    liked_tweets = UserMain().user_liked_tweets(user.id)
-    return jsonify({"response": liked_tweets["liked_tweets"]})
 
 
 @main.route("like_tweet", methods=["POST"])
@@ -152,12 +145,44 @@ def unlike_tweet():
     return jsonify({"resposne": True})
 
 
+@main.route("main_user_liked_tweets", methods=["GET"])
+@login_required
+def main_user_liked_tweets():
+    user = g.user
+    liked_tweets = UserMain().user_liked_tweets(user.id)
+    return jsonify({"response": liked_tweets["liked_tweets"]})
+
+
 @main.route("retweet", methods=["POST"])
 @login_required
 def retweet():
     user_id = g.user.id
     tweet_id = request.json.get("tweet_id")
-    print(user_id)
-    print(tweet_id)
     TweetMain().retweet_tweet(user_id, tweet_id)
     return jsonify({"response": True})
+
+
+@main.route("unretweet", methods=["POST"])
+@login_required
+def unretweet():
+    user_id = g.user.id
+    tweet_id = request.json.get("tweet_id")
+    TweetMain().unretweet_tweet(user_id, tweet_id)
+    return jsonify({"response": True})
+
+
+@main.route("main_user_retweeted_tweets", methods=["GET"])
+@login_required
+def main_user_retweeted_tweets():
+    user = g.user.id
+    retweeted_tweets = UserMain().user_retweeted_tweets(user)
+    return jsonify({"response": retweeted_tweets["retweeted_tweets"]})
+
+
+@main.route("user_last_tweet", methods=["GET"])
+@login_required
+def user_last_tweet():
+    user = g.user.id
+    last_tweet = TweetMain().last_tweet(user)
+    return jsonify({"response": last_tweet["tweet"]})
+    
