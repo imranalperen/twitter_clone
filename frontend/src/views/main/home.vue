@@ -6,7 +6,7 @@
     />
     <div class="timeline" v-if="timeline_elements != 2002">
         <div v-for="tweet in timeline_elements" class="timeline_tweet_container">
-            <div class="tweet_top_bar" v-if="tweet.related_tweet_id">
+            <div class="tweet_top_bar" v-if="tweet.replied_to">
                 <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image_small">
                 <p>{{ tweet.username }} replied</p>
             </div>
@@ -41,8 +41,8 @@
                     </div>
                     <div class="interaction_footer">
                         <div class="comment_container">
-                            <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image" @click="toggle_answer_container(tweet.tweet_id)">
-                            <p class="comment_count">{{ tweet.answers_count }}</p>
+                            <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image" @click="toggle_reply_container(tweet.tweet_id)">
+                            <p class="comment_count">{{ tweet.reply_count }}</p>
                         </div>
                         <div class="retweet_container" v-if="tweet.is_retweeted" @click="unretweet(tweet.tweet_id)">
                             <img src="@/assets/icons8-retweet-24.png" class="unretweet_image">
@@ -62,10 +62,10 @@
                             <p class="like_count">{{ tweet.like_count }}</p>
                         </div>
                     </div>
-                    <div class="answer_component" v-if="tweet.tweet_id == toggle_answer_id">
-                        <answer_tweet
-                            :toggle_answer_id = "toggle_answer_id"
-                        ></answer_tweet>
+                    <div class="reply_component" v-if="tweet.tweet_id == toggle_reply_id">
+                        <reply_tweet
+                            :toggle_reply_id = "toggle_reply_id"
+                        ></reply_tweet>
                     </div>
                 </div>
             </div>
@@ -81,7 +81,7 @@
 
 <script>
 import main_tweet from '@/components/main/main_tweet.vue'
-import answer_tweet from '@/components/main/answer_tweet.vue'
+import reply_tweet from '@/components/main/reply_tweet.vue'
 
 import {
     timeline_request,
@@ -98,7 +98,7 @@ import {
 export default {
     components: {
         main_tweet,
-        answer_tweet
+        reply_tweet
     },
 
     props: ["user"],
@@ -106,7 +106,7 @@ export default {
     data() {
         return {
             timeline_elements: [],
-            toggle_answer_id: null,
+            toggle_reply_id: null,
         }
     },
 
@@ -146,12 +146,12 @@ export default {
 
     methods: {
 
-        toggle_answer_container(tweet_id) {
-            if(this.toggle_answer_id) {
-                this.toggle_answer_id = null
+        toggle_reply_container(tweet_id) {
+            if(this.toggle_reply_id) {
+                this.toggle_reply_id = null
             }
             else {
-                this.toggle_answer_id = tweet_id
+                this.toggle_reply_id = tweet_id
             }
         },
 

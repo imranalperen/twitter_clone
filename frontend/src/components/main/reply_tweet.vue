@@ -1,13 +1,13 @@
 <template>
-    <div class="answer_tweet_container">
+    <div class="reply_tweet_container">
         <div class="image_container" v-if="preview_image">
             <img :src="preview_image" class="image_preview"/>
             <img id="clear_image_btn" src="@/assets/icons8-xbox-x-50.png" @click="clear_preview_image">
         </div>
-        <div class="answer_textarea_container">
+        <div class="reply_textarea_container">
             {{ character_limitor }}
             <textarea
-                id="answer_textarea"
+                id="reply_textarea"
                 placeholder="Tweet your reply..."
                 v-model="tweet_text_body"
                 @input="calculate_percent"
@@ -15,25 +15,25 @@
         </div>
         <div class="footer">
             <div class="footer_icon">
-                <div class="answer_icon_container">
+                <div class="reply_icon_container">
                     <input type="file"
-                    id="answer_selected_file"
+                    id="reply_selected_file"
                     style="display: none;"
                     @change="validate_image_size"
                 />
-                <img class="answer_icon" src="@/assets/image-outline.svg" onclick="document.getElementById('answer_selected_file').click();">
+                <img class="reply_icon" src="@/assets/image-outline.svg" onclick="document.getElementById('reply_selected_file').click();">
             </div>
         </div>
-            <button id="tweet_answer_btn" @click="validate_tweet">Tweet</button>
+            <button id="tweet_reply_btn" @click="validate_tweet">Tweet</button>
         </div>
     </div>
 </template>
 
 <script>
-import { add_answer_tweet_request } from "@/requests"
+import { add_replied_tweet_request } from "@/requests"
 
 export default {
-    props: ["toggle_answer_id"],
+    props: ["toggle_reply_id"],
 
     data() {
         return {
@@ -90,9 +90,9 @@ export default {
             const request_body = {
                 "tweet_body": this.tweet_text_body,
                 "tweet_image": this.preview_image,
-                "tweet_id": this.toggle_answer_id
+                "tweet_id": this.toggle_reply_id
             }
-            let response_value = await add_answer_tweet_request(request_body)
+            let response_value = await add_replied_tweet_request(request_body)
             if(response_value == 2001) {
                 console.log("api tweeet length error")
             }
@@ -116,7 +116,7 @@ export default {
 
 
 <style scoped>
-#answer_textarea {
+#reply_textarea {
     border: none;
     font-weight: 300;
     font-size: 1em;
@@ -134,7 +134,7 @@ export default {
     justify-content: space-between;
 }
 
-#tweet_answer_btn {
+#tweet_reply_btn {
     margin: .1em;
     color: var(--colorWhite);
     background-color: var(--tweetBtnBg);
@@ -146,7 +146,7 @@ export default {
     cursor: pointer;
 }
 
-.answer_icon {
+.reply_icon {
     width: 26px;
     filter: invert(45%) sepia(100%) saturate(662%) hue-rotate(173deg) brightness(94%) contrast(100%);
     margin-left: 1em;
@@ -154,7 +154,7 @@ export default {
     border-radius: 50%;
 }
 
-.answer_icon:hover {
+.reply_icon:hover {
     transition: .1s;
     background: var(--itemBackground);
 }

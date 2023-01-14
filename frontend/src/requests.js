@@ -276,10 +276,10 @@ function last_tweet_of_user_request() {
     return fetched_data
 }
 
-function add_answer_tweet_request(request_body) {
+function add_replied_tweet_request(request_body) {
     const access_token = access_token_control()
 
-    const fetched_data = fetch(`${API_URL}/add_answer_tweet`, {
+    const fetched_data = fetch(`${API_URL}/add_replied_tweet`, {
         method: "POST",
         headers: {
             "content-type": "application/json",
@@ -326,6 +326,6 @@ export {
     unretweet_request,
     main_user_retweeted_tweets,
     last_tweet_of_user_request,
-    add_answer_tweet_request,
+    add_replied_tweet_request,
     tweet_page_request
 }

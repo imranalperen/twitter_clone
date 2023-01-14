@@ -121,5 +121,10 @@ export default {
     position: -webkit-sticky;
     position: sticky;
     top: 0;    
-}    
+}
+
+.header_container {
+    z-index: 9;
+}
+
 </style>

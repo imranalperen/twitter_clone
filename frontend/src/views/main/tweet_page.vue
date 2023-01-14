@@ -6,6 +6,7 @@
 
 <script>
 import { tweet_page_request } from '@/requests'
+
 export default{
     data() {
         return {
@@ -20,7 +21,7 @@ export default{
         let requst_body = {
             "tweet_id": url_param
         }
-        response_value = await tweet_page_request(requst_body)
+        // response_value = await tweet_page_request(requst_body)
     }
 }
 </script>

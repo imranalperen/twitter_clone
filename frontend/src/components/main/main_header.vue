@@ -43,6 +43,8 @@ export default {
 <style scoped>
 .header_main {
     display: flex;
+    width: 100%;
+    background-color: rgba(21, 32, 43, .9);
 }
 
 .go_back > img {
@@ -54,7 +56,6 @@ export default {
 }
 .header_title {
     padding: .5em 0 1.2em 1em;
-    background-color: rgba(21, 32, 43, .9);
 }
 
 h1 {

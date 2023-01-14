@@ -48,7 +48,7 @@
     <div class="user_info_bottom" v-if="user">
         <div class="user_info_left">
             <div class="user_info_image">
-                <img :src="user.image" alt="">
+                <img :src="user.profile_image" alt="">
             </div>
             <div class="user_info_right">
                 <p id="name">{{ user.name }}</p>

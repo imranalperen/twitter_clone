@@ -34,10 +34,8 @@ class Tweets(Base):
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     body = Column(String(280))
     image = Column(String)
-    likes = Column(Integer)
-    retweets = Column(Integer)
-    comments = Column(Integer)
-    related_tweets = Column(Integer, default=None)
+    # related_tweet = Column(Integer, default=None)
+    replied_to = Column(Integer)
 
 
 class UsersFollowers(Base):

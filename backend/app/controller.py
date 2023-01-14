@@ -7,7 +7,7 @@ from flask import(
 from app.crud.users_crud import UserFollow, UserRegistration
 from app.crud.tweet_crud import TweetMain
 from app.crud.fake_crud import FakeMain
-from app.crud.timeline_crud import TimelineMain
+from app.crud.timeline_crud import TimelineMain, WhoToFollow, TweetPage
 from app.utils import create_access_token
 from app.decorators import login_required
 
@@ -30,10 +30,7 @@ def signup():
     username = request.json.get("username")
     email = request.json.get("email")
     password = request.json.get("password")
-
-    register_response = UserRegistration().signup(name, username, email, password)
-    #{"status": Bool, "error": error code}
-    
+    register_response = UserRegistration().signup(name, username, email, password)    
     if register_response["status"]:
         return jsonify({"response": True})
     
@@ -64,7 +61,6 @@ def registration_info():
     return jsonify({"response": True})
 
 
-
 @main.route("user", methods=["POST"])
 @login_required
 def user():
@@ -73,7 +69,7 @@ def user():
         "id": user.id,
         "username": user.username,
         "name": user.name,
-        "image": user.profile_image
+        "profile_image": user.profile_image
     })
 
 
@@ -81,7 +77,7 @@ def user():
 @login_required
 def recommend_follow_user():
     main_user = g.user
-    recommended_users = UserFollow().recommend_two_user(main_user.id)
+    recommended_users = WhoToFollow().recommend_two_user(main_user.id)
     return jsonify({"response": recommended_users})
 
 
@@ -109,8 +105,8 @@ def tweet():
     user = g.user
     tweet_body = request.json.get("tweet_body")
     tweet_image = request.json.get("tweet_image")
-    related_tweet_id = None
-    tweet_response = TweetMain().add_tweet(user.id, tweet_body, tweet_image, related_tweet_id)
+    replied_to_id = None
+    tweet_response = TweetMain().add_tweet(user.id, tweet_body, tweet_image, replied_to_id)
     if tweet_response["status"]:
         return jsonify({"response": True})
     
@@ -184,18 +180,18 @@ def main_user_retweeted_tweets():
 @login_required
 def user_last_tweet():
     user = g.user.id
-    last_tweet = TweetMain().last_tweet(user)
+    last_tweet = TimelineMain().last_tweet(user)
     return jsonify({"response": last_tweet["tweet"]})
     
 
-@main.route("add_answer_tweet", methods=["POST"])
+@main.route("add_replied_tweet", methods=["POST"])
 @login_required
-def add_answer_tweet():
+def add_replied_tweet():
     user = g.user
     tweet_body = request.json.get("tweet_body")
     tweet_image = request.json.get("tweet_image")
-    related_tweet_id = request.json.get("tweet_id")
-    tweet_response = TweetMain().add_tweet(user.id, tweet_body, tweet_image, related_tweet_id)
+    replied_to_id = request.json.get("tweet_id")
+    tweet_response = TweetMain().add_tweet(user.id, tweet_body, tweet_image, replied_to_id)
     if tweet_response["status"]:
         return jsonify({"response": True})
     
@@ -207,5 +203,5 @@ def add_answer_tweet():
 def tweet_page():
     user = g.user
     tweet_id = request.json.get("tweet_id")
-    tweet_page_response = TimelineMain().create_tweet_page(user, tweet_id)
+    tweet_page_response = TweetPage().create_tweet_page(user, tweet_id)
     return "asd"

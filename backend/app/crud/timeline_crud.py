@@ -3,6 +3,35 @@ from app.models import Users, UsersFollowers, Tweets, TweetsLikes, Retweets
 from sqlalchemy.sql import and_, desc
 from sqlalchemy import func
 
+class WhoToFollow:
+    def recommend_two_user(self, main_user_id):       
+        query = (
+            session.query(Users)
+            .outerjoin(UsersFollowers, and_(
+                UsersFollowers.following_user_id==Users.id,
+                UsersFollowers.main_user_id==main_user_id
+                )
+            )
+            .where(UsersFollowers.id==None)
+            .where(Users.id!=main_user_id)
+            .order_by(func.random())
+            .limit(2)
+            .all()
+        )
+        # from sqlalchemy.dialects import postgresql
+        # x = str(q.statement.compile(dialect=postgresql.dialect()))
+        recommended_users = []
+        for user in query:
+            recommended_users.append({
+                "id": user.id,
+                "name": user.name,
+                "username": user.username,
+                "is_following": False,
+                "image": user.profile_image
+            })
+
+        return recommended_users
+
 class TimelineMain:
     def create_timeline(self, user):
         #tweets of following users
@@ -16,7 +45,7 @@ class TimelineMain:
                 Tweets.body,
                 Tweets.id.label("tweet_id"),
                 Tweets.image,
-                Tweets.related_tweets
+                Tweets.replied_to
             )
             .join(Tweets, Tweets.user_id == Users.id)
             .join(UsersFollowers, UsersFollowers.following_user_id == Users.id)
@@ -33,7 +62,7 @@ class TimelineMain:
                 Tweets.body,
                 Tweets.id.label("tweet_id"),
                 Tweets.image,
-                Tweets.related_tweets
+                Tweets.replied_to
             )
             .join(Tweets, Tweets.user_id == Users.id)
             .join(UsersFollowers, UsersFollowers.main_user_id == Users.id)
@@ -58,9 +87,9 @@ class TimelineMain:
                 .count()
             )
 
-            answers_count = (
+            reply_count = (
                 session.query(Tweets)
-                .where(Tweets.related_tweets == tweet.tweet_id)
+                .where(Tweets.replied_to == tweet.tweet_id)
                 .count()
             )
 
@@ -76,8 +105,8 @@ class TimelineMain:
                 "image": tweet.image,
                 "like_count": like_count,
                 "retweet_count": retweet_count,
-                "answers_count": answers_count,
-                "related_tweet_id": tweet.related_tweets,
+                "reply_count": reply_count,
+                "replied_to": tweet.replied_to,
             })
         return {"status": True, "tweets": tweets}
 
@@ -143,6 +172,7 @@ class TimelineMain:
         return {"status": True, "tweet": tweet}
 
 
+class TweetPage:
     def create_tweet_page(self, user, tweet_id):
         #the tweet answered
         q = (
@@ -151,7 +181,7 @@ class TimelineMain:
         )
 
         for t in q:
-            answered_tweet_id = t.related_tweets
+            answered_tweet_id = t.replied_to
         if not answered_tweet_id:
             return {"response": 1}
         

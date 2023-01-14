@@ -2,7 +2,7 @@
 <div class="tweet_container">
     <div class="left">
         <div class="profile_image" v-if="user">
-            <img :src="user.image">
+            <img :src="user.profile_image">
         </div>
     </div>
     <div class="right">

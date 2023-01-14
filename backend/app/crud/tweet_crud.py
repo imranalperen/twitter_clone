@@ -5,7 +5,7 @@ from sqlalchemy import desc
 
 
 class TweetMain:
-    def add_tweet(self, user_id, tweet_body, tweet_image, related_tweet_id):
+    def add_tweet(self, user_id, tweet_body, tweet_image, replied_to_id):
         if not tweet_image:
             if(len(tweet_body) > 280 or len(tweet_body) < 1):
                 return {"status": False, "error": 2001}
@@ -14,7 +14,7 @@ class TweetMain:
             user_id = user_id,
             body = tweet_body,
             image = tweet_image,
-            related_tweets = related_tweet_id
+            replied_to = replied_to_id
         )
         session.add(tweet)
         session.commit()

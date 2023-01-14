@@ -96,36 +96,7 @@ class UserRegistration:
         session.commit()
 
 
-class UserFollow:
-    def recommend_two_user(self, main_user_id):       
-        query = (
-            session.query(Users)
-            .outerjoin(UsersFollowers, and_(
-                UsersFollowers.following_user_id==Users.id,
-                UsersFollowers.main_user_id==main_user_id
-                )
-            )
-            .where(UsersFollowers.id==None)
-            .where(Users.id!=main_user_id)
-            .order_by(func.random())
-            .limit(2)
-            .all()
-        )
-        # from sqlalchemy.dialects import postgresql
-        # x = str(q.statement.compile(dialect=postgresql.dialect()))
-        recommended_users = []
-        for user in query:
-            recommended_users.append({
-                "id": user.id,
-                "name": user.name,
-                "username": user.username,
-                "is_following": False,
-                "image": user.profile_image
-            })
-
-        return recommended_users
-
-    
+class UserFollow:    
     def follow_user(self, main_user, following_user_id):
         query = UsersFollowers(
             main_user_id = main_user.id,

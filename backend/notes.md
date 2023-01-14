@@ -19,3 +19,6 @@ mesajaslma basladiginda mesaj okuma ve yollama 2 func olucak okuma computed de o
 bildiirmler
 bildirimler icinde computed kullanilabilir denenmesi lazim kafada ta mbisi sekillenmedi
 bunlar yapilsa yeter reis baya bi is olur sonunda
+
+
+hic kimseyi takip etmiyorken twit atinca anasyfa sapiyior fixle
