@@ -1,19 +1,20 @@
 from app.db import session
-from app.models import Tweets, TweetsLikes, Retweets,Users
+from app.models import Tweets, TweetsLikes, Retweets, Users
 from sqlalchemy.sql import and_
 from sqlalchemy import desc
 
 
 class TweetMain:
-    def add_tweet(self, user, tweet_body, tweet_image):
+    def add_tweet(self, user_id, tweet_body, tweet_image, related_tweet_id):
         if not tweet_image:
             if(len(tweet_body) > 280 or len(tweet_body) < 1):
                 return {"status": False, "error": 2001}
         
         tweet = Tweets(
-            user_id = user.id,
+            user_id = user_id,
             body = tweet_body,
-            image = tweet_image
+            image = tweet_image,
+            related_tweets = related_tweet_id
         )
         session.add(tweet)
         session.commit()
@@ -93,7 +94,54 @@ class TweetMain:
                 })
         
         return {"status": True, "tweet": tweet}
-        
-        
 
+    
+    def get_answer_tweets(self, main_tweet_id):
+        q = (
+            session.query(
+                Users.id,
+                Users.name,
+                Users.username,
+                Users.profile_image,
+                Tweets.time_created,
+                Tweets.body,
+                Tweets.id.label("tweet_id"),
+                Tweets.image,
+                Tweets.related_tweets
+            )
+            .join(Tweets, Tweets.user_id == Users.id)
+            .where(Tweets.related_tweets == main_tweet_id)
+            
+        )
+        
+        if not q:
+            return {"status": False, "error": 2002}
 
+        tweets = []
+        for tweet in q:
+            like_count = (
+                session.query(TweetsLikes)
+                .where(TweetsLikes.tweet_id == tweet.tweet_id)
+                .count()
+            )
+
+            retweet_count = (
+                session.query(Retweets)
+                .where(Retweets.tweet_id == tweet.tweet_id)
+                .count()
+            )
+
+            tweets.append({
+                "tweet_id": tweet.tweet_id,
+                "user_id": tweet.id,
+                "name": tweet.name,
+                "username": tweet.username,
+                "profile_image": tweet.profile_image,
+                "time_created": tweet.time_created,
+                "body": tweet.body,
+                "image": tweet.image,
+                "like_count": like_count,
+                "retweet_count": retweet_count,
+            })
+
+        return {"status": True, "tweets": tweets}

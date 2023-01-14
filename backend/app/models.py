@@ -37,6 +37,7 @@ class Tweets(Base):
     likes = Column(Integer)
     retweets = Column(Integer)
     comments = Column(Integer)
+    related_tweets = Column(Integer, default=None)
 
 
 class UsersFollowers(Base):
@@ -61,6 +62,13 @@ class Retweets(Base):
     id = Column(Integer, primary_key=True)
     tweet_id = Column(Integer, ForeignKey("tweets.id"))
     rt_user_id = Column(Integer, ForeignKey("users.id"))
+
+# class TweetAnswers(Base):
+#     __tablename__ = "tweets_answers"
+
+#     id = Column(Integer, primary_key=True)
+#     tweet_id = Column(Integer, ForeignKey("tweets.id"))
+#     answer_user_id = Column(Integer, ForeignKey("users.id"))
 
 
 

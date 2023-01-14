@@ -1,1 +1,2 @@
-send new request after add tweet
+tweet answers sayisini fixle
+tweet pageye gitmeden hoover ekle

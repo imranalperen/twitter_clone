@@ -6,8 +6,9 @@
     />
     <div class="timeline" v-if="timeline_elements != 2002">
         <div v-for="tweet in timeline_elements" class="timeline_tweet_container">
-            <div class="tweet_top_bar">
-                rt like comment
+            <div class="tweet_top_bar" v-if="tweet.related_tweet_id">
+                <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image_small">
+                <p>{{ tweet.username }} replied</p>
             </div>
             <div class="tweet_container_main">
                 <div class="left">
@@ -31,7 +32,7 @@
                             <img src="@/assets/icons8-trash-bin-32.png">
                         </div>
                     </div>
-                    <div class="tweet_body">
+                    <div class="tweet_body" @click="show_answers_toggle(tweet.tweet_id)">
                         <div class="tweet_text" v-if="tweet.body">
                             {{ tweet.body }}
                         </div>
@@ -41,8 +42,8 @@
                     </div>
                     <div class="interaction_footer">
                         <div class="comment_container">
-                            <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image">
-                            <p class="comment_count">34</p>
+                            <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image" @click="toggle_answer_container(tweet.tweet_id)">
+                            <p class="comment_count">{{ tweet.answers_count }}</p>
                         </div>
                         <div class="retweet_container" v-if="tweet.is_retweeted" @click="unretweet(tweet.tweet_id)">
                             <img src="@/assets/icons8-retweet-24.png" class="unretweet_image">
@@ -62,6 +63,16 @@
                             <p class="like_count">{{ tweet.like_count }}</p>
                         </div>
                     </div>
+                    <div class="answer_component" v-if="tweet.tweet_id == toggle_answer_id">
+                        <answer_tweet
+                            :toggle_answer_id = "toggle_answer_id"
+                        ></answer_tweet>
+                    </div>
+                    <div class="answers_container" v-if="tweet.tweet_id == show_answers_tweet_id">
+                        <div class="answer">
+                            answerler for ile dondurulup burada listelencek
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -76,6 +87,7 @@
 
 <script>
 import main_tweet from '@/components/main/main_tweet.vue'
+import answer_tweet from '@/components/main/answer_tweet.vue'
 
 import {
     timeline_request,
@@ -85,13 +97,15 @@ import {
     retweet_request,
     unretweet_request,
     main_user_retweeted_tweets,
-    last_tweet_of_user_request
+    last_tweet_of_user_request,
+    answers_request
 } from '@/requests'
 
 
 export default {
     components: {
-        main_tweet
+        main_tweet,
+        answer_tweet
     },
 
     props: ["user"],
@@ -99,6 +113,8 @@ export default {
     data() {
         return {
             timeline_elements: [],
+            toggle_answer_id: null,
+            show_answers_tweet_id: null,
         }
     },
 
@@ -137,6 +153,16 @@ export default {
     },
 
     methods: {
+
+        toggle_answer_container(tweet_id) {
+            if(this.toggle_answer_id) {
+                this.toggle_answer_id = null
+            }
+            else {
+                this.toggle_answer_id = tweet_id
+            }
+        },
+
         async add_new_tweet() {
             //we will get users last tweet from database
             //and we add this tweet to timeline_elements
@@ -205,6 +231,22 @@ export default {
             }
         },
 
+        async show_answers_toggle(tweet_id) {
+            if(this.show_answers_tweet_id) {
+                this.show_answers_tweet_id = null
+            }
+            else {
+                let request_body = {
+                    "tweet_id": tweet_id
+                }
+                let response_value = await answers_request(request_body)
+                //response value array 0 donerse herhangi bir ceva pyok demezse var burdan devam edebilirz
+                console.log(response_value)
+
+                this.show_answers_tweet_id = tweet_id
+            }
+        }
+
     },
 }
 
@@ -217,9 +259,14 @@ export default {
 }
 
 .tweet_top_bar {
+    display: flex;
+}
+
+.tweet_top_bar > p {
     font-size: .8em;
     font-weight: bold;
     color: var(--bordergray);
+    margin-left: .3em;
 }
 
 
@@ -246,6 +293,7 @@ export default {
 .tweet_body {
     display: flex;
     flex-direction: column;
+    cursor: pointer;
 }
 
 .interaction_footer {
@@ -303,6 +351,12 @@ a {
 .comment_image, .retweet_image, .like_image, .unlike_image, .unretweet_image {
     width: 24px;
     height: 24px;
+    filter: invert(32%) sepia(6%) saturate(811%) hue-rotate(166deg) brightness(97%) contrast(89%);
+}
+
+.comment_image_small {
+    width: 18px;
+    height: 18px;
     filter: invert(32%) sepia(6%) saturate(811%) hue-rotate(166deg) brightness(97%) contrast(89%);
 }
 

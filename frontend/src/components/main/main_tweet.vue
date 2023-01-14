@@ -25,7 +25,7 @@
                     <input type="file"
                     id="selected_file"
                     style="display: none;"
-                    @change="validagte_image_size"
+                    @change="validate_image_size"
                 />
                 <!-- input type file shows file name to ignore this we can do: -->
                 <img class="icon" src="@/assets/image-outline.svg" onclick="document.getElementById('selected_file').click();">
@@ -81,7 +81,7 @@ export default {
             this.tweet_percent = len*(100/280)
         },
 
-        validagte_image_size(e) {
+        validate_image_size(e) {
             const file_size = e.target.files[0]
             if(file_size.size > 2097152) {
                 console.log("File size shuld be less then 2 mb")

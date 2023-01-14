@@ -17,7 +17,7 @@ export default {
 
   watch: {
     $route(to, from) {
-      this.current_url = to.fullPath
+      this.current_url = to.fullPath.split('/')[1]
     }
   }
 }

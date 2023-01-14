@@ -22,7 +22,7 @@
         </div>
         <div class="route_container">
             <home
-                v-if="current_url == '/home'"
+                v-if="current_url == 'home'"
                 :user="user"
             ></home>
         </div>
@@ -53,7 +53,9 @@ import main_trends from '@/components/main/main_trends.vue';
 import who_to_follow from '@/components/main/who_to_follow.vue';
 import searchbar from '@/components/main/searchbar.vue'
 import main_header from '@/components/main/main_header.vue'
+
 import home from '@/views/main/home.vue'
+
 import { user_request } from '@/requests'
     
 export default {

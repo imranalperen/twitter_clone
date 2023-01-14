@@ -152,11 +152,7 @@ class UserFollow:
 
 class UserMain:
     def create_timeline(self, user):
-        #user own tweets
-        #user foloowing users tweets
-        #user following users retweets
-        #user following users likes
-        #user following users releted tweets
+        #tweets of following users
         q1 = (
             session.query(
                 Users.id,
@@ -166,7 +162,8 @@ class UserMain:
                 Tweets.time_created,
                 Tweets.body,
                 Tweets.id.label("tweet_id"),
-                Tweets.image
+                Tweets.image,
+                Tweets.related_tweets
             )
             .join(Tweets, Tweets.user_id == Users.id)
             .join(UsersFollowers, UsersFollowers.following_user_id == Users.id)
@@ -183,7 +180,8 @@ class UserMain:
                 Tweets.time_created,
                 Tweets.body,
                 Tweets.id.label("tweet_id"),
-                Tweets.image
+                Tweets.image,
+                Tweets.related_tweets
             )
             .join(Tweets, Tweets.user_id == Users.id)
             .join(UsersFollowers, UsersFollowers.main_user_id == Users.id)
@@ -209,6 +207,13 @@ class UserMain:
                 .count()
             )
 
+            answers_count = (
+                session.query(Tweets)
+                .where(Tweets.related_tweets == tweet.tweet_id)
+                .count()
+            )
+
+            
             tweets.append({
                 "tweet_id": tweet.tweet_id,
                 "user_id": tweet.id,
@@ -219,10 +224,13 @@ class UserMain:
                 "body": tweet.body,
                 "image": tweet.image,
                 "like_count": like_count,
-                "retweet_count": retweet_count
+                "retweet_count": retweet_count,
+                "answers_count": answers_count,
+                "related_tweet_id": tweet.related_tweets,
             })
 
         return {"status": True, "tweets": tweets}
+
 
     def user_liked_tweets(self, user_id):
         q = (

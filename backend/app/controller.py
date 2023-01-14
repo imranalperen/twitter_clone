@@ -109,7 +109,8 @@ def tweet():
     user = g.user
     tweet_body = request.json.get("tweet_body")
     tweet_image = request.json.get("tweet_image")
-    tweet_response = TweetMain().add_tweet(user, tweet_body, tweet_image)
+    related_tweet_id = None
+    tweet_response = TweetMain().add_tweet(user.id, tweet_body, tweet_image, related_tweet_id)
     if tweet_response["status"]:
         return jsonify({"response": True})
     
@@ -186,3 +187,30 @@ def user_last_tweet():
     last_tweet = TweetMain().last_tweet(user)
     return jsonify({"response": last_tweet["tweet"]})
     
+
+@main.route("add_answer_tweet", methods=["POST"])
+@login_required
+def add_answer_tweet():
+    user = g.user
+    tweet_body = request.json.get("tweet_body")
+    tweet_image = request.json.get("tweet_image")
+    related_tweet_id = request.json.get("tweet_id")
+    tweet_response = TweetMain().add_tweet(user.id, tweet_body, tweet_image, related_tweet_id)
+    if tweet_response["status"]:
+        return jsonify({"response": True})
+    
+    return jsonify({"response": tweet_response["error"]})
+
+
+@main.route("get_tweet_answers", methods=["POST"])
+@login_required
+def get_tweet_answers():
+    #get tweet id which clicked
+    #get releted tweets whic = upper line
+    main_tweet_id = request.json.get("tweet_id")
+    related_tweets = TweetMain().get_answer_tweets(main_tweet_id)
+    if not related_tweets["status"]:
+        return jsonify({"response": related_tweets["error"]})
+
+    return jsonify({"response": related_tweets["tweets"]})
+

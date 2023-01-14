@@ -276,6 +276,38 @@ function last_tweet_of_user_request() {
     return fetched_data
 }
 
+function add_answer_tweet_request(request_body) {
+    const access_token = access_token_control()
+
+    const fetched_data = fetch(`${API_URL}/add_answer_tweet`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+function answers_request(request_body) {
+    const access_token = access_token_control()
+
+    const fetched_data = fetch(`${API_URL}/get_tweet_answers`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
 
 export {
     signup_request,
@@ -293,5 +325,7 @@ export {
     retweet_request,
     unretweet_request,
     main_user_retweeted_tweets,
-    last_tweet_of_user_request
+    last_tweet_of_user_request,
+    add_answer_tweet_request,
+    answers_request
 }
