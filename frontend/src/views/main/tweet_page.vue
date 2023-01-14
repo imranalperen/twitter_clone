@@ -1,27 +1,26 @@
 <template>
     <div class="tweet_page_general_container">
-        
+
     </div>
 </template>
 
 <script>
 import { tweet_page_request } from '@/requests'
-
-export default{
+export default {
     data() {
         return {
-            tweet_id: null
+            
         }
     },
-    
-    async beforeCreate() {
-        let url_param = await this.$route.fullPath.split("/")[2]
-        this.tweet_id = url_param
 
-        let requst_body = {
-            "tweet_id": url_param
+    async beforeCreate() {
+        let tweet_id = this.$route.fullPath.split("/")[2]
+        let request_body = {"tweet_id": tweet_id}
+        let response_value = await tweet_page_request(request_body)
+        console.log(response_value.parent_tweet)
+        for(let i = 0; i < response_value.child_tweets.length; i++) {
+            console.log(response_value.child_tweets[i])
         }
-        // response_value = await tweet_page_request(requst_body)
     }
 }
 </script>

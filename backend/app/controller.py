@@ -204,4 +204,4 @@ def tweet_page():
     user = g.user
     tweet_id = request.json.get("tweet_id")
     tweet_page_response = TweetPage().create_tweet_page(user, tweet_id)
-    return "asd"
+    return jsonify({"parent_tweet": tweet_page_response["parent_tweet"], "child_tweets": tweet_page_response["child_tweets"]})
