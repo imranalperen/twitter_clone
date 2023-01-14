@@ -1,10 +1,10 @@
 <template>
 <div class="menu_container">
     <div class="menu">
-        <div class="menu_element">
+        <div class="menu_element" @click="push_main">
             <img class="hashtag" src="@/assets/icons8-twitter.svg">
         </div>
-        <div class="menu_element">
+        <div class="menu_element" @click="push_main">
             <div class="menu_image">
                 <img class="icon" src="@/assets/home.svg">
             </div>
@@ -72,6 +72,10 @@ export default {
         logout() {
             window.localStorage.clear()
             this.$router.push({name: "login"})
+        },
+        
+        push_main() {
+            this.$router.push({name: "home"})
         }
     }
 }

@@ -28,11 +28,10 @@
                         <div class="tweet_time"><p>{{ tweet.time_created }}</p></div>
                         </div>
                         <div class="delete_tweet_container" v-if="tweet.user_id == user.id">
-                            <!-- only tweet owner can delete tweet -->
                             <img src="@/assets/icons8-trash-bin-32.png">
                         </div>
                     </div>
-                    <div class="tweet_body" @click="show_answers_toggle(tweet.tweet_id)">
+                    <div class="tweet_body" @click="redirect_tweet_page(tweet.tweet_id)">
                         <div class="tweet_text" v-if="tweet.body">
                             {{ tweet.body }}
                         </div>
@@ -68,11 +67,6 @@
                             :toggle_answer_id = "toggle_answer_id"
                         ></answer_tweet>
                     </div>
-                    <div class="answers_container" v-if="tweet.tweet_id == show_answers_tweet_id">
-                        <div class="answer">
-                            answerler for ile dondurulup burada listelencek
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -98,7 +92,6 @@ import {
     unretweet_request,
     main_user_retweeted_tweets,
     last_tweet_of_user_request,
-    answers_request
 } from '@/requests'
 
 
@@ -114,7 +107,6 @@ export default {
         return {
             timeline_elements: [],
             toggle_answer_id: null,
-            show_answers_tweet_id: null,
         }
     },
 
@@ -164,8 +156,6 @@ export default {
         },
 
         async add_new_tweet() {
-            //we will get users last tweet from database
-            //and we add this tweet to timeline_elements
             let new_tweet_object = await last_tweet_of_user_request()
             this.timeline_elements = [new_tweet_object.response[0]].concat(this.timeline_elements)
         },
@@ -231,20 +221,8 @@ export default {
             }
         },
 
-        async show_answers_toggle(tweet_id) {
-            if(this.show_answers_tweet_id) {
-                this.show_answers_tweet_id = null
-            }
-            else {
-                let request_body = {
-                    "tweet_id": tweet_id
-                }
-                let response_value = await answers_request(request_body)
-                //response value array 0 donerse herhangi bir ceva pyok demezse var burdan devam edebilirz
-                console.log(response_value)
-
-                this.show_answers_tweet_id = tweet_id
-            }
+        redirect_tweet_page(tweet_id) {
+            this.$router.push({ name: 'tweet_page', params: { id: `${tweet_id}` } })
         }
 
     },

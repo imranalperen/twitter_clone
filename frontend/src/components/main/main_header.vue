@@ -6,6 +6,7 @@
     </div>
     <div class="header_title">
         <h1 v-if="current_url == 'home'">Home</h1>
+        <h1 v-if="current_url == 'tweet_page'">Tweet</h1>
     </div>
 </div>
 </template>

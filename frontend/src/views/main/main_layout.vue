@@ -25,6 +25,10 @@
                 v-if="current_url == 'home'"
                 :user="user"
             ></home>
+            <tweet_page
+                v-if="current_url == 'tweet_page'"
+                :user="user"
+            ></tweet_page>
         </div>
     </div>
 
@@ -55,6 +59,7 @@ import searchbar from '@/components/main/searchbar.vue'
 import main_header from '@/components/main/main_header.vue'
 
 import home from '@/views/main/home.vue'
+import tweet_page from '@/views/main/tweet_page.vue'
 
 import { user_request } from '@/requests'
     
@@ -69,6 +74,7 @@ export default {
         searchbar,
         main_header,
         home,
+        tweet_page
     },
 
     data() {

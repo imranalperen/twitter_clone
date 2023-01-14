@@ -5,7 +5,7 @@ import login from '@/views/registration/login.vue'
 
 import main_layout from '@/views/main/main_layout.vue'
 import home from '@/views/main/home.vue'
-
+import tweet_page from '@/views/main/tweet_page.vue'
 
 const routes = [
   {
@@ -29,6 +29,11 @@ const routes = [
         path: '/home',
         name: 'home',
         component: home
+      },
+      {
+        path: '/tweet_page/:id',
+        name: 'tweet_page',
+        component: tweet_page
       }
     ]
   }

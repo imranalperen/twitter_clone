@@ -4,12 +4,12 @@ from flask import(
     jsonify,
     g
 )
-from app.crud.users_crud import UserFollow, UserRegistration, UserMain
+from app.crud.users_crud import UserFollow, UserRegistration
 from app.crud.tweet_crud import TweetMain
 from app.crud.fake_crud import FakeMain
+from app.crud.timeline_crud import TimelineMain
 from app.utils import create_access_token
 from app.decorators import login_required
-import datetime
 
 
 main = Blueprint("main", __name__, url_prefix="/api")
@@ -121,7 +121,7 @@ def tweet():
 @login_required
 def timeline():
     user = g.user
-    tweets = UserMain().create_timeline(user)
+    tweets = TimelineMain().create_timeline(user)
     if not tweets["status"]:
         return jsonify({"response": tweets["error"]})
     
@@ -150,7 +150,7 @@ def unlike_tweet():
 @login_required
 def main_user_liked_tweets():
     user = g.user
-    liked_tweets = UserMain().user_liked_tweets(user.id)
+    liked_tweets = TimelineMain().user_liked_tweets(user.id)
     return jsonify({"response": liked_tweets["liked_tweets"]})
 
 
@@ -176,7 +176,7 @@ def unretweet():
 @login_required
 def main_user_retweeted_tweets():
     user = g.user.id
-    retweeted_tweets = UserMain().user_retweeted_tweets(user)
+    retweeted_tweets = TimelineMain().user_retweeted_tweets(user)
     return jsonify({"response": retweeted_tweets["retweeted_tweets"]})
 
 
@@ -202,15 +202,10 @@ def add_answer_tweet():
     return jsonify({"response": tweet_response["error"]})
 
 
-@main.route("get_tweet_answers", methods=["POST"])
+@main.route("tweet_page", methods=["POST"])
 @login_required
-def get_tweet_answers():
-    #get tweet id which clicked
-    #get releted tweets whic = upper line
-    main_tweet_id = request.json.get("tweet_id")
-    related_tweets = TweetMain().get_answer_tweets(main_tweet_id)
-    if not related_tweets["status"]:
-        return jsonify({"response": related_tweets["error"]})
-
-    return jsonify({"response": related_tweets["tweets"]})
-
+def tweet_page():
+    user = g.user
+    tweet_id = request.json.get("tweet_id")
+    tweet_page_response = TimelineMain().create_tweet_page(user, tweet_id)
+    return "asd"
