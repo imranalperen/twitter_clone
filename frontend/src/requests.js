@@ -181,22 +181,6 @@ function like_request(request_body) {
     return fetched_data
 }
 
-//!like request
-function main_user_liked_tweets() {
-    const access_token = access_token_control()
-
-    const fetched_data = fetch(`${API_URL}/main_user_liked_tweets`, {
-        method: "GET",
-        headers: {
-            "content-type": "application/json",
-            "access_token": access_token
-        },
-    })
-    .then((response) => response.json())
-
-    return fetched_data
-}
-
 function unlike_request(request_body) {
     const access_token = access_token_control()
 
@@ -239,22 +223,6 @@ function unretweet_request(request_body) {
             "access_token": access_token
         },
         body: JSON.stringify(request_body)
-    })
-    .then((response) => response.json())
-
-    return fetched_data
-}
-
-
-function main_user_retweeted_tweets() {
-    const access_token = access_token_control()
-
-    const fetched_data = fetch(`${API_URL}/main_user_retweeted_tweets`, {
-        method: "GET",
-        headers: {
-            "content-type": "application/json",
-            "access_token": access_token
-        },
     })
     .then((response) => response.json())
 
@@ -320,11 +288,9 @@ export {
     timeline_request,
     registration_info_request,
     like_request,
-    main_user_liked_tweets,
     unlike_request,
     retweet_request,
     unretweet_request,
-    main_user_retweeted_tweets,
     last_tweet_of_user_request,
     add_replied_tweet_request,
     tweet_page_request

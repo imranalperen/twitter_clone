@@ -142,14 +142,6 @@ def unlike_tweet():
     return jsonify({"resposne": True})
 
 
-@main.route("main_user_liked_tweets", methods=["GET"])
-@login_required
-def main_user_liked_tweets():
-    user = g.user
-    liked_tweets = TimelineMain().user_liked_tweets(user.id)
-    return jsonify({"response": liked_tweets["liked_tweets"]})
-
-
 @main.route("retweet", methods=["POST"])
 @login_required
 def retweet():
@@ -166,14 +158,6 @@ def unretweet():
     tweet_id = request.json.get("tweet_id")
     TweetMain().unretweet_tweet(user_id, tweet_id)
     return jsonify({"response": True})
-
-
-@main.route("main_user_retweeted_tweets", methods=["GET"])
-@login_required
-def main_user_retweeted_tweets():
-    user = g.user.id
-    retweeted_tweets = TimelineMain().user_retweeted_tweets(user)
-    return jsonify({"response": retweeted_tweets["retweeted_tweets"]})
 
 
 @main.route("user_last_tweet", methods=["GET"])
@@ -204,4 +188,4 @@ def tweet_page():
     user = g.user
     tweet_id = request.json.get("tweet_id")
     tweet_page_response = TweetPage().create_tweet_page(user, tweet_id)
-    return jsonify({"parent_tweet": tweet_page_response["parent_tweet"], "child_tweets": tweet_page_response["child_tweets"]})
+    return jsonify({"response": tweet_page_response})

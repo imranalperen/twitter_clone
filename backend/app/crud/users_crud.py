@@ -2,7 +2,6 @@ from app.db import session
 from app.models import Users, UsersFollowers
 from app.utils import password_hasher
 from sqlalchemy.sql import and_
-from sqlalchemy import func
 
 class UserRegistration:
     def signup(self, name, username, email, password):

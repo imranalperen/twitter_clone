@@ -65,6 +65,7 @@
                     <div class="reply_component" v-if="tweet.tweet_id == toggle_reply_id">
                         <reply_tweet
                             :toggle_reply_id = "toggle_reply_id"
+                            @add_replied_tweet_timeline = add_new_tweet(tweet.tweet_id)
                         ></reply_tweet>
                     </div>
                 </div>
@@ -86,11 +87,9 @@ import reply_tweet from '@/components/main/reply_tweet.vue'
 import {
     timeline_request,
     like_request,
-    main_user_liked_tweets,
     unlike_request,
     retweet_request,
     unretweet_request,
-    main_user_retweeted_tweets,
     last_tweet_of_user_request,
 } from '@/requests'
 
@@ -114,34 +113,6 @@ export default {
         let response_value = await timeline_request()
         this.timeline_elements = response_value.response
 
-        //icon color change for liked tweets
-        let liked_tweets_object = await main_user_liked_tweets()
-        //includes() function cant use to numbers we need to convert string
-        let liked_tweets_string = []
-        for(let i = 0; i < liked_tweets_object.response.length; i++) {
-            liked_tweets_string.push(liked_tweets_object.response[i].tweet_id)
-        }
-        //we r adding is_liked to timeline element
-        for(let i = 0; i < this.timeline_elements.length; i++) {
-            this.timeline_elements[i].is_liked = false
-            if(liked_tweets_string.includes(this.timeline_elements[i].tweet_id)) {
-                this.timeline_elements[i].is_liked = true
-            }
-        }
-
-        //icon color change for retweeted tweets
-        let retweeted_tweets_object = await main_user_retweeted_tweets()
-        let retweeted_tweets_string = []
-        for(let i = 0; i < retweeted_tweets_object.response.length; i++) {
-            retweeted_tweets_string.push(retweeted_tweets_object.response[i].tweet_id)
-        }
-        for(let i = 0; i < this.timeline_elements.length; i++) {
-            this.timeline_elements[i].is_retweeted = false
-            if(retweeted_tweets_string.includes(this.timeline_elements[i].tweet_id)) {
-                this.timeline_elements[i].is_retweeted = true
-            }
-        }
-
     },
 
     methods: {
@@ -155,9 +126,17 @@ export default {
             }
         },
 
-        async add_new_tweet() {
+        async add_new_tweet(replied_twet_id) {
             let new_tweet_object = await last_tweet_of_user_request()
             this.timeline_elements = [new_tweet_object.response[0]].concat(this.timeline_elements)
+            if(replied_twet_id) {
+                for(let i = 0; i < this.timeline_elements.length; i++) {
+                    if(this.timeline_elements[i].tweet_id == replied_twet_id) {
+                        this.timeline_elements[i].reply_count += 1
+                        this.toggle_reply_container(replied_twet_id)
+                    }
+                }
+            }
         },
 
         async like_tweet(tweet_id) {
@@ -170,6 +149,7 @@ export default {
                     if(this.timeline_elements[i].tweet_id == tweet_id) {
                         this.timeline_elements[i].is_liked = true
                         this.timeline_elements[i].like_count += 1
+
                     }
                 }
             }

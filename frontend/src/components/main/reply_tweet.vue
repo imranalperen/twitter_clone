@@ -35,6 +35,8 @@ import { add_replied_tweet_request } from "@/requests"
 export default {
     props: ["toggle_reply_id"],
 
+    emits: ["add_replied_tweet_timeline"],
+
     data() {
         return {
             tweet_text_body: "",
@@ -99,6 +101,7 @@ export default {
             else {
                 this.tweet_text_body = ""
                 this.preview_image = null
+                this.$emit("add_replied_tweet_timeline")
             }
         },
     },
