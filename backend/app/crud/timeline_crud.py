@@ -284,6 +284,7 @@ class TweetPage:
                 "retweet_count": retweet_count,
                 "reply_count": reply_count,
                 "is_retweeted": is_retweeted,
+                "replied_to": parent_tweet_query.replied_to,
                 "is_liked": is_liked
             })
 
@@ -341,9 +342,6 @@ class TweetPage:
                         is_retweeted = True
                 except:
                     is_retweeted = False
-                print(like_count)
-                print(retweet_count)
-                print(reply_count)
                 child_tweets.append({
                     "tweet_id": t.id,
                     "user_id":tweet_user.id,
@@ -429,6 +427,7 @@ class TweetPage:
                 "retweet_count": retweet_count,
                 "reply_count": reply_count,
                 "is_retweeted": is_retweeted,
+                "replied_to": parent_tweet_query.replied_to,
                 "is_liked": is_liked
             })
 
@@ -488,9 +487,7 @@ class TweetPage:
                         is_retweeted = True
                 except:
                     is_retweeted = False
-                print(like_count)
-                print(retweet_count)
-                print(reply_count)
+
                 child_tweets.append({
                     "tweet_id": t.id,
                     "user_id":tweet_user.id,

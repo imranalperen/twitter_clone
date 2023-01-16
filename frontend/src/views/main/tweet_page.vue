@@ -1,7 +1,7 @@
 <template>
-    <div class="tweet_page_general_container">
+<div class="tweet_page_general_container">
 
-    </div>
+</div>
 </template>
 
 <script>
@@ -18,14 +18,14 @@ export default {
         let tweet_id = this.$route.fullPath.split("/")[2]
         let request_body = {"tweet_id": tweet_id}
         let response_value = await tweet_page_request(request_body)
-        this.parent_tweet = response_value.response.parent_tweet
+        this.parent_tweet = response_value.response.parent_tweet[0]
         this.child_tweets = response_value.response.child_tweets
-        console.log(this.child_tweets)
         console.log(this.parent_tweet)
+        console.log(this.child_tweets)
     }
 }
 </script>
 
-<style>
+<style scoped>
 
 </style>
