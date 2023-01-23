@@ -31,12 +31,7 @@ class WhoToFollow:
         return recommended_users
 
 class TimelineUtils:
-    def get_tweet(self, **kwargs):
-        #like count
-        #retweet count
-        #reply count
-        #is liked
-        #is retweeted
+    def get_tweet_interactions(self, **kwargs):
         like_count = (
             session.query(TweetsLikes)
             .where(TweetsLikes.tweet_id == kwargs["tweet_id"])
@@ -76,13 +71,14 @@ class TimelineUtils:
         except:
             is_retweeted = False
 
-        print(like_count, retweet_count, reply_count, is_liked, is_retweeted)
-
-
-
-
-
-            
+        tweet_interactions = {
+            "like_count": like_count,
+            "retweet_count": retweet_count,
+            "reply_count": reply_count,
+            "is_liked": is_liked,
+            "is_retweeted": is_retweeted
+        }
+        return tweet_interactions
 
             
 
@@ -129,61 +125,9 @@ class TimelineMain:
 
         tweets = []
         for tweet in q:
-            like_count = (
-                session.query(TweetsLikes)
-                .where(TweetsLikes.tweet_id == tweet.tweet_id)
-                .count()
-            )
-            retweet_count = (
-                session.query(Retweets)
-                .where(Retweets.tweet_id == tweet.tweet_id)
-                .count()
-            )
-            reply_count = (
-                session.query(Tweets)
-                .where(Tweets.replied_to == tweet.tweet_id)
-                .count()
-            )
-            is_liked_query = (
-                session.query(TweetsLikes)
-                .where(TweetsLikes.tweet_id == tweet.tweet_id)
-                .where(TweetsLikes.like_user_id == user.id)
-                .first()
-            )
-            try:
-                if is_liked_query.id:
-                    is_liked = True
-            except:
-                is_liked = False
-            
-            is_retweeted_query = (
-                session.query(Retweets)
-                .where(Retweets.tweet_id == tweet.tweet_id)
-                .where(Retweets.rt_user_id == user.id)
-                .first()
-            )
-            try:
-                if is_retweeted_query.id:
-                    is_retweeted = True
-            except:
-                is_retweeted = False
-
-            #!!!DEVELOPMENT!!!
-            TimelineUtils.get_tweet(self, 
+            tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
                 tweet_id = tweet.tweet_id,
                 user_id = tweet.id,
-                name = tweet.name,
-                username = tweet.username,
-                profile_image = tweet.profile_image,
-                time_created = tweet.time_created,
-                body = tweet.body,
-                image = tweet.image,
-                like_count = like_count,
-                retweet_count = retweet_count,
-                reply_count = reply_count,
-                replied_to = tweet.replied_to,
-                is_retweeted = is_retweeted,
-                is_liked = is_liked
             )
 
             tweets.append({
@@ -195,12 +139,12 @@ class TimelineMain:
                 "time_created": tweet.time_created,
                 "body": tweet.body,
                 "image": tweet.image,
-                "like_count": like_count,
-                "retweet_count": retweet_count,
-                "reply_count": reply_count,
+                "like_count": tweet_interactions["like_count"],
+                "retweet_count": tweet_interactions["retweet_count"],
+                "reply_count": tweet_interactions["reply_count"],
                 "replied_to": tweet.replied_to,
-                "is_retweeted": is_retweeted,
-                "is_liked": is_liked
+                "is_retweeted": tweet_interactions["is_retweeted"],
+                "is_liked": tweet_interactions["is_liked"]
             })
         return {"status": True, "tweets": tweets}
 
@@ -219,9 +163,10 @@ class TimelineMain:
         tweet = []
         for t in tweet_query:
             for u in user_query:
-                like_count = 0
-                retweet_count = 0
-                reply_count = 0
+                tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
+                    tweet_id = t.id,
+                    user_id = u.id,
+                )
                 tweet.append({
                     "tweet_id": t.id,
                     "user_id": u.id,
@@ -231,12 +176,12 @@ class TimelineMain:
                     "time_created": t.time_created,
                     "body": t.body,
                     "image": t.image,
-                    "like_count": like_count,
-                    "retweet_count": retweet_count,
-                    "reply_count": reply_count,
+                    "like_count": tweet_interactions["like_count"],
+                    "retweet_count": tweet_interactions["retweet_count"],
+                    "reply_count": tweet_interactions["reply_count"],
                     "replied_to": t.replied_to,
-                    "is_retweeted": False,
-                    "is_liked": False
+                    "is_retweeted": tweet_interactions["is_retweeted"],
+                    "is_liked": tweet_interactions['is_liked']
                 })
         
         return {"status": True, "tweet": tweet}
@@ -244,12 +189,12 @@ class TimelineMain:
 
 class TweetPage:
     def create_tweet_page(self, user, tweet_id):
-        #we need parent tweet which replied
-        #and we need all the child tweets of this parent
-        #first we check is tweet parent or not
-        #if tweet is parent then we just look for child tweets
-        #if twet is child tweet we find the parent tweet
-        #and we get the all child tweets
+        """we need parent tweet which replied
+        and we need all the child tweets of this parent
+        first we check is tweet parent or not
+        if tweet is parent then we just look for child tweets
+        if twet is child tweet we find the parent tweet
+        and we get the all child tweets"""
         clicked_tweet = (
             session.query(Tweets)
             .where(Tweets.id == tweet_id)
@@ -257,9 +202,9 @@ class TweetPage:
         )
         child_tweets = []
         parent_tweet = []
+        is_it_parent = False
 
         if not clicked_tweet.replied_to:
-            #TODO we use this structure many different sitations make this a function when it works well
             #else tek fark paretn tweet_query de
             #this is a parent tweet
             parent_tweet_query = (
@@ -267,197 +212,26 @@ class TweetPage:
                 .where(Tweets.id == clicked_tweet.id)
                 .first()
             )
-            parent_tweet_user_query = (
-                session.query(Users)
-                .where(Users.id == parent_tweet_query.user_id)
-                .first()
-            )
-            like_count = (
-                session.query(TweetsLikes)
-                .where(TweetsLikes.tweet_id == parent_tweet_query.id)
-                .count()
-            )
-            retweet_count = (
-                session.query(Retweets)
-                .where(Retweets.tweet_id == parent_tweet_query.id)
-                .count()
-            )
-            reply_count = (
-                session.query(Tweets)
-                .where(Tweets.replied_to == parent_tweet_query.id)
-                .count()
-            )
-            is_liked_query = (
-                session.query(TweetsLikes)
-                .where(and_(
-                    TweetsLikes.tweet_id == parent_tweet_query.id,
-                    TweetsLikes.like_user_id == user.id
-                ))
-                .first()
-            )
-            try:
-                if is_liked_query.id:
-                    is_liked = True
-            except:
-                is_liked = False
-            is_retweeted_query = (
-                session.query(Retweets)
-                .where(and_(
-                    Retweets.tweet_id == parent_tweet_query.id,
-                    Retweets.rt_user_id == user.id
-                ))
-                .first()
-            )
-            try:
-                if is_retweeted_query.id:
-                    is_retweeted = True
-            except:
-                is_retweeted= False
-
-            parent_tweet.append({
-                "tweet_id": parent_tweet_query.id,
-                "user_id": parent_tweet_user_query.id,
-                "name": parent_tweet_user_query.name,
-                "username": parent_tweet_user_query.username,
-                "profile_image": parent_tweet_user_query.profile_image,
-                "time_created": parent_tweet_query.time_created,
-                "body": parent_tweet_query.body,
-                "image": parent_tweet_query.image,
-                "like_count": like_count,
-                "retweet_count": retweet_count,
-                "reply_count": reply_count,
-                "is_retweeted": is_retweeted,
-                "replied_to": parent_tweet_query.replied_to,
-                "is_liked": is_liked
-            })
-
-            child_tweets_query = (
-                session.query(Tweets)
-                .where(Tweets.replied_to == clicked_tweet.id)
-                .all()
-            )
-            # child_tweets = []
-            for t in child_tweets_query:
-                tweet_user = (
-                    session.query(Users)
-                    .where(Users.id == t.user_id)
-                    .first()
-                )
-                like_count = (
-                    session.query(TweetsLikes)
-                    .where(TweetsLikes.tweet_id == t.id)
-                    .count()
-                )
-                retweet_count = (
-                    session.query(Retweets)
-                    .where(Retweets.tweet_id == t.id)
-                    .count()
-                )
-                reply_count = (
-                    session.query(Tweets)
-                    .where(Tweets.replied_to == t.id)
-                    .count()
-                )
-                is_liked_query = (
-                    session.query(TweetsLikes)
-                    .where(and_(
-                        TweetsLikes.tweet_id == t.id,
-                        TweetsLikes.like_user_id == user.id
-                    ))
-                    .first()
-                )
-                try:
-                    if is_liked_query.id:
-                        is_liked = True
-                except:
-                    is_liked = False
-
-                is_retweeted_query = (
-                    session.query(Retweets)
-                    .where(and_(
-                        Retweets.tweet_id == t.id,
-                        Retweets.rt_user_id == user.id
-                    ))
-                    .first()
-                )
-                try:
-                    if is_retweeted_query.id:
-                        is_retweeted = True
-                except:
-                    is_retweeted = False
-                child_tweets.append({
-                    "tweet_id": t.id,
-                    "user_id":tweet_user.id,
-                    "name": tweet_user.name,
-                    "username": tweet_user.username,
-                    "profile_image": tweet_user.profile_image,
-                    "time_created": t.time_created,
-                    "body": t.body,
-                    "image": t.image,
-                    "like_count": like_count,
-                    "retweet_count": retweet_count,
-                    "reply_count": reply_count,
-                    "is_retweeted": is_retweeted,
-                    "is_liked": is_liked,
-                })
-                
+            is_it_parent = True                
         else:
             #this is a child tweet
+            #first we get parent of child then child
             parent_tweet_query = (
                 session.query(Tweets)
                 .where(Tweets.id == clicked_tweet.replied_to)
                 .first()
             )
-            parent_tweet_user_query = (
+
+        parent_tweet_user_query = (
                 session.query(Users)
                 .where(Users.id == parent_tweet_query.user_id)
                 .first()
             )
-
-            # parent_tweet= []
-            like_count = (
-                session.query(TweetsLikes)
-                .where(TweetsLikes.tweet_id == parent_tweet_query.id)
-                .count()
+        tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
+                tweet_id = parent_tweet_query.id,
+                user_id = user.id,
             )
-            retweet_count = (
-                session.query(Retweets)
-                .where(Retweets.tweet_id == parent_tweet_query.id)
-                .count()
-            )
-            reply_count = (
-                session.query(Tweets)
-                .where(Tweets.replied_to == parent_tweet_query.id)
-                .count()
-            )
-            is_liked_query = (
-                session.query(TweetsLikes)
-                .where(and_(
-                    TweetsLikes.tweet_id == parent_tweet_query.id,
-                    TweetsLikes.like_user_id == user.id
-                ))
-                .first()
-            )
-            try:
-                if is_liked_query.id:
-                    is_liked = True
-            except:
-                is_liked = False
-            is_retweeted_query = (
-                session.query(Retweets)
-                .where(and_(
-                    Retweets.tweet_id == parent_tweet_query.id,
-                    Retweets.rt_user_id == user.id
-                ))
-                .first()
-            )
-            try:
-                if is_retweeted_query.id:
-                    is_retweeted = True
-            except:
-                is_retweeted= False
-
-            parent_tweet.append({
+        parent_tweet.append({
                 "tweet_id": parent_tweet_query.id,
                 "user_id": parent_tweet_user_query.id,
                 "name": parent_tweet_user_query.name,
@@ -466,85 +240,55 @@ class TweetPage:
                 "time_created": parent_tweet_query.time_created,
                 "body": parent_tweet_query.body,
                 "image": parent_tweet_query.image,
-                "like_count": like_count,
-                "retweet_count": retweet_count,
-                "reply_count": reply_count,
-                "is_retweeted": is_retweeted,
+                "like_count": tweet_interactions["like_count"],
+                "retweet_count": tweet_interactions["retweet_count"],
+                "reply_count": tweet_interactions["reply_count"],
+                "is_retweeted": tweet_interactions["is_retweeted"],
                 "replied_to": parent_tweet_query.replied_to,
-                "is_liked": is_liked
+                "is_liked": tweet_interactions["is_liked"]
             })
-
-            #now we can get child tweets
+        #if it is not parent tweet we need to get replied_to mean parent of child twet
+        if not is_it_parent:
             child_tweets_query = (
                 session.query(Tweets)
-                .where(Tweets.replied_to == parent_tweet_query.id)
+                .where(Tweets.replied_to == clicked_tweet.replied_to)
                 .all()
             )
-            # child_tweets = []
-            #DEVELOPMENT
-            for t in child_tweets_query:
-                tweet_user = (
-                    session.query(Users)
-                    .where(Users.id == t.user_id)
-                    .first()
-                )
-                like_count = (
-                    session.query(TweetsLikes)
-                    .where(TweetsLikes.tweet_id == t.id)
-                    .count()
-                )
-                retweet_count = (
-                    session.query(Retweets)
-                    .where(Retweets.tweet_id == t.id)
-                    .count()
-                )
-                reply_count = (
-                    session.query(Tweets)
-                    .where(Tweets.replied_to == t.id)
-                    .count()
-                )
-                is_liked_query = (
-                    session.query(TweetsLikes)
-                    .where(and_(
-                        TweetsLikes.tweet_id == t.id,
-                        TweetsLikes.like_user_id == tweet_user.id
-                    ))
-                    .first()
-                )
-                try:
-                    if is_liked_query.id:
-                        is_liked = True
-                except:
-                    is_liked = False
+        else:
+            child_tweets_query = (
+                session.query(Tweets)
+                .where(Tweets.replied_to == clicked_tweet.id)
+                .all()
+            )
+            
+        for t in child_tweets_query:
+            tweet_user = (
+                session.query(Users)
+                .where(Users.id == t.user_id)
+                .first()
+            )
 
-                is_retweeted_query = (
-                    session.query(Retweets)
-                    .where(and_(
-                        Retweets.tweet_id == t.id,
-                        Retweets.rt_user_id == tweet_user.id
-                    ))
-                    .first()
-                )
-                try:
-                    if is_retweeted_query.id:
-                        is_retweeted = True
-                except:
-                    is_retweeted = False
+            tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
+                tweet_id = t.id,
+                user_id = tweet_user.id,
+            )
+                
+            child_tweets.append({
+                "tweet_id": t.id,
+                "user_id":tweet_user.id,
+                "name": tweet_user.name,
+                "username": tweet_user.username,
+                "profile_image": tweet_user.profile_image,
+                "time_created": t.time_created,
+                "body": t.body,
+                "image": t.image,
+                "like_count": tweet_interactions["like_count"],
+                "retweet_count": tweet_interactions["retweet_count"],
+                "reply_count": tweet_interactions["reply_count"],
+                "is_retweeted": tweet_interactions["is_retweeted"],
+                "is_liked": tweet_interactions["is_liked"]
+            })
 
-                child_tweets.append({
-                    "tweet_id": t.id,
-                    "user_id":tweet_user.id,
-                    "name": tweet_user.name,
-                    "username": tweet_user.username,
-                    "profile_image": tweet_user.profile_image,
-                    "time_created": t.time_created,
-                    "body": t.body,
-                    "image": t.image,
-                    "like_count": like_count,
-                    "retweet_count": retweet_count,
-                    "reply_count": reply_count,
-                    "is_retweeted": is_retweeted,
-                    "is_liked": is_liked,
-                })
+
         
         return {"status": True, "parent_tweet": parent_tweet, "child_tweets": child_tweets}
