@@ -18,3 +18,12 @@ def create_access_token():
         "end_date": end_date
     }
     return token_properties
+
+
+def hashtag_finder(tweet_body):
+    tag_vocabs = []
+    vocabs = tweet_body.split()
+    for vocab in vocabs:
+        if vocab[0] == "#":
+            tag_vocabs.append(vocab)
+    return tag_vocabs

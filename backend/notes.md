@@ -22,3 +22,6 @@ bunlar yapilsa yeter reis baya bi is olur sonunda
 
 
 hic kimseyi takip etmiyorken twit atinca anasyfa sapiyior fixle
+
+
+main pageden reply reply tweete tikladigimda 1. reply parent olarak aliniyor ve onun reply leri gosterliyor bu durumdaki parente tiklayinca gercek parent tweete ulasiliyor ve onun replyleri gosteriliyor. bu parent tweete gelirken kullandigimiz child tweete tikladigimizda istedigimiz sehy onun artik parent olmasi ve onun child lerinin gosterilmesi fakat patliyor onu bi fixle

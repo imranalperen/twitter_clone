@@ -4,6 +4,7 @@
         <tweet_container
             :user="user"
             :tweets="parent_tweet"
+            @add_new_tweet_timeline_emit = "reload_page()"
         />
     </div>
     <div class="seperator">
@@ -44,6 +45,12 @@ export default {
         let response_value = await tweet_page_request(request_body)
         this.parent_tweet = response_value.response.parent_tweet
         this.child_tweets = response_value.response.child_tweets
+    },
+
+    methods: {
+        reload_page() {
+            location.reload()
+        }
     },
     
     watch: {

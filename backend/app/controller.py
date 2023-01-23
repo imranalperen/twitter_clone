@@ -7,7 +7,7 @@ from flask import(
 from app.crud.users_crud import UserFollow, UserRegistration
 from app.crud.tweet_crud import TweetMain
 from app.crud.fake_crud import FakeMain
-from app.crud.timeline_crud import TimelineMain, WhoToFollow, TweetPage
+from app.crud.timeline_crud import TimelineMain, WhoToFollow, TweetPage, TrendTopics
 from app.utils import create_access_token
 from app.decorators import login_required
 
@@ -189,3 +189,10 @@ def tweet_page():
     tweet_id = request.json.get("tweet_id")
     tweet_page_response = TweetPage().create_tweet_page(user, tweet_id)
     return jsonify({"response": tweet_page_response})
+
+
+@main.route("trend_topics", methods=["POST"])
+@login_required
+def trend_topics():
+    trends = TrendTopics().get_trends()
+    return jsonify({"response": trends})

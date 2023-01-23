@@ -273,7 +273,23 @@ function tweet_page_request(request_body) {
     })
     .then((response) => response.json())
 
-    return fetched_data    
+    return fetched_data
+}
+
+function trend_topics_request() {
+    const access_token = access_token_control()
+
+    const fetched_data = fetch(`${API_URL}/trend_topics`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access_token": access_token
+        },
+    })
+    .then((response) => response.json())
+
+
+    return fetched_data
 }
 
 
@@ -293,5 +309,6 @@ export {
     unretweet_request,
     last_tweet_of_user_request,
     add_replied_tweet_request,
-    tweet_page_request
+    tweet_page_request,
+    trend_topics_request
 }

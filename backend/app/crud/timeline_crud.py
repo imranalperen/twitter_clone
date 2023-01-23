@@ -1,7 +1,34 @@
 from app.db import session
-from app.models import Users, UsersFollowers, Tweets, TweetsLikes, Retweets
+from app.models import Users, UsersFollowers, Tweets, TweetsLikes, Retweets, Tags
 from sqlalchemy.sql import and_, desc
 from sqlalchemy import func
+from collections import Counter
+
+class TrendTopics:
+    def get_trends(self):
+        #we pick trends in last 100 tweets
+        #most 5 hashtag in last 100 tweets will be trends
+        q = (
+            session.query(Tags.tag_vocab)
+            .order_by(Tags.id.desc())
+            .limit(100)
+            .all()
+        )
+
+        count = {}
+        
+        for i in q:           
+            if not i[0] in count:
+                count[i[0]] = 1
+            else:
+                count[i[0]] += 1
+                print(count[i[0]])
+
+        sorted_counts = sorted(count.items(), key=lambda x: x[1])
+        #key of trends dict is tag name and value is count of tweets
+        trends = sorted_counts[-1: -6: -1]
+        return trends
+
 
 class WhoToFollow:
     def recommend_two_user(self, main_user_id):       
@@ -205,7 +232,6 @@ class TweetPage:
         is_it_parent = False
 
         if not clicked_tweet.replied_to:
-            #else tek fark paretn tweet_query de
             #this is a parent tweet
             parent_tweet_query = (
                 session.query(Tweets)
@@ -215,6 +241,7 @@ class TweetPage:
             is_it_parent = True                
         else:
             #this is a child tweet
+            #replies of replied tweet so
             #first we get parent of child then child
             parent_tweet_query = (
                 session.query(Tweets)

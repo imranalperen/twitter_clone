@@ -61,13 +61,14 @@ class Retweets(Base):
     tweet_id = Column(Integer, ForeignKey("tweets.id"))
     rt_user_id = Column(Integer, ForeignKey("users.id"))
 
-# class TweetAnswers(Base):
-#     __tablename__ = "tweets_answers"
+class Tags(Base):
+    __tablename__ = "tags"
 
-#     id = Column(Integer, primary_key=True)
-#     tweet_id = Column(Integer, ForeignKey("tweets.id"))
-#     answer_user_id = Column(Integer, ForeignKey("users.id"))
-
+    id = Column(Integer, primary_key=True)
+    tweet_id = Column(Integer, ForeignKey("tweets.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
+    tag_vocab = Column(String, nullable=False)
+    
 
 
 Base.metadata.create_all(engine)

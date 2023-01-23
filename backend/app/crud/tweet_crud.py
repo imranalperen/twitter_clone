@@ -1,7 +1,8 @@
 from app.db import session
-from app.models import Tweets, TweetsLikes, Retweets, Users
-from sqlalchemy.sql import and_
-from sqlalchemy import desc
+from app.models import Tweets, TweetsLikes, Retweets, Tags
+from app.crud.timeline_crud import TimelineMain
+from sqlalchemy.sql import and_, desc
+from app.utils import hashtag_finder
 
 
 class TweetMain:
@@ -18,6 +19,21 @@ class TweetMain:
         )
         session.add(tweet)
         session.commit()
+        #if tweet has any hashtag we will add these tagas hashtags table
+        tag_vocabs = hashtag_finder(tweet_body)
+        if tag_vocabs:
+        #we already add the tweet we need last tweet of user
+            last_tweet = TimelineMain().last_tweet(user_id)
+            tweet_id = last_tweet["tweet"][0]["tweet_id"]
+            for vocab in tag_vocabs:
+                q = Tags(
+                    tweet_id = tweet_id,
+                    user_id = user_id,
+                    tag_vocab = vocab
+                )
+                session.add(q)
+                session.commit()
+                
         return {"status": True}
 
     def tweet_like(self, user_id, tweet_id):

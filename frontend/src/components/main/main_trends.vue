@@ -4,33 +4,29 @@
         <h1>Trends</h1>
     </div>
     <div class="trends">
-        <div class="trend">
-            <p class="trend_title">#trend1</p>
-            <p class="trend_tweet">1,723 Tweets</p>
-        </div>
-        <div class="trend">
-            <p class="trend_title">#trend2</p>
-            <p class="trend_tweet">7,721 Tweets</p>
-        </div>
-        <div class="trend">
-            <p class="trend_title">#trend3</p>
-            <p class="trend_tweet">6,618 Tweets</p>
-        </div>
-        <div class="trend">
-            <p class="trend_title">#trend4</p>
-            <p class="trend_tweet">99,124 Tweets</p>
-        </div>
-        <div class="trend">
-            <p class="trend_title">#trend5</p>
-            <p class="trend_tweet">3,512 Tweets</p>
+        <div class="trend" v-for="tag in tags">
+            <p class="trend_title">{{ tag[0] }}</p>
+            <p class="trend_tweet">{{ tag[1] }} Tweets</p>
         </div>
     </div>
 </div>
 </template>
 
 <script>
-export default {
+import { trend_topics_request } from "@/requests"
 
+export default {
+    data() {
+        return {
+            tags: null
+        }
+    },
+
+
+    async beforeCreate(){
+        this.tags = await trend_topics_request()
+        this.tags = this.tags.response
+    }
 }
 </script>
 
