@@ -196,3 +196,10 @@ def tweet_page():
 def trend_topics():
     trends = TrendTopics().get_trends()
     return jsonify({"response": trends})
+
+
+@main.route("trend/<string:topic>")
+@login_required
+def trend_page(topic):
+    print(topic)
+    pass

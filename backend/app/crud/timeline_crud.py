@@ -22,7 +22,6 @@ class TrendTopics:
                 count[i[0]] = 1
             else:
                 count[i[0]] += 1
-                print(count[i[0]])
 
         sorted_counts = sorted(count.items(), key=lambda x: x[1])
         #key of trends dict is tag name and value is count of tweets

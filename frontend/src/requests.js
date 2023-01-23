@@ -293,6 +293,21 @@ function trend_topics_request() {
 }
 
 
+function topic_request(topic) {
+    const access_token = access_token_control()
+
+    const fetched_data = fetch(`${API_URL}/trend/${topic}`, {
+        headers: {
+            "content-type": "application/json",
+            "access_token": access_token
+        },
+    })
+    .then((response) => response.json())
+
+    console.log(fetched_data)
+    return fetched_data
+}
+
 export {
     signup_request,
     login_request,
@@ -310,5 +325,6 @@ export {
     last_tweet_of_user_request,
     add_replied_tweet_request,
     tweet_page_request,
-    trend_topics_request
+    trend_topics_request,
+    topic_request
 }

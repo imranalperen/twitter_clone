@@ -4,7 +4,7 @@
         <h1>Trends</h1>
     </div>
     <div class="trends">
-        <div class="trend" v-for="tag in tags">
+        <div class="trend" v-for="tag in tags" @click="redirect_topic(tag[0])">
             <p class="trend_title">{{ tag[0] }}</p>
             <p class="trend_tweet">{{ tag[1] }} Tweets</p>
         </div>
@@ -22,10 +22,16 @@ export default {
         }
     },
 
-
     async beforeCreate(){
         this.tags = await trend_topics_request()
         this.tags = this.tags.response
+    },
+
+    methods: {
+        redirect_topic(topic) {
+            topic = topic.split('#')[1]
+            this.$router.push({ name: 'topic', params: { string: `${topic}` } })
+        }
     }
 }
 </script>
