@@ -18,8 +18,6 @@ class WhoToFollow:
             .limit(2)
             .all()
         )
-        # from sqlalchemy.dialects import postgresql
-        # x = str(q.statement.compile(dialect=postgresql.dialect()))
         recommended_users = []
         for user in query:
             recommended_users.append({
@@ -32,6 +30,61 @@ class WhoToFollow:
 
         return recommended_users
 
+class TimelineUtils:
+    def get_tweet(self, **kwargs):
+        #like count
+        #retweet count
+        #reply count
+        #is liked
+        #is retweeted
+        like_count = (
+            session.query(TweetsLikes)
+            .where(TweetsLikes.tweet_id == kwargs["tweet_id"])
+            .count()
+        )
+        retweet_count = (
+            session.query(Retweets)
+            .where(Retweets.tweet_id == kwargs["tweet_id"])
+            .count()
+        )
+        reply_count = (
+            session.query(Tweets)
+            .where(Tweets.replied_to == kwargs["tweet_id"])
+            .count()
+        )
+        is_liked_query = (
+            session.query(TweetsLikes)
+            .where(TweetsLikes.tweet_id == kwargs["tweet_id"])
+            .where(TweetsLikes.like_user_id == kwargs["user_id"])
+            .first()
+        )
+        try:
+            if is_liked_query.id:
+                is_liked = True
+        except:
+            is_liked = False
+        
+        is_retweeted_query = (
+            session.query(Retweets)
+            .where(Retweets.tweet_id == kwargs["tweet_id"])
+            .where(Retweets.rt_user_id == kwargs["user_id"])
+            .first()
+        )
+        try:
+            if is_retweeted_query.id:
+                is_retweeted = True
+        except:
+            is_retweeted = False
+
+        print(like_count, retweet_count, reply_count, is_liked, is_retweeted)
+
+
+
+
+
+            
+
+            
 
 class TimelineMain:
     def create_timeline(self, user):
@@ -115,7 +168,24 @@ class TimelineMain:
             except:
                 is_retweeted = False
 
-                
+            #!!!DEVELOPMENT!!!
+            TimelineUtils.get_tweet(self, 
+                tweet_id = tweet.tweet_id,
+                user_id = tweet.id,
+                name = tweet.name,
+                username = tweet.username,
+                profile_image = tweet.profile_image,
+                time_created = tweet.time_created,
+                body = tweet.body,
+                image = tweet.image,
+                like_count = like_count,
+                retweet_count = retweet_count,
+                reply_count = reply_count,
+                replied_to = tweet.replied_to,
+                is_retweeted = is_retweeted,
+                is_liked = is_liked
+            )
+
             tweets.append({
                 "tweet_id": tweet.tweet_id,
                 "user_id": tweet.id,
@@ -134,33 +204,6 @@ class TimelineMain:
             })
         return {"status": True, "tweets": tweets}
 
-    
-    def user_liked_tweets(self, user_id):
-        q = (
-        session.query(TweetsLikes)
-        .where(TweetsLikes.like_user_id == user_id)
-        )
-        liked_tweets = []
-        for like in q:
-            liked_tweets.append({
-                "tweet_id": like.tweet_id,
-            })
-
-        return {"status": True, "liked_tweets": liked_tweets}
-
-
-    def user_retweeted_tweets(self, user_id):
-        q = (
-            session.query(Retweets)
-            .where(Retweets.rt_user_id == user_id)
-        )
-        retweeted_tweets = []
-        for retweet in q:
-            retweeted_tweets.append({
-                "tweet_id": retweet.tweet_id
-            })
-
-        return {"status": True, "retweeted_tweets": retweeted_tweets}
 
     def last_tweet(self, user_id):
         tweet_query = (

@@ -36,8 +36,8 @@
                         </div>
                     </div>
                     <div class="interaction_footer">
-                        <div class="comment_container">
-                            <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image" @click="toggle_reply_container(tweet.tweet_id)">
+                        <div class="comment_container" @click="toggle_reply_container(tweet.tweet_id)">
+                            <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image">
                             <p class="comment_count">{{ tweet.reply_count }}</p>
                         </div>
                         <div class="retweet_container" v-if="tweet.is_retweeted" @click="unretweet(tweet.tweet_id)">
