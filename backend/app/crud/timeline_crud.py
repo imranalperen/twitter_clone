@@ -2,59 +2,6 @@ from app.db import session
 from app.models import Users, UsersFollowers, Tweets, TweetsLikes, Retweets, Tags
 from sqlalchemy.sql import and_, desc
 from sqlalchemy import func
-from collections import Counter
-
-class TrendTopics:
-    def get_trends(self):
-        #we pick trends in last 100 tweets
-        #most 5 hashtag in last 100 tweets will be trends
-        q = (
-            session.query(Tags.tag_vocab)
-            .order_by(Tags.id.desc())
-            .limit(100)
-            .all()
-        )
-
-        count = {}
-        
-        for i in q:           
-            if not i[0] in count:
-                count[i[0]] = 1
-            else:
-                count[i[0]] += 1
-
-        sorted_counts = sorted(count.items(), key=lambda x: x[1])
-        #key of trends dict is tag name and value is count of tweets
-        trends = sorted_counts[-1: -6: -1]
-        return trends
-
-
-class WhoToFollow:
-    def recommend_two_user(self, main_user_id):       
-        query = (
-            session.query(Users)
-            .outerjoin(UsersFollowers, and_(
-                UsersFollowers.following_user_id==Users.id,
-                UsersFollowers.main_user_id==main_user_id
-                )
-            )
-            .where(UsersFollowers.id==None)
-            .where(Users.id!=main_user_id)
-            .order_by(func.random())
-            .limit(2)
-            .all()
-        )
-        recommended_users = []
-        for user in query:
-            recommended_users.append({
-                "id": user.id,
-                "name": user.name,
-                "username": user.username,
-                "is_following": False,
-                "image": user.profile_image
-            })
-
-        return recommended_users
 
 class TimelineUtils:
     def get_tweet_interactions(self, **kwargs):
@@ -105,6 +52,109 @@ class TimelineUtils:
             "is_retweeted": is_retweeted
         }
         return tweet_interactions
+
+class TrendTopics:
+    def get_trends(self):
+        #we pick trends in last 100 tweets
+        #most 5 hashtag in last 100 tweets will be trends
+        q = (
+            session.query(Tags.tag_vocab)
+            .order_by(Tags.id.desc())
+            .limit(100)
+            .all()
+        )
+
+        count = {}
+        
+        for i in q:           
+            if not i[0] in count:
+                count[i[0]] = 1
+            else:
+                count[i[0]] += 1
+
+        sorted_counts = sorted(count.items(), key=lambda x: x[1])
+        #key of trends dict is tag name and value is count of tweets
+        trends = sorted_counts[-1: -6: -1]
+        return trends
+
+    
+    def create_topic_page(self, topic, user):
+        q = (
+            session.query(
+                Tags,
+                Users.id,
+                Users.name,
+                Users.username,
+                Users.profile_image,
+                Tweets.time_created,
+                Tweets.body,
+                Tweets.id.label("tweet_id"),
+                Tweets.image,
+                Tweets.replied_to
+            )
+            .join(Tweets, Tweets.id == Tags.tweet_id)
+            .join(Users, Users.id == Tweets.user_id)
+            .where(Tags.tag_vocab == f"#{topic}")
+            .order_by(Tweets.time_created.desc())
+            .limit(100)
+            .all()
+        )
+
+        tweets = []
+        for tweet in q:
+            tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
+                tweet_id = tweet.tweet_id,
+                user_id = user.id,
+            )
+            tweets.append({
+                "tweet_id": tweet.tweet_id,
+                "user_id": tweet.id,
+                "name": tweet.name,
+                "username": tweet.username,
+                "profile_image": tweet.profile_image,
+                "time_created": tweet.time_created,
+                "body": tweet.body,
+                "image": tweet.image,
+                "like_count": tweet_interactions["like_count"],
+                "retweet_count": tweet_interactions["retweet_count"],
+                "reply_count": tweet_interactions["reply_count"],
+                "replied_to": tweet.replied_to,
+                "is_retweeted": tweet_interactions["is_retweeted"],
+                "is_liked": tweet_interactions["is_liked"]
+            })
+        return {"status": True, "tweets": tweets}
+            
+            
+
+
+class WhoToFollow:
+    def recommend_two_user(self, main_user_id):       
+        query = (
+            session.query(Users)
+            .outerjoin(UsersFollowers, and_(
+                UsersFollowers.following_user_id==Users.id,
+                UsersFollowers.main_user_id==main_user_id
+                )
+            )
+            .where(UsersFollowers.id==None)
+            .where(Users.id!=main_user_id)
+            .order_by(func.random())
+            .limit(2)
+            .all()
+        )
+        recommended_users = []
+        for user in query:
+            recommended_users.append({
+                "id": user.id,
+                "name": user.name,
+                "username": user.username,
+                "is_following": False,
+                "image": user.profile_image
+            })
+
+        return recommended_users
+
+
 
             
 

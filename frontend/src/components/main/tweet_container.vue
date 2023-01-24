@@ -29,6 +29,7 @@
                     </div>
                     <div class="tweet_body" @click="redirect_tweet_page(tweet.tweet_id)">
                         <div class="tweet_text" v-if="tweet.body">
+                            {{ calculate_hashtag(tweet.body) }}
                             {{ tweet.body }}
                         </div>
                         <div class="tweet_image" v-if="tweet.image">
@@ -184,7 +185,19 @@ export default {
                 }
             }
         },
-    }
+        
+        calculate_hashtag(tweet) {
+            if(tweet.includes("#")) {
+                let vocabs = tweet.split(" ")
+                for(let i = 0; i < vocabs.length; i++) {
+                    if(vocabs[i].includes("#")) {
+                        console.log(vocabs)
+                    }
+                }
+                console.log(vocabs)
+            }
+        }
+    },
 }
 
 </script>

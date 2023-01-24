@@ -36,7 +36,6 @@ function access_token_control() {
 
     if(!access_token) {
         window.localStorage.clear()
-        console.log(1)
         location.href = 'http://localhost:8080/login'
     }
     else {
@@ -304,7 +303,6 @@ function topic_request(topic) {
     })
     .then((response) => response.json())
 
-    console.log(fetched_data)
     return fetched_data
 }
 

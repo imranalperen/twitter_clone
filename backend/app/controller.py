@@ -201,5 +201,6 @@ def trend_topics():
 @main.route("trend/<string:topic>")
 @login_required
 def trend_page(topic):
-    print(topic)
-    pass
+    user = g.user
+    tweets = TrendTopics().create_topic_page(topic, user)
+    return jsonify({"response": tweets["tweets"]})
