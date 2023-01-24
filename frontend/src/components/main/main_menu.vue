@@ -28,7 +28,7 @@
             </div>
             <p class="menu_text">Messages</p>
         </div>
-        <div class="menu_element">
+        <div class="menu_element" @click="push_profile">
             <div class="menu_image">
                 <img class="icon" src="@/assets/person-outline.svg">
             </div>
@@ -80,6 +80,10 @@ export default {
 
         push_explore() {
             this.$router.push({name: "explore"})
+        },
+
+        push_profile() {
+            this.$router.push({name: "profile", params: { string: `${this.user.username}`}})
         }
     }
 }

@@ -323,6 +323,26 @@ function explore_timeline_request() {
     return fetched_data
 }
 
+function user_tweets_request(username) {
+    const access_token = access_token_control()
+
+    let request_body = {
+        "username": username
+    }
+
+    const fetched_data = fetch(`${API_URL}/profile`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
 export {
     signup_request,
     login_request,
@@ -342,5 +362,6 @@ export {
     tweet_page_request,
     trend_topics_request,
     topic_request,
-    explore_timeline_request
+    explore_timeline_request,
+    user_tweets_request
 }

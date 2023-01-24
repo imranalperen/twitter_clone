@@ -8,6 +8,7 @@ import home from '@/views/main/home.vue'
 import tweet_page from '@/views/main/tweet_page.vue'
 import topic_page from '@/views/main/topic_page.vue'
 import explore from '@/views/main/explore.vue'
+import profile from '@/views/main/profile.vue'
 
 const routes = [
   {
@@ -46,6 +47,11 @@ const routes = [
         path: '/explore',
         name: 'explore',
         component: explore
+      },
+      {
+        path: '/profile/:string',
+        name: 'profile',
+        component: profile
       }
     ]
   }

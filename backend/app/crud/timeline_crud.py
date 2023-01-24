@@ -298,10 +298,11 @@ class TweetPage:
                 .where(Users.id == parent_tweet_query.user_id)
                 .first()
             )
-        tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
-                tweet_id = parent_tweet_query.id,
-                user_id = user.id,
-            )
+        tweet_interactions = TimelineUtils.get_tweet_interactions(self,
+                                                                  tweet_id = parent_tweet_query.id,
+                                                                  user_id = user.id,
+                                                                  )
+        
         parent_tweet.append({
                 "tweet_id": parent_tweet_query.id,
                 "user_id": parent_tweet_user_query.id,
@@ -365,7 +366,7 @@ class TweetPage:
 
 class Explore:
     def create_explore_timeline(self, user_id):
-        '''random 50 tweets will be explore feed'''
+        '''random 50 tweets will be explore feed'''        
         tweets_query = (
             session.query(
                 Users.id,
@@ -376,26 +377,25 @@ class Explore:
                 Tweets.body,
                 Tweets.id.label("tweet_id"),
                 Tweets.image,
-                Tweets.replied_to
+                Tweets.replied_to,
+                Tweets.user_id
             )
             .join(Tweets, Tweets.user_id == Users.id)
-            .join(UsersFollowers, UsersFollowers.following_user_id == Users.id)
             .order_by(func.random())
             .limit(50)
             .all()
         )
 
-        user_query = (
-            session.query(Users)
-            .where(Users.id == user_id)
-        )      
-
         tweets = []
         for t in tweets_query:
+            user_query = (
+                session.query(Users)
+                .where(Users.id == t.user_id)
+            )
             for u in user_query:
                 tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
                     tweet_id = t.id,
-                    user_id = u.id,
+                    user_id = user_id,
                 )
                 tweets.append({
                     "tweet_id": t.tweet_id,
@@ -414,4 +414,50 @@ class Explore:
                     "is_liked": tweet_interactions['is_liked']
                 })
 
+        return {"status": True, "tweets": tweets}
+
+class UserProfileFeed:
+    def get_user_tweets(self, username):
+        tweets_query = (
+            session.query(
+                Users.id,
+                Users.name,
+                Users.username,
+                Users.profile_image,
+                Tweets.time_created,
+                Tweets.body,
+                Tweets.id.label("tweet_id"),
+                Tweets.image,
+                Tweets.replied_to,
+                Tweets.user_id
+            )
+            .join(Tweets, Tweets.user_id == Users.id)
+            .where(Users.username == username)
+            .all()
+        )
+
+        tweets = []
+
+        for t in tweets_query:
+            tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
+                tweet_id = t.id,
+                user_id = t.id,
+            )
+            tweets.append({
+                "tweet_id": t.tweet_id,
+                "user_id": t.id,
+                "name": t.name,
+                "username": t.username,
+                "profile_image": t.profile_image,
+                "time_created": t.time_created,
+                "body": t.body,
+                "image": t.image,
+                "like_count": tweet_interactions["like_count"],
+                "retweet_count": tweet_interactions["retweet_count"],
+                "reply_count": tweet_interactions["reply_count"],
+                "replied_to": t.replied_to,
+                "is_retweeted": tweet_interactions["is_retweeted"],
+                "is_liked": tweet_interactions['is_liked']
+            })
+            
         return {"status": True, "tweets": tweets}
