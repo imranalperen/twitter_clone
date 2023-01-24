@@ -7,7 +7,7 @@ from flask import(
 from app.crud.users_crud import UserFollow, UserRegistration
 from app.crud.tweet_crud import TweetMain
 from app.crud.fake_crud import FakeMain
-from app.crud.timeline_crud import TimelineMain, WhoToFollow, TweetPage, TrendTopics
+from app.crud.timeline_crud import TimelineMain, WhoToFollow, TweetPage, TrendTopics, Explore
 from app.utils import create_access_token
 from app.decorators import login_required
 
@@ -203,4 +203,12 @@ def trend_topics():
 def trend_page(topic):
     user = g.user
     tweets = TrendTopics().create_topic_page(topic, user)
+    return jsonify({"response": tweets["tweets"]})
+
+
+@main.route("explore", methods=["POST"])
+@login_required
+def explore_page():
+    user = g.user
+    tweets = Explore().create_explore_timeline(user.id)
     return jsonify({"response": tweets["tweets"]})

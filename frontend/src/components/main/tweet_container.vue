@@ -1,7 +1,7 @@
 <template>
 <div class="tweet_general_container">
     <div class="timeline" v-if="tweets != 2002">
-        <div v-for="tweet in tweets" class="timeline_tweet_container">
+        <div v-for="tweet in tweets" :key="tweet.tweet_id" class="timeline_tweet_container">
             <div class="tweet_top_bar" v-if="tweet.replied_to">
                 <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image_small">
                 <p>{{ tweet.username }} replied</p>
@@ -29,8 +29,9 @@
                     </div>
                     <div class="tweet_body" @click="redirect_tweet_page(tweet.tweet_id)">
                         <div class="tweet_text" v-if="tweet.body">
-                            {{ calculate_hashtag(tweet.body) }}
+                            <!-- {{ calculate_hashtag(tweet.body) }} -->
                             {{ tweet.body }}
+                            <!-- <p><span v-html="tweet_body"></span></p> -->
                         </div>
                         <div class="tweet_image" v-if="tweet.image">
                             <img :src="tweet.image">
@@ -95,6 +96,7 @@ export default {
     data() {
         return {
             toggle_reply_id: null,
+            tweet_body: null
         }
     },
 
@@ -164,7 +166,6 @@ export default {
                     if(this.tweets[i].tweet_id == tweet_id) {
                         this.tweets[i].is_liked = true
                         this.tweets[i].like_count += 1
-
                     }
                 }
             }
@@ -187,15 +188,23 @@ export default {
         },
         
         calculate_hashtag(tweet) {
+            this.tweet_body = tweet
             if(tweet.includes("#")) {
                 let vocabs = tweet.split(" ")
                 for(let i = 0; i < vocabs.length; i++) {
                     if(vocabs[i].includes("#")) {
-                        console.log(vocabs)
+                        //TODO hashtag in tweet link it topic
+                        //vue warn maximum recursive updates exceeded.
+                        vocabs[i] = `<a>${vocabs[i]}</a>`
+                        this.tweet_body = vocabs.join(" ")
                     }
                 }
-                console.log(vocabs)
             }
+        },
+
+        redirect_topic_page(topic) {
+            console.log(topic)
+            console.log(11)
         }
     },
 }

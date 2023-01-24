@@ -306,6 +306,23 @@ function topic_request(topic) {
     return fetched_data
 }
 
+
+function explore_timeline_request() {
+    const access_token = access_token_control()
+
+    const fetched_data = fetch(`${API_URL}/explore`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access_token": access_token
+        },
+    })
+    .then((response) => response.json())
+
+
+    return fetched_data
+}
+
 export {
     signup_request,
     login_request,
@@ -324,5 +341,6 @@ export {
     add_replied_tweet_request,
     tweet_page_request,
     trend_topics_request,
-    topic_request
+    topic_request,
+    explore_timeline_request
 }

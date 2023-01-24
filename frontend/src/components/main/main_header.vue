@@ -8,6 +8,7 @@
         <h1 v-if="current_url == 'home'">Home</h1>
         <h1 v-if="current_url == 'tweet_page'">Tweet</h1>
         <h1 v-if="current_url == 'topic'">#topic</h1>
+        <h1 v-if="current_url == 'explore'">Explore</h1>
     </div>
 </div>
 </template>

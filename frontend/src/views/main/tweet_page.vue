@@ -1,4 +1,5 @@
 <template>
+    <!-- TODO tweet page restructure -->
 <div class="tweet_page_general_container">
     <div class="parent_tweet_container">
         <tweet_container

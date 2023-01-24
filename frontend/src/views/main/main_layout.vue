@@ -33,6 +33,10 @@
                 v-if="current_url == 'topic'"
                 :user = user
             ></topic_page>
+            <explore
+                v-if="current_url == 'explore'"
+                :user = user
+            ></explore>
         </div>
     </div>
 
@@ -64,7 +68,8 @@ import main_header from '@/components/main/main_header.vue'
 
 import home from '@/views/main/home.vue'
 import tweet_page from '@/views/main/tweet_page.vue'
-import topic_page from './topic_page.vue';
+import topic_page from '@/views/main/topic_page.vue';
+import explore from '@/views/main/explore.vue'
 
 import { user_request } from '@/requests'
     
@@ -80,7 +85,8 @@ export default {
         main_header,
         home,
         tweet_page,
-        topic_page
+        topic_page,
+        explore
     },
 
     data() {

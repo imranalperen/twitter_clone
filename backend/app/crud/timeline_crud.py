@@ -123,8 +123,6 @@ class TrendTopics:
                 "is_liked": tweet_interactions["is_liked"]
             })
         return {"status": True, "tweets": tweets}
-            
-            
 
 
 class WhoToFollow:
@@ -153,10 +151,7 @@ class WhoToFollow:
             })
 
         return recommended_users
-
-
-
-            
+       
 
 class TimelineMain:
     def create_timeline(self, user):
@@ -175,7 +170,7 @@ class TimelineMain:
             )
             .join(Tweets, Tweets.user_id == Users.id)
             .join(UsersFollowers, UsersFollowers.following_user_id == Users.id)
-            .where(UsersFollowers.main_user_id == user.id)        
+            .where(UsersFollowers.main_user_id == user.id)  
             )
         #tweets of main user
         q2 = (
@@ -203,7 +198,7 @@ class TimelineMain:
         for tweet in q:
             tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
                 tweet_id = tweet.tweet_id,
-                user_id = tweet.id,
+                user_id = user.id,
             )
 
             tweets.append({
@@ -365,6 +360,58 @@ class TweetPage:
                 "is_liked": tweet_interactions["is_liked"]
             })
 
-
-        
         return {"status": True, "parent_tweet": parent_tweet, "child_tweets": child_tweets}
+    
+
+class Explore:
+    def create_explore_timeline(self, user_id):
+        '''random 50 tweets will be explore feed'''
+        tweets_query = (
+            session.query(
+                Users.id,
+                Users.name,
+                Users.username,
+                Users.profile_image,
+                Tweets.time_created,
+                Tweets.body,
+                Tweets.id.label("tweet_id"),
+                Tweets.image,
+                Tweets.replied_to
+            )
+            .join(Tweets, Tweets.user_id == Users.id)
+            .join(UsersFollowers, UsersFollowers.following_user_id == Users.id)
+            .order_by(func.random())
+            .limit(50)
+            .all()
+        )
+
+        user_query = (
+            session.query(Users)
+            .where(Users.id == user_id)
+        )      
+
+        tweets = []
+        for t in tweets_query:
+            for u in user_query:
+                tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
+                    tweet_id = t.id,
+                    user_id = u.id,
+                )
+                tweets.append({
+                    "tweet_id": t.tweet_id,
+                    "user_id": u.id,
+                    "name": u.name,
+                    "username": u.username,
+                    "profile_image": u.profile_image,
+                    "time_created": t.time_created,
+                    "body": t.body,
+                    "image": t.image,
+                    "like_count": tweet_interactions["like_count"],
+                    "retweet_count": tweet_interactions["retweet_count"],
+                    "reply_count": tweet_interactions["reply_count"],
+                    "replied_to": t.replied_to,
+                    "is_retweeted": tweet_interactions["is_retweeted"],
+                    "is_liked": tweet_interactions['is_liked']
+                })
+
+        return {"status": True, "tweets": tweets}

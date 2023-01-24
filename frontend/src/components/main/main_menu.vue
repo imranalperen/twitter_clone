@@ -10,7 +10,7 @@
             </div>
             <p class="menu_text">Home</p>
         </div>
-        <div class="menu_element">
+        <div class="menu_element" @click="push_explore">
             <div class="menu_image">
                 <img class="hashtag" src="@/assets/icons8-hashtag-50.png">
             </div>
@@ -76,6 +76,10 @@ export default {
         
         push_main() {
             this.$router.push({name: "home"})
+        },
+
+        push_explore() {
+            this.$router.push({name: "explore"})
         }
     }
 }
