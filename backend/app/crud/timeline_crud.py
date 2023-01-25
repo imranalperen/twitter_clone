@@ -170,7 +170,7 @@ class TimelineMain:
             )
             .join(Tweets, Tweets.user_id == Users.id)
             .join(UsersFollowers, UsersFollowers.following_user_id == Users.id)
-            .where(UsersFollowers.main_user_id == user.id)  
+            .where(UsersFollowers.main_user_id == user.id)
             )
         #tweets of main user
         q2 = (
@@ -187,8 +187,33 @@ class TimelineMain:
             )
             .join(Tweets, Tweets.user_id == Users.id)
             .join(UsersFollowers, UsersFollowers.main_user_id == Users.id)
-            .where(UsersFollowers.main_user_id == user.id)    
+            .where(UsersFollowers.main_user_id == user.id)
         )
+        #retweets of main user
+        # SELECT * FROM users
+        # INNER JOIN  tweets ON tweets.user_id = users.id
+        # INNER JOIN users_followers ON users_followers.following_user_id = users.id
+        # INNER JOIN retweets ON retweets.tweet_id = tweets.id
+        # WHERE (retweets.rt_user_id = 6)
+        # q3 = (
+        #     session.query(
+        #         Users.id,
+        #         Users.name,
+        #         Users.username,
+        #         Users.profile_image,
+        #         Tweets.time_created,
+        #         Tweets.body,
+        #         Tweets.id.label("tweet_id"),
+        #         Tweets.image,
+        #         Tweets.replied_to
+        #     )
+        #     .join(Tweets, Tweets.user_id == Users.id)
+        #     .join(UsersFollowers, UsersFollowers.following_user_id == Users.id)
+        #     .join(Retweets, Retweets.tweet_id == Tweets.id)
+        #     .where(Retweets.rt_user_id == user.id)
+        # )
+        #we need retweets of following users and likes of following users
+
         #mergeing 2 queries and sort results descending tweet create time
         q = q1.union(q2).order_by(Tweets.time_created.desc()).all()
         if not q:
@@ -417,32 +442,105 @@ class Explore:
         return {"status": True, "tweets": tweets}
 
 class UserProfileFeed:
-    def get_user_tweets(self, username):
-        tweets_query = (
-            session.query(
-                Users.id,
-                Users.name,
-                Users.username,
-                Users.profile_image,
-                Tweets.time_created,
-                Tweets.body,
-                Tweets.id.label("tweet_id"),
-                Tweets.image,
-                Tweets.replied_to,
-                Tweets.user_id
-            )
-            .join(Tweets, Tweets.user_id == Users.id)
+    def get_user_profile_infos(self, username):
+        q = (
+            session.query(Users)
             .where(Users.username == username)
-            .all()
+            .first()
         )
-
+        follow_count = (
+            session.query(UsersFollowers)
+            .where(UsersFollowers.main_user_id == q.id)
+            .count()
+        )
+        followers_count = (
+            session.query(UsersFollowers)
+            .where(UsersFollowers.following_user_id == q.id)
+            .count()
+        )
+        user_info = []
+        user_info.append({
+            "username": q.username,
+            "name": q.name,
+            "profile_image": q.profile_image,
+            "follow_count": follow_count,
+            "followers_count": followers_count
+        })
+        return user_info
+    
+    def get_user_tweets(self, username, user_id, profile_tab):
+        if profile_tab == "tweets":
+            tweets_query = (
+                session.query(
+                    Users.id,
+                    Users.name,
+                    Users.username,
+                    Users.profile_image,
+                    Tweets.time_created,
+                    Tweets.body,
+                    Tweets.id.label("tweet_id"),
+                    Tweets.image,
+                    Tweets.replied_to,
+                    Tweets.user_id
+                )
+                .join(Tweets, Tweets.user_id == Users.id)
+                .where(Users.username == username)
+                .order_by(Tweets.time_created.desc())
+                .all()
+            )
+        if profile_tab == "media":
+            tweets_query = (
+                session.query(
+                    Users.id,
+                    Users.name,
+                    Users.username,
+                    Users.profile_image,
+                    Tweets.time_created,
+                    Tweets.body,
+                    Tweets.id.label("tweet_id"),
+                    Tweets.image,
+                    Tweets.replied_to,
+                    Tweets.user_id
+                )
+                .join(Tweets, Tweets.user_id == Users.id)
+                .where(and_(
+                    Users.username == username,
+                    Tweets.image != None
+                ))
+                .order_by(Tweets.time_created.desc())
+                .all()
+            )
+        if profile_tab == "likes":
+            tweets_query = (
+                session.query(
+                    Users.id,
+                    Users.name,
+                    Users.username,
+                    Users.profile_image,
+                    Tweets.time_created,
+                    Tweets.body,
+                    Tweets.id.label("tweet_id"),
+                    Tweets.image,
+                    Tweets.replied_to,
+                    Tweets.user_id
+                )
+                # .join(Tweets, Tweets.user_id == Users.id)
+                # .join(TweetsLikes, TweetsLikes.like_user_id == Tweets.id)
+                .join(Tweets, Tweets.user_id == Users.id)
+                .join(TweetsLikes, TweetsLikes.tweet_id == Tweets.id)
+                .where(TweetsLikes.like_user_id == user_id)
+                .order_by(TweetsLikes.like_date.desc())
+                .all()
+            )
         tweets = []
 
         for t in tweets_query:
-            tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
-                tweet_id = t.id,
-                user_id = t.id,
+            tweet_interaction = TimelineUtils.get_tweet_interactions(
+                self,
+                tweet_id = t.tweet_id,
+                user_id = user_id
             )
+
             tweets.append({
                 "tweet_id": t.tweet_id,
                 "user_id": t.id,
@@ -452,26 +550,11 @@ class UserProfileFeed:
                 "time_created": t.time_created,
                 "body": t.body,
                 "image": t.image,
-                "like_count": tweet_interactions["like_count"],
-                "retweet_count": tweet_interactions["retweet_count"],
-                "reply_count": tweet_interactions["reply_count"],
+                "like_count": tweet_interaction["like_count"],
+                "retweet_count": tweet_interaction["retweet_count"],
+                "reply_count": tweet_interaction["reply_count"],
                 "replied_to": t.replied_to,
-                "is_retweeted": tweet_interactions["is_retweeted"],
-                "is_liked": tweet_interactions['is_liked']
+                "is_retweeted": tweet_interaction["is_retweeted"],
+                "is_liked": tweet_interaction["is_liked"],
             })
-
         return {"status": True, "tweets": tweets}
-
-    def get_user_infos(self, username):
-        q = (
-            session.query(Users)
-            .where(Users.username == username)
-            .first()
-        )
-        user_info = []
-        user_info.append({
-            "username": q.username,
-            "name": q.name,
-            "profile_image": q.profile_image,
-        })
-        return user_info

@@ -218,6 +218,36 @@ def explore_page():
 @login_required
 def user_profile():
     username = request.json.get("username")
-    user_tweets = UserProfileFeed().get_user_tweets(username)
-    user_profile = UserProfileFeed().get_user_infos(username)
-    return jsonify({"user_tweets": user_tweets["tweets"], "user_profile": user_profile})
+    # user_tweets = UserProfileFeed().get_user_tweets(username)
+    user_profile = UserProfileFeed().get_user_profile_infos(username)
+    return jsonify({"response": user_profile})
+
+
+@main.route("profile_tweets", methods=["POST"])
+@login_required
+def profile_tweets():
+    username = request.json.get("username")
+    user_id = g.user.id
+    purpose = "tweets"
+    user_tweets = UserProfileFeed().get_user_tweets(username, user_id, purpose)
+    return jsonify({"response": user_tweets["tweets"]})
+
+
+@main.route("profile_media", methods=["POST"])
+@login_required
+def profile_media():
+    username = request.json.get("username")
+    user_id = g.user.id
+    purpose = "media"
+    user_media_tweets = UserProfileFeed().get_user_tweets(username, user_id, purpose)
+    return jsonify({"response": user_media_tweets["tweets"]})
+
+
+@main.route("profile_feed", methods=["POST"])
+@login_required
+def profile_feed():
+    username = request.json.get("username")
+    user_id = g.user.id
+    profile_tab = request.json.get("profile_tab")
+    tweets = UserProfileFeed().get_user_tweets(username, user_id, profile_tab)
+    return jsonify({"response": tweets["tweets"]})

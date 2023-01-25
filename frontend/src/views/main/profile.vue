@@ -1,5 +1,5 @@
 <template>
-<div class="profile_page_general_container" v-if="user_infos && user_tweets && user">
+<div class="profile_page_general_container" v-if="user_infos">
     <div class="top_container">
         <div class="profile_image_container">
             <img :src="user_infos.profile_image">
@@ -17,57 +17,78 @@
     </div>
     <div class="user_informations">
         <div class="name_container">
-            <p>imran alperen bayram</p>
+            <p>{{ user_infos.name }}</p>
         </div>
         <div class="username_container">
-            <p class="gray_text">@imranalperen</p>
+            <p class="gray_text">@{{ user_infos.username }}</p>
         </div>
         <div class="follow_and_followers_container">
             <div class="follows_container">
                 <a href="">
-                    <p class="number">123</p>
+                    <p class="number">{{ user_infos.follow_count }}</p>
                     <p class="gray_text small_text">Following</p>
                 </a>
             </div>
             <div class="followers_container">
                 <a href="">
-                    <p class="number">2</p>
+                    <p class="number">{{ user_infos.followers_count }}</p>
                     <p class="gray_text small_text">Followers</p>
                 </a>
             </div>
         </div>
     </div>
     <div class="headers_container">
-        <router-link :to="{name: 'profile', params: {string: user.username, profile_tab: null}}" class="header" :class="{selected_header: tab_name == null}">
-            <p>Tweets</p>
+        <router-link
+            :to="{name: 'profile', params: {string: user_infos.username, profile_tab: null}}"
+            class="header"
+            :class="{selected_header: tab_name == null}">
+                <p>Tweets</p>
         </router-link>
-        <router-link :to="{name: 'profile', params: {string: user.username, profile_tab: 'replies'}}" class="header" :class="{selected_header: tab_name == 'replies'}">
-            <p>Tweets&Replies</p>
+
+        <router-link
+            :to="{name: 'profile', params: {string: user_infos.username, profile_tab: 'media'}}"
+            class="header"
+            :class="{selected_header: tab_name == 'media'}">
+                <p>Media</p>
         </router-link>
-        <router-link :to="{name: 'profile', params: {string: user.username, profile_tab: 'media'}}" class="header" :class="{selected_header: tab_name == 'media'}">
-            <p>Media</p>
-        </router-link>
-        <router-link :to="{name: 'profile', params: {string: user.username, profile_tab: 'likes'}}" class="header" :class="{selected_header: tab_name == 'likes'}">
-            <p>Likes</p>
+
+        <router-link
+            :to="{name: 'profile', params: {string: user_infos.username, profile_tab: 'likes'}}"
+            class="header"
+            :class="{selected_header: tab_name == 'likes'}">
+                <p>Likes</p>
         </router-link>
     </div>
-    <div class="profile_tweets_container">
-
+    <div class="profile_tweets_container" v-if="tab_request">
+        <tweet_container
+            :user="user"
+            :tweets="tweets"
+        />
     </div>
 </div>
 </template>
-
+    
 <script>
-import { profile_request } from '@/requests'
+import {
+    profile_request,
+    profile_tweets_request,
+    profile_media_request
+} from '@/requests'
+
+import tweet_container from '@/components/main/tweet_container.vue'
 
 export default {
     props: ["user"],
 
+    components: {
+        tweet_container
+    },
+
     data() {
         return {
-            user_tweets: null,
             user_infos: null,
-            tab_name: null
+            tab_name: null,
+            tweets: null
         }
     },
 
@@ -76,10 +97,38 @@ export default {
         //username is unique name is not unique
         let username = this.$route.fullPath.split('/')[2]
         let response_value = await profile_request(username)
-        this.user_tweets = response_value.user_tweets
-        this.user_infos = response_value.user_profile[0]
+        this.user_infos = response_value.response[0]
         this.tab_name = this.$route.fullPath.split('/')[3]
-        //create requests according to tab name
+    },
+    watch: {
+        $route(to, from) {
+            if(to != from) {
+                this.tab_name = this.$route.fullPath.split('/')[3]
+            }
+        }
+    },
+
+    computed: {
+        async tab_request() {
+            this.tweets = null
+            if(!this.tab_name) {
+                //if there is no tab at url this is tweets request
+                let temp_tab_name = "tweets"
+                this.tweets = await profile_tweets_request(this.user_infos.username, temp_tab_name)
+                this.tweets = this.tweets.response
+            }
+            else if(this.tab_name == "media") {
+                this.tweets = await profile_tweets_request(this.user_infos.username, this.tab_name)
+                this.tweets = this.tweets.response
+            }
+            else if(this.tab_name == "likes") {
+                this.tweets = await profile_tweets_request(this.user_infos.username, this.tab_name)
+                this.tweets = this.tweets.response
+            }
+            else {
+                console.log("patlar")
+            }
+        }
     }
 }
 
@@ -101,6 +150,7 @@ export default {
     width: 135px;
     height: 135px;
     border-radius: 50%;
+    border: 1px solid white;
 }
 
 .buttons_container {
@@ -176,7 +226,7 @@ a {
 
 .headers_container {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     border-bottom: 1px solid var(--bordergray);
     margin-top: 1em;
 }

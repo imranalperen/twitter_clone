@@ -37,10 +37,10 @@
                 v-if="current_url == 'explore'"
                 :user = user
             ></explore>
-            <profile_layout
+            <profile
                 v-if="current_url == 'profile'"
                 :user = user
-            ></profile_layout>
+            ></profile>
         </div>
     </div>
 
@@ -74,7 +74,7 @@ import home from '@/views/main/home.vue'
 import tweet_page from '@/views/main/tweet_page.vue'
 import topic_page from '@/views/main/topic_page.vue';
 import explore from '@/views/main/explore.vue'
-import profile_layout from '@/views/profile/profile_layout.vue'
+import profile from '@/views/main/profile.vue';
 
 import { user_request } from '@/requests'
     
@@ -92,7 +92,7 @@ export default {
         tweet_page,
         topic_page,
         explore,
-        profile_layout
+        profile
     },
 
     data() {

@@ -343,6 +343,69 @@ function profile_request(username) {
     return fetched_data
 }
 
+
+// function profile_tweets_request(username) {
+//     const access_token = access_token_control()
+
+//     let request_body = {
+//         "username": username
+//     }
+
+//     const fetched_data = fetch(`${API_URL}/profile_tweets`, {
+//         method: "POST",
+//         headers: {
+//             "content-type": "application/json",
+//             "access-token": access_token
+//         },
+//         body: JSON.stringify(request_body)
+//     })
+//     .then((response) => response.json())
+
+//     return fetched_data
+// }
+
+function profile_media_request(username) {
+    const access_token = access_token_control()
+
+    let request_body = {
+        "username": username
+    }
+
+    const fetched_data = fetch(`${API_URL}/profile_media`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+function profile_tweets_request(username, profile_tab) {
+    const access_token = access_token_control()
+
+    let request_body = {
+        "username": username,
+        "profile_tab": profile_tab
+    }
+
+    const fetched_data = fetch(`${API_URL}/profile_feed`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+
 export {
     signup_request,
     login_request,
@@ -364,4 +427,6 @@ export {
     topic_request,
     explore_timeline_request,
     profile_request,
+    profile_tweets_request,
+    profile_media_request,
 }

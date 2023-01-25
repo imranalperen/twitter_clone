@@ -52,6 +52,7 @@ class TweetsLikes(Base):
     id = Column(Integer, primary_key=True)
     tweet_id = Column(Integer, ForeignKey("tweets.id"))
     like_user_id = Column(Integer, ForeignKey("users.id"))
+    like_date = Column(DateTime(timezone=True), server_default=func.now())
 
 
 class Retweets(Base):
