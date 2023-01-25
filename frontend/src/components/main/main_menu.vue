@@ -1,45 +1,55 @@
 <template>
-<div class="menu_container">
+<div class="menu_container" v-if="user">
+    <!-- <router-link :to="{name: 'profile', params: {string: user.username, profile_tab: 'likes'}}" class="header" :class="{selected_header: tab_name == 'likes'}">
+            <p>Likes</p>
+        </router-link> -->
     <div class="menu">
-        <div class="menu_element" @click="push_main">
+        <router-link class="menu_element" :to="{name: 'home'}">
             <img class="hashtag" src="@/assets/icons8-twitter.svg">
-        </div>
-        <div class="menu_element" @click="push_main">
+        </router-link>
+
+        <router-link class="menu_element" :to="{name: 'home'}">
             <div class="menu_image">
                 <img class="icon" src="@/assets/home.svg">
             </div>
             <p class="menu_text">Home</p>
-        </div>
-        <div class="menu_element" @click="push_explore">
+        </router-link>
+
+        <router-link class="menu_element" :to="{name: 'explore'}">
             <div class="menu_image">
                 <img class="hashtag" src="@/assets/icons8-hashtag-50.png">
             </div>
             <p class="menu_text">Explore</p>
-        </div>
-        <div class="menu_element">
+        </router-link>
+
+        <router-link class="menu_element" :to="{name: 'home'}">
             <div class="menu_image">
                 <img class="icon" src="@/assets/notifications-outline.svg">
             </div>
             <p class="menu_text">Notifications</p>
-        </div>
-        <div class="menu_element">
+        </router-link>
+
+        <router-link class="menu_element" :to="{name: 'home'}">
             <div class="menu_image">
                 <img class="icon" src="@/assets/mail-outline.svg">
             </div>
             <p class="menu_text">Messages</p>
-        </div>
-        <div class="menu_element" @click="push_profile">
+        </router-link>
+
+        <router-link class="menu_element" :to="{name: 'profile', params: {string: `${user.username}`, profile_tab: null}}">
             <div class="menu_image">
                 <img class="icon" src="@/assets/person-outline.svg">
             </div>
             <p class="menu_text">Profile</p>
-        </div>
-        <div class="menu_element">
+        </router-link>
+
+        <router-link class="menu_element" :to="{name: 'home'}">
             <div class="menu_image">
                 <img class="icon" src="@/assets/ellipsis-horizontal-circle-outline.svg">
             </div>
             <p class="menu_text">More</p>
-        </div>
+        </router-link>
+
         <div class="menu_tweet">
             <button id="menu_tweet_btn">Tweet</button>
         </div>
@@ -117,6 +127,7 @@ export default {
     align-items: center;
     padding: .5em 0 .5em .3em;
     cursor: pointer;
+    text-decoration: none;
 }
 
 .menu_tweet{

@@ -21,7 +21,9 @@
                                 <div class="name"><p>{{ tweet.name }}</p></div>
                             </a>
                             <div class="username"><p>@{{ tweet.username }}</p></div>
-                            <div class="tweet_time"><p>{{ tweet.time_created }}</p></div>
+                            <!-- TODO time created i duzenle  -->
+                            <!-- <div class="tweet_time"><p>{{ tweet.time_created }}</p></div> -->
+                            <div class="tweet_time"><p>1h</p></div>
                         </div>
                         <div class="delete_tweet_container" v-if="tweet.user_id == user.id">
                             <img src="@/assets/icons8-trash-bin-32.png">
@@ -102,6 +104,7 @@ export default {
 
     methods: {
         redirect_tweet_page(tweet_id) {
+            console.log(tweet_id);
             this.$router.push({ name: 'tweet_page', params: { id: `${tweet_id}` } })
         },
 

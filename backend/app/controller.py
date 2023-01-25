@@ -219,4 +219,5 @@ def explore_page():
 def user_profile():
     username = request.json.get("username")
     user_tweets = UserProfileFeed().get_user_tweets(username)
-    return jsonify({"response": user_tweets["tweets"]})
+    user_profile = UserProfileFeed().get_user_infos(username)
+    return jsonify({"user_tweets": user_tweets["tweets"], "user_profile": user_profile})

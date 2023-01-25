@@ -459,5 +459,19 @@ class UserProfileFeed:
                 "is_retweeted": tweet_interactions["is_retweeted"],
                 "is_liked": tweet_interactions['is_liked']
             })
-            
+
         return {"status": True, "tweets": tweets}
+
+    def get_user_infos(self, username):
+        q = (
+            session.query(Users)
+            .where(Users.username == username)
+            .first()
+        )
+        user_info = []
+        user_info.append({
+            "username": q.username,
+            "name": q.name,
+            "profile_image": q.profile_image,
+        })
+        return user_info

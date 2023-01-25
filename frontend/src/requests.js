@@ -323,7 +323,7 @@ function explore_timeline_request() {
     return fetched_data
 }
 
-function user_tweets_request(username) {
+function profile_request(username) {
     const access_token = access_token_control()
 
     let request_body = {
@@ -363,5 +363,5 @@ export {
     trend_topics_request,
     topic_request,
     explore_timeline_request,
-    user_tweets_request
+    profile_request,
 }
