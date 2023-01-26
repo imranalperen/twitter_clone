@@ -43,7 +43,6 @@ class TweetMain:
         )
         session.add(query)
         session.commit()
-        return {"status": True}
 
     def unlike_tweet(self, user_id, tweet_id):
         (
@@ -55,7 +54,6 @@ class TweetMain:
             .delete()
         )
         session.commit()
-        return {"status": True}
 
     def retweet_tweet(self, user_id, tweet_id):
         query = Retweets(
@@ -64,7 +62,7 @@ class TweetMain:
         )
         session.add(query)
         session.commit()
-        return {"status": True}
+
 
     def unretweet_tweet(self, user_id, tweet_id):
         (
@@ -76,4 +74,4 @@ class TweetMain:
             .delete()
         )
         session.commit()
-        return {"status": True}
+        

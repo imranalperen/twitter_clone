@@ -73,25 +73,15 @@ class UserRegistration:
         return user
     
 
-    def update_user_info(self, user, image, date_of_birth, gender):
-        if(gender and date_of_birth):
-            (
-                session.query(Users)
-                .where(Users.id == user.id)
-                .update({
-                    "profile_image": image,
-                    "date_of_birth": date_of_birth,
-                    "gender": gender
-                })
-            )
-        else:
-            (
-                session.query(Users)
-                .where(Users.id == user.id)
-                .update({
-                    "profile_image": image
-                })
-            )
+    def update_user_profile_image(self, user, image, bio):
+        (
+            session.query(Users)
+            .where(Users.id == user.id)
+            .update({
+                "profile_image": image,
+                "biography": bio
+            })
+        )
         session.commit()
 
 
@@ -103,7 +93,6 @@ class UserFollow:
         )
         session.add(query)
         session.commit()
-        return {"status": True}
 
 
     def unfollow_user(self, main_user, unfollowing_user_id):
@@ -116,5 +105,3 @@ class UserFollow:
             .delete()
         )
         session.commit()
-
-        return {"status": True}

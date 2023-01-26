@@ -19,9 +19,7 @@ class Users(Base):
     email = Column(String(30), nullable=False, unique=True)
     hashed_password = Column(String(100), nullable=False)
     profile_image = Column(String)
-    date_of_birth = Column(String(30))
-    gender = Column(String(10))
-    verified_accaunt = Column(Boolean, default=False)
+    biography = Column(String(160))
     access_token = Column(String(100))
     access_token_expire_date = Column(DateTime)
 

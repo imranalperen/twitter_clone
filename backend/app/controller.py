@@ -7,7 +7,14 @@ from flask import(
 from app.crud.users_crud import UserFollow, UserRegistration
 from app.crud.tweet_crud import TweetMain
 from app.crud.fake_crud import FakeMain
-from app.crud.timeline_crud import TimelineMain, WhoToFollow, TweetPage, TrendTopics, Explore, UserProfileFeed
+from app.crud.timeline_crud import (
+    TimelineMain,
+    WhoToFollow,
+    TweetPage,
+    TrendTopics,
+    Explore,
+    UserProfileFeed
+)
 from app.utils import create_access_token
 from app.decorators import login_required
 
@@ -55,9 +62,8 @@ def login():
 def registration_info():
     user = g.user
     image = request.json.get("profile_image")
-    date_of_birth = request.json.get("date_of_birth")
-    gender = request.json.get("gender")
-    UserRegistration().update_user_info(user, image, date_of_birth, gender)
+    bio = request.json.get("bio")
+    UserRegistration().update_user_profile_image(user, image, bio)
     return jsonify({"response": True})
 
 
@@ -76,8 +82,8 @@ def user():
 @main.route("recommend_follow_user", methods=["GET"])
 @login_required
 def recommend_follow_user():
-    main_user = g.user
-    recommended_users = WhoToFollow().recommend_two_user(main_user.id)
+    user = g.user
+    recommended_users = WhoToFollow().who_to_follow_feed(user.id)
     return jsonify({"response": recommended_users})
 
 

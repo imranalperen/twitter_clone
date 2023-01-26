@@ -150,6 +150,7 @@ function timeline_request() {
 //! registration_info_request
 function registration_info_request(request_body) {
     const access_token = access_token_control()
+    
     const fetched_data = fetch(`${API_URL}/registration_info`, {
         method: "POST",
         headers: {

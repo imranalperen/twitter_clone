@@ -5,27 +5,23 @@
             <img :src="user_infos.profile_image">
         </div>
         <div class="buttons_container">
-            <div class="dm_container">
+            <div class="dm_container" v-if="user_infos.following_situation != 'edit_profile'">
                 <img src="@/assets/mail-outline.svg" class="message_image">
             </div>
             <div class="follow_container">
-                
-                <div
-                    v-if="user_infos.following_situation == 'settings'"
-                    class="settings_btn"
-                >
-                    <img src="@/assets/icons8-settings-50.png" class="settings_image">
-                </div>
-                    
-                
-
+                <button
+                    v-if="user_infos.following_situation == 'edit_profile'"
+                    class="follow_btn"
+                    @click="toggle_edit_profile()"
+                >Edit Profile</button>
                 <button
                     v-if="user_infos.following_situation == 'follow'"
+                    @click="follow_user_request(user_infos.user_id)"
                     class="follow_btn"
                 >follow</button>
-
                 <button
                     v-if="user_infos.following_situation == 'unfollow'"
+                    @click="unfollow_user_request(user_infos.user_id)"
                     class="unfollow_btn"
                 >unfollow</button>
             </div>
@@ -38,18 +34,17 @@
         <div class="username_container">
             <p class="gray_text">@{{ user_infos.username }}</p>
         </div>
+        <div class="bio_container">
+            <p class="biography">{{ user_infos.biography }}</p>
+        </div>
         <div class="follow_and_followers_container">
-            <div class="follows_container">
-                <a href="">
-                    <p class="number">{{ user_infos.follow_count }}</p>
-                    <p class="gray_text small_text">Following</p>
-                </a>
+            <div class="follows_container" @click="toggle_follows()">
+                <p class="number">{{ user_infos.follow_count }}</p>
+                <p class="gray_text small_text">Following</p>
             </div>
-            <div class="followers_container">
-                <a href="">
-                    <p class="number">{{ user_infos.followers_count }}</p>
-                    <p class="gray_text small_text">Followers</p>
-                </a>
+            <div class="followers_container" @click="toggle_followers()">
+                <p class="number right_number">{{ user_infos.followers_count }}</p>
+                <p class="gray_text small_text">Followers</p>
             </div>
         </div>
     </div>
@@ -81,6 +76,13 @@
             :tweets="tweets"
         />
     </div>
+
+    <div class="modal_container" v-if="modal_bool">
+        <profile_modals
+            :active_modal = active_modal
+            :user_infos = user_infos
+        />
+    </div>
 </div>
 </template>
     
@@ -91,19 +93,24 @@ import {
 } from '@/requests'
 
 import tweet_container from '@/components/main/tweet_container.vue'
+import profile_modals from '@/components/main/profile_modals.vue'
+import { follow_request, unfollow_request } from "@/requests"
 
 export default {
     props: ["user"],
 
     components: {
-        tweet_container
+        tweet_container,
+        profile_modals
     },
 
     data() {
         return {
             user_infos: null,
             tab_name: null,
-            tweets: null
+            tweets: null,
+            modal_bool: false,
+            active_modal: ''
         }
     },
 
@@ -115,6 +122,42 @@ export default {
         this.user_infos = response_value.response[0]
         this.tab_name = this.$route.fullPath.split('/')[3]
     },
+
+    methods: {
+        async follow_user_request(user_id) {
+            let response = await follow_request(user_id)
+            if(response) {
+                this.user_infos.following_situation = "unfollow"
+            }
+        },
+
+        async unfollow_user_request(user_id) {
+            let response = await unfollow_request(user_id)
+            if(response) {
+                this.user_infos.following_situation = "follow"
+            }
+        },
+
+        toggle_modal_bool() {
+            this.modal_bool = !this.modal_bool
+        },
+
+        toggle_edit_profile() {
+            this.toggle_modal_bool()
+            this.active_modal = "edit_profile"
+        },
+
+        toggle_follows() {
+            this.toggle_modal_bool()
+            this.active_modal = "follows"
+        },
+
+        toggle_followers() {
+            this.toggle_modal_bool()
+            this.active_modal = "followers"            
+        }
+    },
+
     watch: {
         $route(to, from) {
             if(to != from) {
@@ -150,6 +193,22 @@ export default {
 </script>
 
 <style scoped>
+/* EDIT PROFILE MODAL */
+.modal_container {
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(52, 64, 77, .5);
+    z-index: 10;
+}
+
+
+/* PROFILE */
 .profile_page_general_container {
     display: flex;
     flex-direction: column;
@@ -222,41 +281,6 @@ export default {
     transition: .3s;
 }
 
-.settings_image {
-    filter: invert(100%) sepia(6%) saturate(73%) hue-rotate(193deg) brightness(111%) contrast(87%);
-    border-radius: 50%;
-    width: 43px;
-    padding: .5em;
-    border: 1px solid var(--bordergray);
-    cursor: pointer;
-    margin-left: 1em;
-}
-
-.settings_image:hover {
-    background-color: var(--gray);
-}
-
-/* .settings_btn {
-    background-color: var(--primaryBG);
-    box-shadow: none;
-    border-style: none;
-    margin-left: 1em;
-    border-radius: 50%;
-}
-
-.settings_btn > img {
-    filter: invert(100%) sepia(6%) saturate(73%) hue-rotate(193deg) brightness(111%) contrast(87%);
-    border-radius: 50%;
-    width: 43px;
-    padding: .5em;
-    border: 1px solid var(--bordergray);
-    cursor: pointer;
-}
-
-.settings_btn:hover {
-    filter: invert(100%) sepia(6%) saturate(73%) hue-rotate(193deg) brightness(111%) contrast(87%);
-} */
-
 .user_informations {
     display: flex;
     flex-direction: column;
@@ -269,16 +293,24 @@ export default {
     font-size: 1.1em;
 }
 
+.bio_container {
+    margin-top: 1.3em;
+}
+
 .gray_text {
     color: var(--gray);
 }
 
 .small_text {
     font-size: .9em;
+    margin-left: .3em;
 }
 
 .number {
     font-weight: bold;
+}
+.right_number {
+    margin-left: .5em;
 }
 
 .follow_and_followers_container {
@@ -287,17 +319,25 @@ export default {
     margin-top: 1em;
 }
 
-.follows_container > a, .followers_container > a {
+burada
+.followers_container {
+    margin-left: 1em;
+}
+
+.follows_container, .followers_container {
     display: flex;
-    justify-content: row;
-    gap: .3em;
+    cursor: pointer;
+    padding: .3em;
 }
 
 a {
     text-decoration: none;
 }
-.followers_container {
-    margin-left: 1em;
+
+.followers_container:hover, .follows_container:hover {
+    background-color: var(--bordergray);
+    border-radius: 5px;
+    transition: .2s;
 }
 
 .headers_container {

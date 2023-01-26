@@ -126,16 +126,16 @@ class TrendTopics:
 
 
 class WhoToFollow:
-    def recommend_two_user(self, main_user_id):       
+    def who_to_follow_feed(self, user_id):
         query = (
             session.query(Users)
             .outerjoin(UsersFollowers, and_(
-                UsersFollowers.following_user_id==Users.id,
-                UsersFollowers.main_user_id==main_user_id
+                UsersFollowers.following_user_id == Users.id,
+                UsersFollowers.main_user_id == user_id
                 )
             )
-            .where(UsersFollowers.id==None)
-            .where(Users.id!=main_user_id)
+            .where(UsersFollowers.id == None)
+            .where(Users.id != user_id)
             .order_by(func.random())
             .limit(2)
             .all()
@@ -459,7 +459,7 @@ class UserProfileFeed:
             .count()
         )
         if user.username == username:
-            follwing_sitation = "settings"
+            follwing_sitation = "edit_profile"
         else:
             follwing_sitation = (
                 session.query(UsersFollowers)
@@ -479,13 +479,15 @@ class UserProfileFeed:
             "username": q.username,
             "name": q.name,
             "profile_image": q.profile_image,
+            "user_id": q.id,
             "follow_count": follow_count,
             "followers_count": followers_count,
-            "following_situation": follwing_sitation
+            "following_situation": follwing_sitation,
+            "biography": q.biography
         })
         return user_info
     
-    def get_user_tweets(self, username, user_id, profile_tab):
+    def get_user_tweets(self, username, user_id, profile_tab):        
         if profile_tab == "tweets":
             tweets_query = (
                 session.query(
@@ -528,6 +530,12 @@ class UserProfileFeed:
                 .all()
             )
         if profile_tab == "likes":
+            #current viewing profile user query
+            q = (
+                session.query(Users)
+                .where(Users.username == username)
+                .first()
+            )
             tweets_query = (
                 session.query(
                     Users.id,
@@ -545,7 +553,7 @@ class UserProfileFeed:
                 # .join(TweetsLikes, TweetsLikes.like_user_id == Tweets.id)
                 .join(Tweets, Tweets.user_id == Users.id)
                 .join(TweetsLikes, TweetsLikes.tweet_id == Tweets.id)
-                .where(TweetsLikes.like_user_id == user_id)
+                .where(TweetsLikes.like_user_id == q.id)
                 .order_by(TweetsLikes.like_date.desc())
                 .all()
             )

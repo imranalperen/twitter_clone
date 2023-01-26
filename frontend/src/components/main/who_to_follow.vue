@@ -27,7 +27,6 @@
                     @click="unfollow_user_request(user)"
                 >Following</button>
             </div>
-            <div class></div>
         </div>
     </div>
 </div>

@@ -106,7 +106,6 @@ export default {
                 this.error_message = "Email already registered."
             }
             else {
-                //same function with login.vue
                 let request_body = {
                     "username": this.username,
                     "password": this.password,
@@ -125,7 +124,6 @@ export default {
                     window.localStorage.setItem("first_vizit", true)
                     this.$router.push({name: "home"})
                 }
-                // this.$router.push({name: "login"})
             }
         },
 

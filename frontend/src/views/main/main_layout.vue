@@ -4,7 +4,6 @@
 </div>
 
 <div class="main_layout_container" v-else>
-    {{first_vizit}}
     <div class="left">
         <div class="menu_container">
             <main_menu
