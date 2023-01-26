@@ -218,8 +218,8 @@ def explore_page():
 @login_required
 def user_profile():
     username = request.json.get("username")
-    # user_tweets = UserProfileFeed().get_user_tweets(username)
-    user_profile = UserProfileFeed().get_user_profile_infos(username)
+    user = g.user
+    user_profile = UserProfileFeed().get_user_profile_infos(username, user)
     return jsonify({"response": user_profile})
 
 
@@ -231,16 +231,6 @@ def profile_tweets():
     purpose = "tweets"
     user_tweets = UserProfileFeed().get_user_tweets(username, user_id, purpose)
     return jsonify({"response": user_tweets["tweets"]})
-
-
-@main.route("profile_media", methods=["POST"])
-@login_required
-def profile_media():
-    username = request.json.get("username")
-    user_id = g.user.id
-    purpose = "media"
-    user_media_tweets = UserProfileFeed().get_user_tweets(username, user_id, purpose)
-    return jsonify({"response": user_media_tweets["tweets"]})
 
 
 @main.route("profile_feed", methods=["POST"])

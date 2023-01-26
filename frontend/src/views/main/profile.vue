@@ -6,12 +6,28 @@
         </div>
         <div class="buttons_container">
             <div class="dm_container">
-                <img src="@/assets/mail-outline.svg">
+                <img src="@/assets/mail-outline.svg" class="message_image">
             </div>
             <div class="follow_container">
+                
+                <div
+                    v-if="user_infos.following_situation == 'settings'"
+                    class="settings_btn"
+                >
+                    <img src="@/assets/icons8-settings-50.png" class="settings_image">
+                </div>
+                    
+                
+
                 <button
+                    v-if="user_infos.following_situation == 'follow'"
                     class="follow_btn"
-                >Follow</button>
+                >follow</button>
+
+                <button
+                    v-if="user_infos.following_situation == 'unfollow'"
+                    class="unfollow_btn"
+                >unfollow</button>
             </div>
         </div>
     </div>
@@ -72,7 +88,6 @@
 import {
     profile_request,
     profile_tweets_request,
-    profile_media_request
 } from '@/requests'
 
 import tweet_container from '@/components/main/tweet_container.vue'
@@ -159,13 +174,18 @@ export default {
     margin-bottom: 1em;
 }
 
-.dm_container > img {
+.message_image {
     filter: invert(100%) sepia(6%) saturate(73%) hue-rotate(193deg) brightness(111%) contrast(87%);
     border-radius: 50%;
     width: 43px;
     padding: .5em;
     border: 1px solid var(--bordergray);
     cursor: pointer;
+}
+
+.message_image:hover { 
+    background-color: var(--tweetBtnBg);
+    transition: .3s;
 }
 
 .follow_btn {
@@ -180,6 +200,62 @@ export default {
     font-size: 1em;
     cursor: pointer;
 }
+
+.unfollow_btn {
+    margin: .5em 0 .5em .4em;
+    color: white;
+    background-color: var(--thirdBG);
+    border-style: none;
+    border: 1px solid var(--gray);
+    padding: .6em .8em .6em .8em;
+    width: 100%;
+    border-radius: 25px;
+    font-weight: 500;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.unfollow_btn:hover {
+    color: crimson;
+    border-color: crimson;
+    background-color: rgba(220, 20, 60, .2);
+    transition: .3s;
+}
+
+.settings_image {
+    filter: invert(100%) sepia(6%) saturate(73%) hue-rotate(193deg) brightness(111%) contrast(87%);
+    border-radius: 50%;
+    width: 43px;
+    padding: .5em;
+    border: 1px solid var(--bordergray);
+    cursor: pointer;
+    margin-left: 1em;
+}
+
+.settings_image:hover {
+    background-color: var(--gray);
+}
+
+/* .settings_btn {
+    background-color: var(--primaryBG);
+    box-shadow: none;
+    border-style: none;
+    margin-left: 1em;
+    border-radius: 50%;
+}
+
+.settings_btn > img {
+    filter: invert(100%) sepia(6%) saturate(73%) hue-rotate(193deg) brightness(111%) contrast(87%);
+    border-radius: 50%;
+    width: 43px;
+    padding: .5em;
+    border: 1px solid var(--bordergray);
+    cursor: pointer;
+}
+
+.settings_btn:hover {
+    filter: invert(100%) sepia(6%) saturate(73%) hue-rotate(193deg) brightness(111%) contrast(87%);
+} */
 
 .user_informations {
     display: flex;

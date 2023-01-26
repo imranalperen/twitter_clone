@@ -442,7 +442,7 @@ class Explore:
         return {"status": True, "tweets": tweets}
 
 class UserProfileFeed:
-    def get_user_profile_infos(self, username):
+    def get_user_profile_infos(self, username, user):
         q = (
             session.query(Users)
             .where(Users.username == username)
@@ -458,13 +458,30 @@ class UserProfileFeed:
             .where(UsersFollowers.following_user_id == q.id)
             .count()
         )
+        if user.username == username:
+            follwing_sitation = "settings"
+        else:
+            follwing_sitation = (
+                session.query(UsersFollowers)
+                .where(and_(
+                    UsersFollowers.main_user_id == user.id,
+                    UsersFollowers.following_user_id == q.id
+                ))
+                .first()
+            )
+            if follwing_sitation:
+                follwing_sitation = "unfollow"
+            else:
+                follwing_sitation = "follow"
+
         user_info = []
         user_info.append({
             "username": q.username,
             "name": q.name,
             "profile_image": q.profile_image,
             "follow_count": follow_count,
-            "followers_count": followers_count
+            "followers_count": followers_count,
+            "following_situation": follwing_sitation
         })
         return user_info
     
