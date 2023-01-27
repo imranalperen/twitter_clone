@@ -1,27 +1,27 @@
 <template>
-<div class="profile_page_general_container" v-if="user_infos">
+<div class="profile_page_general_container" v-if="visited_user">
     <div class="top_container">
         <div class="profile_image_container">
-            <img :src="user_infos.profile_image">
+            <img :src="visited_user.profile_image">
         </div>
         <div class="buttons_container">
-            <div class="dm_container" v-if="user_infos.following_situation != 'edit_profile'">
+            <div class="dm_container" v-if="visited_user.following_situation != 'edit_profile'">
                 <img src="@/assets/mail-outline.svg" class="message_image">
             </div>
             <div class="follow_container">
                 <button
-                    v-if="user_infos.following_situation == 'edit_profile'"
+                    v-if="visited_user.following_situation == 'edit_profile'"
                     class="follow_btn"
                     @click="toggle_edit_profile()"
                 >Edit Profile</button>
                 <button
-                    v-if="user_infos.following_situation == 'follow'"
-                    @click="follow_user_request(user_infos.user_id)"
+                    v-if="visited_user.following_situation == 'follow'"
+                    @click="follow_user_request(visited_user.user_id)"
                     class="follow_btn"
                 >follow</button>
                 <button
-                    v-if="user_infos.following_situation == 'unfollow'"
-                    @click="unfollow_user_request(user_infos.user_id)"
+                    v-if="visited_user.following_situation == 'unfollow'"
+                    @click="unfollow_user_request(visited_user.user_id)"
                     class="unfollow_btn"
                 >unfollow</button>
             </div>
@@ -29,42 +29,42 @@
     </div>
     <div class="user_informations">
         <div class="name_container">
-            <p>{{ user_infos.name }}</p>
+            <p>{{ visited_user.name }}</p>
         </div>
         <div class="username_container">
-            <p class="gray_text">@{{ user_infos.username }}</p>
+            <p class="gray_text">@{{ visited_user.username }}</p>
         </div>
         <div class="bio_container">
-            <p class="biography">{{ user_infos.biography }}</p>
+            <p class="biography">{{ visited_user.biography }}</p>
         </div>
         <div class="follow_and_followers_container">
             <div class="follows_container" @click="toggle_follows()">
-                <p class="number">{{ user_infos.follow_count }}</p>
+                <p class="number">{{ visited_user.follow_count }}</p>
                 <p class="gray_text small_text">Following</p>
             </div>
             <div class="followers_container" @click="toggle_followers()">
-                <p class="number right_number">{{ user_infos.followers_count }}</p>
+                <p class="number right_number">{{ visited_user.followers_count }}</p>
                 <p class="gray_text small_text">Followers</p>
             </div>
         </div>
     </div>
     <div class="headers_container">
         <router-link
-            :to="{name: 'profile', params: {string: user_infos.username, profile_tab: null}}"
+            :to="{name: 'profile', params: {string: visited_user.username, profile_tab: null}}"
             class="header"
             :class="{selected_header: tab_name == null}">
                 <p>Tweets</p>
         </router-link>
 
         <router-link
-            :to="{name: 'profile', params: {string: user_infos.username, profile_tab: 'media'}}"
+            :to="{name: 'profile', params: {string: visited_user.username, profile_tab: 'media'}}"
             class="header"
             :class="{selected_header: tab_name == 'media'}">
                 <p>Media</p>
         </router-link>
 
         <router-link
-            :to="{name: 'profile', params: {string: user_infos.username, profile_tab: 'likes'}}"
+            :to="{name: 'profile', params: {string: visited_user.username, profile_tab: 'likes'}}"
             class="header"
             :class="{selected_header: tab_name == 'likes'}">
                 <p>Likes</p>
@@ -78,14 +78,34 @@
     </div>
 
     <div class="modal_container" v-if="modal_bool">
-        <profile_modals
-            :active_modal = active_modal
-            :user_infos = user_infos
-        />
+        <div class="sticky_container">
+            <div v-if="active_modal == 'edit_profile'" class="sticky_modal">
+                <edit_profile
+                    :visited_user = visited_user
+                    @toggle_modal_bool = toggle_modal_bool()
+                />
+            </div>
+            <div v-if="active_modal == 'follows'" class="sticky_modal">
+                <profile_follows
+                    :visitor_user="user"
+                    :visited_user = visited_user
+                    :purpose="'follows'"
+                    @toggle_modal_bool = toggle_modal_bool()
+                />
+            </div>
+            <div v-if="active_modal == 'followers'" class="sticky_modal">
+                <profile_follows
+                    :visitor_user="user"
+                    :visited_user = visited_user
+                    :purpose="'followers'"
+                    @toggle_modal_bool = toggle_modal_bool()
+                />
+            </div>
+        </div>
     </div>
 </div>
 </template>
-    
+
 <script>
 import {
     profile_request,
@@ -93,7 +113,9 @@ import {
 } from '@/requests'
 
 import tweet_container from '@/components/main/tweet_container.vue'
-import profile_modals from '@/components/main/profile_modals.vue'
+import edit_profile from '@/components/profile/edit_profile.vue'
+import profile_follows from '@/components/profile/profile_follows.vue'
+import profile_followers from '@/components/profile/profile_followers.vue'
 import { follow_request, unfollow_request } from "@/requests"
 
 export default {
@@ -101,12 +123,14 @@ export default {
 
     components: {
         tweet_container,
-        profile_modals
+        edit_profile,
+        profile_follows,
+        profile_followers
     },
 
     data() {
         return {
-            user_infos: null,
+            visited_user: null,
             tab_name: null,
             tweets: null,
             modal_bool: false,
@@ -119,7 +143,7 @@ export default {
         //username is unique name is not unique
         let username = this.$route.fullPath.split('/')[2]
         let response_value = await profile_request(username)
-        this.user_infos = response_value.response[0]
+        this.visited_user = response_value.response[0]
         this.tab_name = this.$route.fullPath.split('/')[3]
     },
 
@@ -127,19 +151,26 @@ export default {
         async follow_user_request(user_id) {
             let response = await follow_request(user_id)
             if(response) {
-                this.user_infos.following_situation = "unfollow"
+                this.visited_user.following_situation = "unfollow"
             }
         },
 
         async unfollow_user_request(user_id) {
             let response = await unfollow_request(user_id)
             if(response) {
-                this.user_infos.following_situation = "follow"
+                this.visited_user.following_situation = "follow"
             }
         },
 
         toggle_modal_bool() {
             this.modal_bool = !this.modal_bool
+            console.log()
+            if (!this.modal_bool) {
+                // if(this.active_modal == "edit_profile"){
+                //     location.reload()
+                // }
+                location.reload()
+            }
         },
 
         toggle_edit_profile() {
@@ -154,7 +185,7 @@ export default {
 
         toggle_followers() {
             this.toggle_modal_bool()
-            this.active_modal = "followers"            
+            this.active_modal = "followers"
         }
     },
 
@@ -172,15 +203,15 @@ export default {
             if(!this.tab_name) {
                 //if there is no tab at url this is tweets request
                 let temp_tab_name = "tweets"
-                this.tweets = await profile_tweets_request(this.user_infos.username, temp_tab_name)
+                this.tweets = await profile_tweets_request(this.visited_user.username, temp_tab_name)
                 this.tweets = this.tweets.response
             }
             else if(this.tab_name == "media") {
-                this.tweets = await profile_tweets_request(this.user_infos.username, this.tab_name)
+                this.tweets = await profile_tweets_request(this.visited_user.username, this.tab_name)
                 this.tweets = this.tweets.response
             }
             else if(this.tab_name == "likes") {
-                this.tweets = await profile_tweets_request(this.user_infos.username, this.tab_name)
+                this.tweets = await profile_tweets_request(this.visited_user.username, this.tab_name)
                 this.tweets = this.tweets.response
             }
             else {
@@ -197,7 +228,7 @@ export default {
 .modal_container {
     top: 0;
     left: 0;
-    height: 100vh;
+    height: 100%;
     width: 100%;
     position: absolute;
     display: flex;
@@ -205,8 +236,8 @@ export default {
     align-items: center;
     background-color: rgba(52, 64, 77, .5);
     z-index: 10;
-}
 
+}
 
 /* PROFILE */
 .profile_page_general_container {
@@ -242,7 +273,7 @@ export default {
     cursor: pointer;
 }
 
-.message_image:hover { 
+.message_image:hover {
     background-color: var(--tweetBtnBg);
     transition: .3s;
 }

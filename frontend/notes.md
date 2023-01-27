@@ -9,3 +9,7 @@ time created i duzenle
 
 profile tweets lere retweetleride ekle
 profile likes query yi hatali placeholder olarak kondu duzelt.
+
+!!!!!!!!!edit profile name length validation
+
+profile modals sticky likleri

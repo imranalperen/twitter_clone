@@ -84,8 +84,37 @@ class UserRegistration:
         )
         session.commit()
 
+    def edit_user_profile(self, user, image, name, bio):
+        if(image):
+            (
+                session.query(Users)
+                .where(Users.id == user.id)
+                .update({
+                    "profile_image": image
+                })
+            )
+            session.commit()
+        if(name):
+            (
+                session.query(Users)
+                .where(Users.id == user.id)
+                .update({
+                    "name": name
+                })
+            )
+            session.commit()
+        (
+            session.query(Users)
+            .where(Users.id == user.id)
+            .update({
+                "biography": bio
+            })
+        )
+        session.commit()
+        
 
-class UserFollow:    
+
+class UserFollow: 
     def follow_user(self, main_user, following_user_id):
         query = UsersFollowers(
             main_user_id = main_user.id,
@@ -105,3 +134,69 @@ class UserFollow:
             .delete()
         )
         session.commit()
+
+    def get_user_follows_or_followers(self, visit_user_id, purpose, user_id):
+        users = []
+        if purpose == "follows":
+            #return followers of user
+            users_query = (
+                session.query(Users)
+                .join(UsersFollowers, UsersFollowers.following_user_id == Users.id)
+                .where(UsersFollowers.main_user_id == visit_user_id)
+                .all()
+            )
+
+            if users_query:
+                for user in users_query:
+                    is_following_query = (
+                        session.query(UsersFollowers)
+                        .where(and_(
+                            UsersFollowers.following_user_id == user.id,
+                            UsersFollowers.main_user_id == user_id
+                        ))
+                        .first()
+                    )
+                    is_following = False
+                    if is_following_query:
+                        is_following = True
+
+                    users.append({
+                        "id": user.id,
+                        "name": user.name,
+                        "username": user.username,
+                        "image": user.profile_image,
+                        "is_following": is_following
+                    })
+
+        if purpose == "followers":
+            #return follows of user
+            users_query = (
+            session.query(Users)
+            .join(UsersFollowers, UsersFollowers.main_user_id == Users.id)
+            .where(UsersFollowers.following_user_id == visit_user_id)
+            .all()
+            )
+
+            if users_query:
+                for user in users_query:
+                    is_following_query = (
+                        session.query(UsersFollowers)
+                        .where(and_(
+                            UsersFollowers.following_user_id == user.id,
+                            UsersFollowers.main_user_id == user_id
+                        ))
+                        .first()
+                    )
+                    is_following = False
+                    if is_following_query:
+                        is_following = True
+                    
+                    users.append({
+                        "id": user.id,
+                        "name": user.name,
+                        "username": user.username,
+                        "image": user.profile_image,
+                        "is_following": is_following
+                    })
+        
+        return users

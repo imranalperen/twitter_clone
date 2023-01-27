@@ -365,6 +365,46 @@ function profile_tweets_request(username, profile_tab) {
     return fetched_data
 }
 
+function edit_profile_request(profile_image, name, bio) {
+    const access_token = access_token_control()
+    
+    let request_body = {
+        "profile_image": profile_image,
+        "name": name,
+        "bio": bio
+    }
+    const fetched_data = fetch(`${API_URL}/edit_profile`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+function user_follows_request(visit_user_id, purpose) {
+    const access_token = access_token_control()
+    
+    let request_body = {
+        "visit_user_id": visit_user_id,
+        "purpose": purpose
+    }
+    const fetched_data = fetch(`${API_URL}/follows_and_followers`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
 
 export {
     signup_request,
@@ -388,4 +428,6 @@ export {
     explore_timeline_request,
     profile_request,
     profile_tweets_request,
+    edit_profile_request,
+    user_follows_request,
 }

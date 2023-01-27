@@ -129,7 +129,7 @@ def timeline():
     
     return jsonify({"response": tweets["tweets"]})
 
-
+#!TWEET INTERACTIONS
 @main.route("like_tweet", methods=["POST"])
 @login_required
 def like_tweet():
@@ -187,7 +187,7 @@ def add_replied_tweet():
     
     return jsonify({"response": tweet_response["error"]})
 
-
+#!TWEET PAGE
 @main.route("tweet_page", methods=["POST"])
 @login_required
 def tweet_page():
@@ -196,7 +196,7 @@ def tweet_page():
     tweet_page_response = TweetPage().create_tweet_page(user, tweet_id)
     return jsonify({"response": tweet_page_response})
 
-
+#!TRENDS
 @main.route("trend_topics", methods=["POST"])
 @login_required
 def trend_topics():
@@ -211,7 +211,7 @@ def trend_page(topic):
     tweets = TrendTopics().create_topic_page(topic, user)
     return jsonify({"response": tweets["tweets"]})
 
-
+#!EXPLORE
 @main.route("explore", methods=["POST"])
 @login_required
 def explore_page():
@@ -219,7 +219,7 @@ def explore_page():
     tweets = Explore().create_explore_timeline(user.id)
     return jsonify({"response": tweets["tweets"]})
 
-
+#! PROFILE
 @main.route("profile", methods=["POST"])
 @login_required
 def user_profile():
@@ -247,3 +247,24 @@ def profile_feed():
     profile_tab = request.json.get("profile_tab")
     tweets = UserProfileFeed().get_user_tweets(username, user_id, profile_tab)
     return jsonify({"response": tweets["tweets"]})
+
+@main.route("edit_profile", methods=["POST"])
+@login_required
+def edit_profile():
+    user = g.user
+    image = request.json.get("profile_image")
+    name = request.json.get("name")
+    bio = request.json.get("bio")
+    UserRegistration().edit_user_profile(user, image, name ,bio)
+    return jsonify({"response": True})
+
+@main.route("follows_and_followers", methods=["POST"])
+@login_required
+def follows_and_followers():
+    user_id = g.user.id
+    visit_user_id = request.json.get("visit_user_id")
+    purpose = request.json.get("purpose")
+    response_body = UserFollow().get_user_follows_or_followers(visit_user_id, purpose, user_id)
+    return jsonify({"response": response_body})
+
+    
