@@ -6,11 +6,16 @@
     <div class="profile" v-for="user in recommend_user_list">
         <div class="left">
             <div class="image">
-                <img :src="user.image">
+                <!-- <img :src="user.image"> -->
+                <router-link :to="{name: 'profile', params:{string: user.username, profile_tab :null}}" class="r_link">
+                    <img class="profile_image" :src="user.image">
+                </router-link>
             </div>
             <div class="names">
-                <p class="name">{{ user.name }}</p>
-                <p class="username">@{{ user.username }}</p>
+                <router-link :to="{name: 'profile', params:{string: user.username, profile_tab :null}}" class="r_link">
+                    <p class="name">{{ user.name }}</p>
+                    <p class="username">@{{ user.username }}</p>
+                </router-link>
             </div>
         </div>
         <div class="right">
@@ -78,7 +83,7 @@ h1 {
     padding-left: .6em;
 }
 
-.image > img {
+.profile_image{
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -151,5 +156,9 @@ h1 {
     color: crimson;
     border-color: crimson;
     background-color: rgba(220, 20, 60, .2);
+}
+
+.r_link {
+    text-decoration: none;
 }
 </style>

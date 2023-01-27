@@ -2,6 +2,7 @@
   <div class="router_view_container">
     <router-view
       :current_url="current_url"
+      :key="$route.path"
     />
   </div>
 </template>

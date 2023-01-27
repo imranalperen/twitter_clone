@@ -22,6 +22,7 @@
         </div>
         <div class="name_container">
             <p class="label_text">Name</p>
+            {{ character_limitor_name }}
             <input type="text" placeholder="Name" v-model="name">
         </div>
         <div class="bio_container">
@@ -90,6 +91,12 @@ export default {
         character_limitor() {
             if(this.bio.length > 160){
                 this.bio = this.bio.substring(0, 160)
+            }
+        },
+
+        character_limitor_name() {
+            if(this.name.length > 25){
+                this.name = this.name.substring(0, 25)
             }
         }
     }

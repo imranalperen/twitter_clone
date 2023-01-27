@@ -9,18 +9,26 @@
             <div class="tweet_container_main">
                 <div class="left">
                     <div class="tweet_profile_image">
-                        <a href="">
+                        <!-- <a href="">
                             <img :src="tweet.profile_image">
-                        </a>
+                        </a> -->
+                        <router-link :to="{name: 'profile', params:{string: tweet.username, profile_tab :null}}">
+                            <img :src="tweet.profile_image">
+                        </router-link>
                     </div>
                 </div>
                 <div class="right">
                     <div class="right_top_bar">
                         <div class="user_info">
-                            <a href="">
+                            <!-- <a href="">
                                 <div class="name"><p>{{ tweet.name }}</p></div>
-                            </a>
-                            <div class="username"><p>@{{ tweet.username }}</p></div>
+                                <div class="username"><p>@{{ tweet.username }}</p></div>
+                            </a> -->
+                            <router-link :to="{name: 'profile', params:{string: tweet.username, profile_tab :null}}">
+                                <div class="name"><p>{{ tweet.name }}</p></div>
+                                <div class="username"><p>@{{ tweet.username }}</p></div>
+                            </router-link>
+
                             <!-- TODO time created i duzenle  -->
                             <!-- <div class="tweet_time"><p>{{ tweet.time_created }}</p></div> -->
                             <div class="tweet_time"><p>1h</p></div>
@@ -104,7 +112,6 @@ export default {
 
     methods: {
         redirect_tweet_page(tweet_id) {
-            console.log(tweet_id);
             this.$router.push({ name: 'tweet_page', params: { id: `${tweet_id}` } })
         },
 
@@ -204,11 +211,6 @@ export default {
                 }
             }
         },
-
-        redirect_topic_page(topic) {
-            console.log(topic)
-            console.log(11)
-        }
     },
 }
 
@@ -276,7 +278,7 @@ export default {
     font-weight: bold;
 }
 
-.username > a > p {
+.username > p {
     color: var(--bordergray);
 }
 
@@ -287,6 +289,7 @@ export default {
 
 a {
     text-decoration: none;
+    display: flex;
 }
 
 .tweet_text {

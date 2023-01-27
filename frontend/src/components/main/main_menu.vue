@@ -1,8 +1,5 @@
 <template>
 <div class="menu_container" v-if="user">
-    <!-- <router-link :to="{name: 'profile', params: {string: user.username, profile_tab: 'likes'}}" class="header" :class="{selected_header: tab_name == 'likes'}">
-            <p>Likes</p>
-        </router-link> -->
     <div class="menu">
         <router-link class="menu_element" :to="{name: 'home'}">
             <img class="hashtag" src="@/assets/icons8-twitter.svg">

@@ -193,7 +193,7 @@ def add_replied_tweet():
 def tweet_page():
     user = g.user
     tweet_id = request.json.get("tweet_id")
-    tweet_page_response = TweetPage().create_tweet_page(user, tweet_id)
+    tweet_page_response = TweetPage().create_tweet_page(user.id, tweet_id)
     return jsonify({"response": tweet_page_response})
 
 #!TRENDS
