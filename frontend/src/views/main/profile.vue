@@ -115,7 +115,6 @@ import {
 import tweet_container from '@/components/main/tweet_container.vue'
 import edit_profile from '@/components/profile/edit_profile.vue'
 import profile_follows from '@/components/profile/profile_follows.vue'
-import profile_followers from '@/components/profile/profile_followers.vue'
 import { follow_request, unfollow_request } from "@/requests"
 
 export default {
@@ -125,7 +124,6 @@ export default {
         tweet_container,
         edit_profile,
         profile_follows,
-        profile_followers
     },
 
     data() {
