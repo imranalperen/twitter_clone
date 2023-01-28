@@ -337,35 +337,7 @@ class TweetPage:
                 .where(Tweets.replied_to == tweet_id)
                 .all()
             )
-            for tweet in child_tweets_query:
-                user = (
-                    session.query(Users)
-                    .join(Tweets, Tweets.user_id == Users.id)
-                    .where(Tweets.id == tweet.id)
-                    .first()
-                )
-                tweet_interactions = TimelineUtils.get_tweet_interactions(self,
-                    tweet_id = tweet.id,
-                    user_id = user_id,
-                )
-                child_tweets.append({
-                    "tweet_id": tweet.id,
-                    "user_id": user.id,
-                    "name": user.name,
-                    "username": user.username,
-                    "profile_image": user.profile_image,
-                    "time_created": tweet.time_created,
-                    "body": tweet.body,
-                    "image": tweet.image,
-                    "like_count": tweet_interactions["like_count"],
-                    "retweet_count": tweet_interactions["retweet_count"],
-                    "reply_count": tweet_interactions["reply_count"],
-                    "replied_to": tweet.replied_to,
-                    "is_retweeted": tweet_interactions["is_retweeted"],
-                    "is_liked": tweet_interactions["is_liked"]
-                })
-            
-        
+
         else:
             #this is a child tweet
             #first we find parent tweet and we will return this parent
@@ -373,7 +345,6 @@ class TweetPage:
             #then return child tweets of replied tweet
             #?parent tweet
             parent_tweet_id = parent_tweet_query.replied_to
-            print(parent_tweet_id)
 
             parent_tweet_query = (
                 session.query(Tweets)
@@ -446,40 +417,39 @@ class TweetPage:
                 .where(Tweets.replied_to == replied_tweet_query.id)
                 .all()
             )
-            for tweet in child_tweets_query:
-                user = (
-                    session.query(Users)
-                    .join(Tweets, Tweets.user_id == Users.id)
-                    .where(Tweets.id == tweet.id)
-                    .first()
-                )
-                tweet_interactions = TimelineUtils.get_tweet_interactions(self,
-                    tweet_id = tweet.id,
-                    user_id = user_id,
-                )
-                child_tweets.append({
-                    "tweet_id": tweet.id,
-                    "user_id": user.id,
-                    "name": user.name,
-                    "username": user.username,
-                    "profile_image": user.profile_image,
-                    "time_created": tweet.time_created,
-                    "body": tweet.body,
-                    "image": tweet.image,
-                    "like_count": tweet_interactions["like_count"],
-                    "retweet_count": tweet_interactions["retweet_count"],
-                    "reply_count": tweet_interactions["reply_count"],
-                    "replied_to": tweet.replied_to,
-                    "is_retweeted": tweet_interactions["is_retweeted"],
-                    "is_liked": tweet_interactions["is_liked"]
-                })
-            
 
-
-
-            pass
+        
+        for tweet in child_tweets_query:
+            user = (
+                session.query(Users)
+                .join(Tweets, Tweets.user_id == Users.id)
+                .where(Tweets.id == tweet.id)
+                .first()
+            )
+            tweet_interactions = TimelineUtils.get_tweet_interactions(self,
+                tweet_id = tweet.id,
+                user_id = user_id,
+            )
+            child_tweets.append({
+                "tweet_id": tweet.id,
+                "user_id": user.id,
+                "name": user.name,
+                "username": user.username,
+                "profile_image": user.profile_image,
+                "time_created": tweet.time_created,
+                "body": tweet.body,
+                "image": tweet.image,
+                "like_count": tweet_interactions["like_count"],
+                "retweet_count": tweet_interactions["retweet_count"],
+                "reply_count": tweet_interactions["reply_count"],
+                "replied_to": tweet.replied_to,
+                "is_retweeted": tweet_interactions["is_retweeted"],
+                "is_liked": tweet_interactions["is_liked"]
+            })
         
         return {"parent_tweet": parent_tweet, "replied_tweet": replied_tweet, "child_tweets": child_tweets}
+    
+    
 class Explore:
     def create_explore_timeline(self, user_id):
         '''random 50 tweets will be explore feed'''        

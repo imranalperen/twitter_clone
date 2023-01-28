@@ -1,29 +1,25 @@
 <template>
 <div class="tweet_general_container">
     <div class="timeline" v-if="tweets != 2002">
-        <div v-for="tweet in tweets" :key="tweet.tweet_id" class="timeline_tweet_container">
-            <div class="tweet_top_bar" v-if="tweet.replied_to">
+        <div v-for="tweet in tweets" :key="tweet.tweet_id" class="timeline_tweet_container" :class="{big: is_big == true}">
+            <!-- :class="{selected_header: tab_name == null}"> -->
+            <div class="tweet_top_bar" v-if="tweet.replied_to && !is_tweet_page_reply">
                 <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image_small">
                 <p>{{ tweet.username }} replied</p>
             </div>
             <div class="tweet_container_main">
                 <div class="left">
-                    <div class="tweet_profile_image">
-                        <!-- <a href="">
-                            <img :src="tweet.profile_image">
-                        </a> -->
+                    <div class="tweet_profile_image_container">
                         <router-link :to="{name: 'profile', params:{string: tweet.username, profile_tab :null}}">
-                            <img :src="tweet.profile_image">
+                            <img :src="tweet.profile_image" class="tweet_profile_image" :class="{big_image: is_big == true}">
                         </router-link>
+                    </div>
+                    <div v-if="is_parent" class="connect_line">
                     </div>
                 </div>
                 <div class="right">
                     <div class="right_top_bar">
                         <div class="user_info">
-                            <!-- <a href="">
-                                <div class="name"><p>{{ tweet.name }}</p></div>
-                                <div class="username"><p>@{{ tweet.username }}</p></div>
-                            </a> -->
                             <router-link :to="{name: 'profile', params:{string: tweet.username, profile_tab :null}}">
                                 <div class="name"><p>{{ tweet.name }}</p></div>
                                 <div class="username"><p>@{{ tweet.username }}</p></div>
@@ -37,16 +33,19 @@
                             <img src="@/assets/icons8-trash-bin-32.png">
                         </div>
                     </div>
-                    <div class="tweet_body" @click="redirect_tweet_page(tweet.tweet_id)">
-                        <div class="tweet_text" v-if="tweet.body">
+                    <router-link :to="{name: 'tweet_page', params:{id: tweet.tweet_id}}">
+                    <div class="tweet_body">
+                        <div class="tweet_text_container" v-if="tweet.body">
+                            <p class="tweet_text">{{ tweet.body }}</p>
+                            <!-- TODO hashhtag ve @ leri ayarla -->
                             <!-- {{ calculate_hashtag(tweet.body) }} -->
-                            {{ tweet.body }}
                             <!-- <p><span v-html="tweet_body"></span></p> -->
                         </div>
                         <div class="tweet_image" v-if="tweet.image">
                             <img :src="tweet.image">
                         </div>
                     </div>
+                    </router-link>
                     <div class="interaction_footer">
                         <div class="comment_container" @click="toggle_reply_container(tweet.tweet_id)">
                             <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image">
@@ -97,10 +96,10 @@ export default {
         reply_tweet
     },
 
-    props: ["tweets", "user"],
+    props: ["tweets", "user", "is_big", "is_tweet_page_reply", "is_parent"],
 
     emits: [
-        "add_new_tweet_timeline_emit"
+        "add_new_tweet_timeline_emit",
     ],
     
     data() {
@@ -111,10 +110,6 @@ export default {
     },
 
     methods: {
-        redirect_tweet_page(tweet_id) {
-            this.$router.push({ name: 'tweet_page', params: { id: `${tweet_id}` } })
-        },
-
         toggle_reply_container(tweet_id) {
             if(this.toggle_reply_id) {
                 this.toggle_reply_id = null
@@ -125,7 +120,7 @@ export default {
         },
         
         add_new_tweet_timeline_emit(tweet_id) {
-            this.$emit("add_new_tweet_timeline_emit")
+            this.$emit("add_new_tweet_timeline_emit", tweet_id)
             if(tweet_id) {
                 for(let i = 0; i < this.tweets.length; i++) {
                     if(this.tweets[i].tweet_id == tweet_id) {
@@ -217,6 +212,26 @@ export default {
 </script>
 
 <style scoped>
+.left {
+    display: flex;
+    flex-direction: column;
+}
+.connect_line {
+    height: 100%;
+    border-left: 3px solid var(--bordergray);
+    margin-left: 30px;  /* set this value related to profile big_image*/
+}
+.big {
+    font-size: 1.2em;
+    font-weight: 500;
+    border-bottom: none !important;
+    padding: 0 1em 0 1em !important;
+}
+
+.big_image {
+    width: 60px !important;
+    height: 60px !important;
+}
 .timeline_tweet_container {
     border-bottom: 1px solid var(--bordergray);
     padding: .3em 1em;
@@ -265,12 +280,12 @@ export default {
     justify-content: space-around;
 }
 
-.tweet_profile_image > a > img {
+.tweet_profile_image {
     width: 50px;
     height: 50px;
     border-radius: 50%;
     margin-right: .7em;
-    margin-top: .5em;
+    /* margin-top: .5em; */
 }
 
 .name > p {
@@ -292,7 +307,7 @@ a {
     display: flex;
 }
 
-.tweet_text {
+.tweet_text_container {
     margin: .3em 0;
 }
 
