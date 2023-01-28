@@ -186,8 +186,9 @@ class TimelineMain:
                 Tweets.replied_to
             )
             .join(Tweets, Tweets.user_id == Users.id)
-            .join(UsersFollowers, UsersFollowers.main_user_id == Users.id)
-            .where(UsersFollowers.main_user_id == user.id)
+            # .join(UsersFollowers, UsersFollowers.main_user_id == Users.id)
+            # .where(UsersFollowers.main_user_id == user.id)
+            .where(Users.id == user.id)
         )
         #retweets of main user
         # SELECT * FROM users
@@ -216,8 +217,6 @@ class TimelineMain:
 
         #mergeing 2 queries and sort results descending tweet create time
         q = q1.union(q2).order_by(Tweets.time_created.desc()).all()
-        if not q:
-            return {"status": False, "error": 2002}
 
         tweets = []
         for tweet in q:

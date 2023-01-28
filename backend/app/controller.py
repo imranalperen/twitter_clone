@@ -151,10 +151,7 @@ def tweet():
 @login_required
 def timeline():
     user = g.user
-    tweets = TimelineMain().create_timeline(user)
-    if not tweets["status"]:
-        return jsonify({"response": tweets["error"]})
-    
+    tweets = TimelineMain().create_timeline(user)    
     return jsonify({"response": tweets["tweets"]})
 
 #!TWEET INTERACTIONS
