@@ -406,6 +406,41 @@ function user_follows_request(visit_user_id, purpose) {
     return fetched_data
 }
 
+function verification_code_request(mail_adress) {    
+    let request_body = {
+        "mail_adress": mail_adress
+    }
+    const fetched_data = fetch(`${API_URL}/send_verify_code `, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+function reset_password_request(verify_code, password, mail) {
+    let request_body = {
+        "verify_code": verify_code,
+        "password": password,
+        "email": mail
+    }
+
+    const fetched_data = fetch(`${API_URL}/reset_password`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
 export {
     signup_request,
     login_request,
@@ -430,4 +465,6 @@ export {
     profile_tweets_request,
     edit_profile_request,
     user_follows_request,
+    verification_code_request,
+    reset_password_request,
 }

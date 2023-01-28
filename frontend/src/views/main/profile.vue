@@ -162,7 +162,6 @@ export default {
 
         toggle_modal_bool() {
             this.modal_bool = !this.modal_bool
-            console.log()
             if (!this.modal_bool) {
                 // if(this.active_modal == "edit_profile"){
                 //     location.reload()

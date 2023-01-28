@@ -17,6 +17,7 @@ from app.crud.timeline_crud import (
 )
 from app.utils import create_access_token
 from app.decorators import login_required
+from app.utils import create_verification_code, send_verfictaion_code_mail
 
 
 main = Blueprint("main", __name__, url_prefix="/api")
@@ -55,6 +56,33 @@ def login():
         return jsonify({"response": True, "access_token": access_token})
 
     return jsonify({"response": login_response["error"]})
+
+
+@main.route("send_verify_code", methods=["POST"])
+def send_verify_code():
+    mail_adress = request.json.get("mail_adress")
+    user = UserRegistration().get_user_by_mail(mail_adress)
+    if user:
+        verification_code = create_verification_code()
+        if send_verfictaion_code_mail(mail_adress, verification_code):
+            UserRegistration().save_verfication_code(user, verification_code)
+            return {"response": True}
+        #if not return valid response probably there is no more free
+        return {"response": 9001}
+
+    return {"response": 1002}
+
+@main.route("reset_password", methods=["POST"])
+def reset_password():
+    verify_code = request.json.get("verify_code")
+    password = request.json.get("password")
+    email = request.json.get("email")
+    user = UserRegistration().get_user_by_mail(email)
+    if UserRegistration().compare_verification_codes(user, verify_code):
+        UserRegistration().update_user_password(user, password)
+        return {"response": True}
+    return {"response": 1004}
+    
 
 
 @main.route("registration_info", methods=["POST"])

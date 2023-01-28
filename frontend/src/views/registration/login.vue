@@ -18,6 +18,9 @@
         <p v-if="error_message" class="error">{{ error_message }}</p> 
         <button type="submit" id="login_btn" @click="login">Login</button>
         <button type="submit" id="signup_btn" @click="sign_up">Sign Up</button>
+        <router-link :to="{name: 'forget_password'}" class="r_link">
+            <p class="forget_password">Forget Password</p>
+        </router-link>
         <br>
         <hr>
         <br>
@@ -184,5 +187,22 @@ input:focus {
     text-align: center;
     margin-top: .7em;
     font-size: .9em;
+}
+
+.forget_password {
+    display: flex;
+    justify-content: center;
+    margin-top: .9em;
+    font-size: .9em;
+    color: var(--tweetBtnBg);
+    cursor: pointer;
+}
+
+.forget_password:hover {
+    text-decoration: underline;
+}
+
+.r_link {
+    text-decoration: none;
 }
 </style>

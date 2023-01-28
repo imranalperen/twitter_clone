@@ -1,5 +1,5 @@
 from app.db import session
-from app.models import Users, UsersFollowers
+from app.models import Users, UsersFollowers, VerificationCodes
 from app.utils import password_hasher
 from sqlalchemy.sql import and_
 
@@ -111,6 +111,64 @@ class UserRegistration:
             })
         )
         session.commit()
+    
+    def get_user_by_mail(self, mail):
+        q = (
+            session.query(Users)
+            .where(Users.email == mail)
+            .first()
+        )
+        if q:
+            return q
+        return False
+    
+    def save_verfication_code(self, user, verification_code):
+        #if there is an verification code in db we will update
+        #if not we will create
+        q = (
+            session.query(VerificationCodes)
+            .where(VerificationCodes.user_id == user.id)
+            .first()
+        )
+        if q:
+            (
+                session.query(VerificationCodes)
+                .where(VerificationCodes.user_id == user.id)
+                .update({
+                    "verification_code": verification_code
+                })
+            )
+            session.commit()
+        else:
+            q = VerificationCodes(
+                user_id = user.id,
+                verification_code = verification_code
+            )
+            session.add(q)
+            session.commit()
+        
+    def compare_verification_codes(self, user, verify_code):
+        q = (
+            session.query(VerificationCodes)
+            .where(VerificationCodes.user_id == user.id)
+            .first()
+        )
+        verify_code = int(verify_code)
+        if verify_code == q.verification_code:
+            return True
+        return False
+    
+    def update_user_password(self, user, password):
+        hashed_password = password_hasher(password, user.username)
+        (
+            session.query(Users)
+            .where(Users.id == user.id)
+            .update({
+                "hashed_password": hashed_password,
+            })
+        )
+        session.commit()
+
         
 
 

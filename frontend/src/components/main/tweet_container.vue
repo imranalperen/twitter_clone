@@ -2,7 +2,6 @@
 <div class="tweet_general_container">
     <div class="timeline" v-if="tweets != 2002">
         <div v-for="tweet in tweets" :key="tweet.tweet_id" class="timeline_tweet_container" :class="{big: is_big == true}">
-            <!-- :class="{selected_header: tab_name == null}"> -->
             <div class="tweet_top_bar" v-if="tweet.replied_to && !is_tweet_page_reply">
                 <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image_small">
                 <p>{{ tweet.username }} replied</p>

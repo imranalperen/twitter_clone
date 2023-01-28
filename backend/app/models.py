@@ -4,9 +4,9 @@ from sqlalchemy import (
     Column,
     Integer,
     String,
-    Boolean,
     DateTime,
-    ForeignKey
+    ForeignKey,
+    Boolean
 )
 
 
@@ -32,7 +32,6 @@ class Tweets(Base):
     time_created = Column(DateTime(timezone=True), server_default=func.now())
     body = Column(String(280))
     image = Column(String)
-    # related_tweet = Column(Integer, default=None)
     replied_to = Column(Integer)
 
 
@@ -60,6 +59,7 @@ class Retweets(Base):
     tweet_id = Column(Integer, ForeignKey("tweets.id"))
     rt_user_id = Column(Integer, ForeignKey("users.id"))
 
+
 class Tags(Base):
     __tablename__ = "tags"
 
@@ -67,7 +67,13 @@ class Tags(Base):
     tweet_id = Column(Integer, ForeignKey("tweets.id"))
     user_id = Column(Integer, ForeignKey("users.id"))
     tag_vocab = Column(String, nullable=False)
-    
 
+
+class VerificationCodes(Base):
+    __tablename__ = "verification_codes"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    verification_code = Column(Integer)
 
 Base.metadata.create_all(engine)

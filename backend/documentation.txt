@@ -2,6 +2,7 @@
 1001 = invalid username
 1002 = invalid email
 1003 = invalid password
+1003 = invalid verify_code
 
 2000 ERROR tweet
 2001 = tweet length

@@ -43,7 +43,7 @@
 
 <script>
 import {
-    edit_profile_request
+    edit_profile_request,
 } from '@/requests'
 export default {
     props: ["visited_user"],
