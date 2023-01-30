@@ -61,21 +61,21 @@ function user_request() {
 
 
 //! add tweet request
-function add_tweet_request(request_body) {
-    const access_token = access_token_control()
+// function add_tweet_request(request_body) {
+//     const access_token = access_token_control()
 
-    const fetched_data = fetch(`${API_URL}/post_tweet`, {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-            "access-token": access_token
-        },
-        body: JSON.stringify(request_body)
-    })
-    .then((response) => response.json())
+//     const fetched_data = fetch(`${API_URL}/post_tweet`, {
+//         method: "POST",
+//         headers: {
+//             "content-type": "application/json",
+//             "access-token": access_token
+//         },
+//         body: JSON.stringify(request_body)
+//     })
+//     .then((response) => response.json())
 
-    return fetched_data
-}
+//     return fetched_data
+// }
 
 
 //! recommend user request
@@ -246,16 +246,19 @@ function last_tweet_of_user_request() {
     return fetched_data
 }
 
-function add_replied_tweet_request(request_body) {
+function add_replied_tweet_request(tweet_body, image, reply_id) {
     const access_token = access_token_control()
 
+    const data = new FormData()
+    data.append("tweet_body", tweet_body)
+    data.append("file", image)
+    data.append("reply_id", reply_id)
     const fetched_data = fetch(`${API_URL}/add_replied_tweet`, {
         method: "POST",
         headers: {
-            "content-type": "application/json",
             "access-token": access_token
         },
-        body: JSON.stringify(request_body)
+        body: data
     })
     .then((response) => response.json())
 
@@ -385,6 +388,26 @@ function update_profile_request(profile_image, name, bio) {
 
     return fetched_data
 }
+
+
+function add_tweet_request(tweet_body, image) {
+    const access_token = access_token_control()
+
+    const data = new FormData()
+    data.append("tweet_body", tweet_body)
+    data.append("file", image)
+    const fetched_data = fetch(`${API_URL}/post_tweet`, {
+        method: "POST",
+        headers: {
+            "access-token": access_token
+        },
+        body: data
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
 
 function user_follows_request(visit_user_id, purpose) {
     const access_token = access_token_control()

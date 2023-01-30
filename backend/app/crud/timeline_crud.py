@@ -115,7 +115,7 @@ class TrendTopics:
                 "profile_image": UPLOAD_FOLDER_URL + tweet.profile_image,
                 "time_created": tweet.time_created,
                 "body": tweet.body,
-                "image": tweet.image,
+                "image": UPLOAD_FOLDER_URL + tweet.image,
                 "like_count": tweet_interactions["like_count"],
                 "retweet_count": tweet_interactions["retweet_count"],
                 "reply_count": tweet_interactions["reply_count"],
@@ -226,7 +226,10 @@ class TimelineMain:
                 tweet_id = tweet.tweet_id,
                 user_id = user.id,
             )
-
+            if tweet.image:
+                tweet_image = UPLOAD_FOLDER_URL + tweet.image
+            else:
+                tweet_image = None
             tweets.append({
                 "tweet_id": tweet.tweet_id,
                 "user_id": tweet.id,
@@ -235,7 +238,7 @@ class TimelineMain:
                 "profile_image": UPLOAD_FOLDER_URL + tweet.profile_image,
                 "time_created": tweet.time_created,
                 "body": tweet.body,
-                "image": tweet.image,
+                "image": tweet_image,
                 "like_count": tweet_interactions["like_count"],
                 "retweet_count": tweet_interactions["retweet_count"],
                 "reply_count": tweet_interactions["reply_count"],
@@ -264,6 +267,10 @@ class TimelineMain:
                     tweet_id = t.id,
                     user_id = u.id,
                 )
+                if t.image:
+                    tweet_image = UPLOAD_FOLDER_URL + t.image
+                else:
+                    tweet_image = None
                 tweet.append({
                     "tweet_id": t.id,
                     "user_id": u.id,
@@ -272,7 +279,7 @@ class TimelineMain:
                     "profile_image": UPLOAD_FOLDER_URL + u.profile_image,
                     "time_created": t.time_created,
                     "body": t.body,
-                    "image": t.image,
+                    "image": tweet_image,
                     "like_count": tweet_interactions["like_count"],
                     "retweet_count": tweet_interactions["retweet_count"],
                     "reply_count": tweet_interactions["reply_count"],
@@ -314,6 +321,10 @@ class TweetPage:
                 tweet_id = tweet_id,
                 user_id = user_id,
             )
+            if parent_tweet_query.image:
+                tweet_image = UPLOAD_FOLDER_URL + parent_tweet_query.image
+            else:
+                tweet_image = None
             parent_tweet.append({
                 "tweet_id": parent_tweet_query.id,
                 "user_id": parent_tweet_user.id,
@@ -322,7 +333,7 @@ class TweetPage:
                 "profile_image": UPLOAD_FOLDER_URL + parent_tweet_user.profile_image,
                 "time_created": parent_tweet_query.time_created,
                 "body": parent_tweet_query.body,
-                "image": parent_tweet_query.image,
+                "image": tweet_image,
                 "like_count": tweet_interactions["like_count"],
                 "retweet_count": tweet_interactions["retweet_count"],
                 "reply_count": tweet_interactions["reply_count"],
@@ -362,6 +373,10 @@ class TweetPage:
                 tweet_id = parent_tweet_query.id,
                 user_id = user_id,
             )
+            if parent_tweet_query.image:
+                tweet_image = UPLOAD_FOLDER_URL + parent_tweet_query.image
+            else:
+                tweet_image = None
             parent_tweet.append({
                 "tweet_id": parent_tweet_query.id,
                 "user_id": parent_tweet_user.id,
@@ -370,7 +385,7 @@ class TweetPage:
                 "profile_image": UPLOAD_FOLDER_URL + parent_tweet_user.profile_image,
                 "time_created": parent_tweet_query.time_created,
                 "body": parent_tweet_query.body,
-                "image": parent_tweet_query.image,
+                "image": tweet_image,
                 "like_count": tweet_interactions["like_count"],
                 "retweet_count": tweet_interactions["retweet_count"],
                 "reply_count": tweet_interactions["reply_count"],
@@ -394,7 +409,10 @@ class TweetPage:
                 tweet_id = replied_tweet_query.id,
                 user_id = replied_tweet_user.id
             )
-
+            if replied_tweet_query.image:
+                tweet_image = UPLOAD_FOLDER_URL + replied_tweet_query.image
+            else:
+                tweet_image = None
             replied_tweet.append({
                 "tweet_id": replied_tweet_query.id,
                 "user_id": replied_tweet_user.id,
@@ -403,7 +421,7 @@ class TweetPage:
                 "profile_image": UPLOAD_FOLDER_URL + replied_tweet_user.profile_image,
                 "time_created": replied_tweet_query.time_created,
                 "body": replied_tweet_query.body,
-                "image": replied_tweet_query.image,
+                "image": tweet_image,
                 "like_count": tweet_interactions["like_count"],
                 "retweet_count": tweet_interactions["retweet_count"],
                 "reply_count": tweet_interactions["reply_count"],
@@ -431,6 +449,10 @@ class TweetPage:
                 tweet_id = tweet.id,
                 user_id = user_id,
             )
+            if tweet.image:
+                tweet_image = UPLOAD_FOLDER_URL + tweet.image
+            else:
+                tweet_image = None
             child_tweets.append({
                 "tweet_id": tweet.id,
                 "user_id": user.id,
@@ -439,7 +461,7 @@ class TweetPage:
                 "profile_image": UPLOAD_FOLDER_URL + user.profile_image,
                 "time_created": tweet.time_created,
                 "body": tweet.body,
-                "image": tweet.image,
+                "image": tweet_image,
                 "like_count": tweet_interactions["like_count"],
                 "retweet_count": tweet_interactions["retweet_count"],
                 "reply_count": tweet_interactions["reply_count"],
@@ -492,7 +514,7 @@ class Explore:
                     "profile_image": UPLOAD_FOLDER_URL + u.profile_image,
                     "time_created": t.time_created,
                     "body": t.body,
-                    "image": t.image,
+                    "image": UPLOAD_FOLDER_URL + t.image,
                     "like_count": tweet_interactions["like_count"],
                     "retweet_count": tweet_interactions["retweet_count"],
                     "reply_count": tweet_interactions["reply_count"],
@@ -635,7 +657,7 @@ class UserProfileFeed:
                 "profile_image": UPLOAD_FOLDER_URL + t.profile_image,
                 "time_created": t.time_created,
                 "body": t.body,
-                "image": t.image,
+                "image": UPLOAD_FOLDER_URL + t.image,
                 "like_count": tweet_interaction["like_count"],
                 "retweet_count": tweet_interaction["retweet_count"],
                 "reply_count": tweet_interaction["reply_count"],

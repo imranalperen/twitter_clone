@@ -41,6 +41,7 @@ export default {
         return {
             tweet_text_body: "",
             preview_image: null,
+            image_file: null,
         }
     },
 
@@ -57,6 +58,8 @@ export default {
 
 
         upload_image(e){
+            this.image_file = e.target.files[0]
+            //preview
             const image = e.target.files[0];
             const reader = new FileReader();
             reader.readAsDataURL(image);
@@ -89,12 +92,13 @@ export default {
         },
 
         async add_tweet() {
-            const request_body = {
-                "tweet_body": this.tweet_text_body,
-                "tweet_image": this.preview_image,
-                "tweet_id": this.toggle_reply_id
-            }
-            let response_value = await add_replied_tweet_request(request_body)
+            // const request_body = {
+            //     "tweet_body": this.tweet_text_body,
+            //     "tweet_image": this.preview_image,
+            //     "tweet_id": this.toggle_reply_id
+            // }
+            // let response_value = await add_replied_tweet_request(request_body)
+            let response_value = await add_replied_tweet_request(this.tweet_text_body, this.image_file, this.toggle_reply_id)
             if(response_value == 2001) {
                 console.log("api tweeet length error")
             }

@@ -98,6 +98,7 @@ def registration_info():
     if not file:
         file_name = "anonim_image.jpeg"
     else:
+        #DEVELOPMENT
         from . import app
         file.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name))
     UserRegistration().update_user_profile_image(user, file_name, bio)
@@ -149,10 +150,16 @@ def unfollow_user():
 @login_required
 def tweet():
     user = g.user
-    tweet_body = request.json.get("tweet_body")
-    tweet_image = request.json.get("tweet_image")
+    tweet_body = request.form.get("tweet_body")
+    file = request.files.get("file")
+    file_name = None
     replied_to_id = None
-    tweet_response = TweetMain().add_tweet(user.id, tweet_body, tweet_image, replied_to_id)
+    if file:
+        #DEVELOPMENT
+        from . import app
+        file_name = str(uuid.uuid4()) + '.png'
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name))
+    tweet_response = TweetMain().add_tweet(user.id, tweet_body, file_name, replied_to_id)
     if tweet_response["status"]:
         return jsonify({"response": True})
     
@@ -215,14 +222,21 @@ def user_last_tweet():
 @login_required
 def add_replied_tweet():
     user = g.user
-    tweet_body = request.json.get("tweet_body")
-    tweet_image = request.json.get("tweet_image")
-    replied_to_id = request.json.get("tweet_id")
-    tweet_response = TweetMain().add_tweet(user.id, tweet_body, tweet_image, replied_to_id)
+    tweet_body = request.form.get("tweet_body")
+    file = request.files.get("file")
+    file_name = None
+    if file:
+        #DEVELOPMENT
+        from . import app
+        file_name = str(uuid.uuid4()) + '.png'
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name))
+    replied_to_id = request.form.get("reply_id")
+    tweet_response = TweetMain().add_tweet(user.id, tweet_body, file_name, replied_to_id)
     if tweet_response["status"]:
         return jsonify({"response": True})
     
     return jsonify({"response": tweet_response["error"]})
+
 
 #!TWEET PAGE
 @main.route("tweet_page", methods=["POST"])
