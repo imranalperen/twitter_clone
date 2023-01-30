@@ -26,6 +26,11 @@ export default {
 
 
 <style>
+.hashtag_1 {
+    font-size: 3em;
+    background-color: red;
+}
+
 :root {
   --primaryBG: #15202b;
   --secondaryBG: #31404e;

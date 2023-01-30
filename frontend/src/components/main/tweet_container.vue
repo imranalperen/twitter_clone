@@ -198,7 +198,7 @@ export default {
                     if(vocabs[i].includes("#")) {
                         //TODO hashtag in tweet link it topic
                         //vue warn maximum recursive updates exceeded.
-                        vocabs[i] = `<a href="/topic/${vocabs[i]}"" style="color: #1d9bf0;, z-index=99;">${vocabs[i]}</a>`
+                        vocabs[i] = `<a href="/topic/${vocabs[i]}" style="color: #1d9bf0;" class=hashtag_1>${vocabs[i]}</a>`
                         tweet_body = vocabs.join(" ")
                     }
                 }

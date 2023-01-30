@@ -506,6 +506,10 @@ class Explore:
                     tweet_id = t.id,
                     user_id = user_id,
                 )
+                if t.image:
+                    tweet_image = UPLOAD_FOLDER_URL + t.image
+                else:
+                    tweet_image = None
                 tweets.append({
                     "tweet_id": t.tweet_id,
                     "user_id": u.id,
@@ -514,7 +518,7 @@ class Explore:
                     "profile_image": UPLOAD_FOLDER_URL + u.profile_image,
                     "time_created": t.time_created,
                     "body": t.body,
-                    "image": UPLOAD_FOLDER_URL + t.image,
+                    "image": tweet_image,
                     "like_count": tweet_interactions["like_count"],
                     "retweet_count": tweet_interactions["retweet_count"],
                     "reply_count": tweet_interactions["reply_count"],
@@ -648,7 +652,10 @@ class UserProfileFeed:
                 tweet_id = t.tweet_id,
                 user_id = user_id
             )
-
+            if t.image:
+                tweet_image = UPLOAD_FOLDER_URL + t.image
+            else:
+                tweet_image = None
             tweets.append({
                 "tweet_id": t.tweet_id,
                 "user_id": t.id,
@@ -657,7 +664,7 @@ class UserProfileFeed:
                 "profile_image": UPLOAD_FOLDER_URL + t.profile_image,
                 "time_created": t.time_created,
                 "body": t.body,
-                "image": UPLOAD_FOLDER_URL + t.image,
+                "image": tweet_image,
                 "like_count": tweet_interaction["like_count"],
                 "retweet_count": tweet_interaction["retweet_count"],
                 "reply_count": tweet_interaction["reply_count"],
