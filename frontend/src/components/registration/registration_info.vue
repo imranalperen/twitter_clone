@@ -48,7 +48,8 @@ export default {
         return {
             preview_image: null,
             error_message: '',
-            bio: ''
+            bio: '',
+            image_file: null,
         }
     },
 
@@ -64,35 +65,22 @@ export default {
         },
 
         upload_image(e){
-            const image = e.target.files[0];
-            const reader = new FileReader();
-            reader.readAsDataURL(image);
-            reader.onload = e =>{
-                //preview_image ll we saved database
-                this.preview_image = e.target.result;
-            };
+            this.image_file = e.target.files[0]
+            //preview
+            const image = e.target.files[0]
+            const reader = new FileReader()
+            reader.readAsDataURL(image)
+            reader.onload = e => {
+                this.preview_image = e.target.result
+            }
         },
 
         async next() {
-            let request_body = {}
-            if(this.preview_image == null) {
-                const stok_image = document.getElementById("stok_image").src
-                request_body = {
-                    "profile_image": stok_image,
-                    "bio": this.bio
-                }
-            }
-            else{
-                request_body = {
-                    "profile_image": this.preview_image,
-                    "bio": this.bio
-                }
-            }
-            let response_value = await registration_info_request(request_body)
+            let response_value = await registration_info_request(this.image_file, this.bio)
             if(response_value) {
                 this.push_main()
             }
-        },        
+        },
 
         push_main() {
             window.localStorage.removeItem("first_vizit")

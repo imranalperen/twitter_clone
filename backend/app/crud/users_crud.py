@@ -2,6 +2,7 @@ from app.db import session
 from app.models import Users, UsersFollowers, VerificationCodes
 from app.utils import password_hasher
 from sqlalchemy.sql import and_
+from config import UPLOAD_FOLDER_URL
 
 class UserRegistration:
     def signup(self, name, username, email, password):
@@ -73,43 +74,27 @@ class UserRegistration:
         return user
     
 
-    def update_user_profile_image(self, user, image, bio):
-        (
-            session.query(Users)
-            .where(Users.id == user.id)
-            .update({
-                "profile_image": image,
-                "biography": bio
-            })
-        )
+    def update_user_profile_image(self, user, profile_image, bio):
+        # (
+        #     session.query(Users)
+        #     .where(Users.id == user.id)
+        #     .update({
+        #         "profile_image": image,
+        #         "biography": bio
+        #     })
+        # )
+        if profile_image:
+            user.profile_image = profile_image
+        if bio:
+            user.biography = bio
         session.commit()
 
     def edit_user_profile(self, user, image, name, bio):
-        if(image):
-            (
-                session.query(Users)
-                .where(Users.id == user.id)
-                .update({
-                    "profile_image": image
-                })
-            )
-            session.commit()
-        if(name):
-            (
-                session.query(Users)
-                .where(Users.id == user.id)
-                .update({
-                    "name": name
-                })
-            )
-            session.commit()
-        (
-            session.query(Users)
-            .where(Users.id == user.id)
-            .update({
-                "biography": bio
-            })
-        )
+        if image:
+            user.profile_image = image
+        if name:
+            user.name = name
+        user.biography = bio
         session.commit()
     
     def get_user_by_mail(self, mail):
@@ -222,7 +207,7 @@ class UserFollow:
                         "id": user.id,
                         "name": user.name,
                         "username": user.username,
-                        "image": user.profile_image,
+                        "image": UPLOAD_FOLDER_URL + user.profile_image,
                         "is_following": is_following
                     })
 
@@ -253,7 +238,7 @@ class UserFollow:
                         "id": user.id,
                         "name": user.name,
                         "username": user.username,
-                        "image": user.profile_image,
+                        "image": UPLOAD_FOLDER_URL + user.profile_image,
                         "is_following": is_following
                     })
         

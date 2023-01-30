@@ -2,6 +2,7 @@ from app.db import session
 from app.models import Users, UsersFollowers, Tweets, TweetsLikes, Retweets, Tags
 from sqlalchemy.sql import and_, desc
 from sqlalchemy import func
+from config import UPLOAD_FOLDER_URL
 
 class TimelineUtils:
     def get_tweet_interactions(self, **kwargs):
@@ -111,7 +112,7 @@ class TrendTopics:
                 "user_id": tweet.id,
                 "name": tweet.name,
                 "username": tweet.username,
-                "profile_image": tweet.profile_image,
+                "profile_image": UPLOAD_FOLDER_URL + tweet.profile_image,
                 "time_created": tweet.time_created,
                 "body": tweet.body,
                 "image": tweet.image,
@@ -147,7 +148,7 @@ class WhoToFollow:
                 "name": user.name,
                 "username": user.username,
                 "is_following": False,
-                "image": user.profile_image
+                "image": UPLOAD_FOLDER_URL + user.profile_image
             })
 
         return recommended_users
@@ -217,6 +218,7 @@ class TimelineMain:
 
         #mergeing 2 queries and sort results descending tweet create time
         q = q1.union(q2).order_by(Tweets.time_created.desc()).all()
+        
 
         tweets = []
         for tweet in q:
@@ -230,7 +232,7 @@ class TimelineMain:
                 "user_id": tweet.id,
                 "name": tweet.name,
                 "username": tweet.username,
-                "profile_image": tweet.profile_image,
+                "profile_image": UPLOAD_FOLDER_URL + tweet.profile_image,
                 "time_created": tweet.time_created,
                 "body": tweet.body,
                 "image": tweet.image,
@@ -267,7 +269,7 @@ class TimelineMain:
                     "user_id": u.id,
                     "name": u.name,
                     "username": u.username,
-                    "profile_image": u.profile_image,
+                    "profile_image": UPLOAD_FOLDER_URL + u.profile_image,
                     "time_created": t.time_created,
                     "body": t.body,
                     "image": t.image,
@@ -317,7 +319,7 @@ class TweetPage:
                 "user_id": parent_tweet_user.id,
                 "name": parent_tweet_user.name,
                 "username": parent_tweet_user.username,
-                "profile_image": parent_tweet_user.profile_image,
+                "profile_image": UPLOAD_FOLDER_URL + parent_tweet_user.profile_image,
                 "time_created": parent_tweet_query.time_created,
                 "body": parent_tweet_query.body,
                 "image": parent_tweet_query.image,
@@ -365,7 +367,7 @@ class TweetPage:
                 "user_id": parent_tweet_user.id,
                 "name": parent_tweet_user.name,
                 "username": parent_tweet_user.username,
-                "profile_image": parent_tweet_user.profile_image,
+                "profile_image": UPLOAD_FOLDER_URL + parent_tweet_user.profile_image,
                 "time_created": parent_tweet_query.time_created,
                 "body": parent_tweet_query.body,
                 "image": parent_tweet_query.image,
@@ -398,7 +400,7 @@ class TweetPage:
                 "user_id": replied_tweet_user.id,
                 "name": replied_tweet_user.name,
                 "username": replied_tweet_user.username,
-                "profile_image": replied_tweet_user.profile_image,
+                "profile_image": UPLOAD_FOLDER_URL + replied_tweet_user.profile_image,
                 "time_created": replied_tweet_query.time_created,
                 "body": replied_tweet_query.body,
                 "image": replied_tweet_query.image,
@@ -434,7 +436,7 @@ class TweetPage:
                 "user_id": user.id,
                 "name": user.name,
                 "username": user.username,
-                "profile_image": user.profile_image,
+                "profile_image": UPLOAD_FOLDER_URL + user.profile_image,
                 "time_created": tweet.time_created,
                 "body": tweet.body,
                 "image": tweet.image,
@@ -487,7 +489,7 @@ class Explore:
                     "user_id": u.id,
                     "name": u.name,
                     "username": u.username,
-                    "profile_image": u.profile_image,
+                    "profile_image": UPLOAD_FOLDER_URL + u.profile_image,
                     "time_created": t.time_created,
                     "body": t.body,
                     "image": t.image,
@@ -533,12 +535,11 @@ class UserProfileFeed:
                 follwing_sitation = "unfollow"
             else:
                 follwing_sitation = "follow"
-
         user_info = []
         user_info.append({
             "username": q.username,
             "name": q.name,
-            "profile_image": q.profile_image,
+            "profile_image": UPLOAD_FOLDER_URL + q.profile_image,
             "user_id": q.id,
             "follow_count": follow_count,
             "followers_count": followers_count,
@@ -631,7 +632,7 @@ class UserProfileFeed:
                 "user_id": t.id,
                 "name": t.name,
                 "username": t.username,
-                "profile_image": t.profile_image,
+                "profile_image": UPLOAD_FOLDER_URL + t.profile_image,
                 "time_created": t.time_created,
                 "body": t.body,
                 "image": t.image,

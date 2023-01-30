@@ -31,3 +31,5 @@ pnpm-debug.log*
 .vercel
 
 localsettings.py
+
+/backend/uploads/*.png

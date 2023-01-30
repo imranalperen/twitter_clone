@@ -148,16 +148,18 @@ function timeline_request() {
 }
 
 //! registration_info_request
-function registration_info_request(request_body) {
+function registration_info_request(profile_image, bio) {
     const access_token = access_token_control()
-    
+
+    const data = new FormData()
+    data.append("file", profile_image)
+    data.append("bio", bio)
     const fetched_data = fetch(`${API_URL}/registration_info`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
             "access-token": access_token
         },
-        body: JSON.stringify(request_body)
+        body: data
     })
     .then((response) => response.json())
 
@@ -365,21 +367,19 @@ function profile_tweets_request(username, profile_tab) {
     return fetched_data
 }
 
-function edit_profile_request(profile_image, name, bio) {
+function update_profile_request(profile_image, name, bio) {
     const access_token = access_token_control()
     
-    let request_body = {
-        "profile_image": profile_image,
-        "name": name,
-        "bio": bio
-    }
+    const data = new FormData()
+    data.append("file", profile_image)
+    data.append("name", name)
+    data.append("bio", bio)
     const fetched_data = fetch(`${API_URL}/edit_profile`, {
         method: "POST",
         headers: {
-            "content-type": "application/json",
             "access-token": access_token
         },
-        body: JSON.stringify(request_body)
+        body: data
     })
     .then((response) => response.json())
 
@@ -440,7 +440,6 @@ function reset_password_request(verify_code, password, mail) {
 
     return fetched_data
 }
-
 export {
     signup_request,
     login_request,
@@ -463,8 +462,8 @@ export {
     explore_timeline_request,
     profile_request,
     profile_tweets_request,
-    edit_profile_request,
     user_follows_request,
     verification_code_request,
     reset_password_request,
+    update_profile_request,
 }

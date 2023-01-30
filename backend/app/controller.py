@@ -18,6 +18,9 @@ from app.crud.timeline_crud import (
 from app.utils import create_access_token
 from app.decorators import login_required
 from app.utils import create_verification_code, send_verfictaion_code_mail
+from config import UPLOAD_FOLDER_URL
+import uuid
+import os
 
 
 main = Blueprint("main", __name__, url_prefix="/api")
@@ -89,9 +92,15 @@ def reset_password():
 @login_required
 def registration_info():
     user = g.user
-    image = request.json.get("profile_image")
-    bio = request.json.get("bio")
-    UserRegistration().update_user_profile_image(user, image, bio)
+    bio = request.form.get("bio")
+    file_name = str(uuid.uuid4()) + '.png'
+    file = request.files.get("file")
+    if not file:
+        file_name = "anonim_image.jpeg"
+    else:
+        from . import app
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name))
+    UserRegistration().update_user_profile_image(user, file_name, bio)
     return jsonify({"response": True})
 
 
@@ -99,11 +108,14 @@ def registration_info():
 @login_required
 def user():
     user = g.user
+    profile_image = None
+    if user.profile_image:
+        profile_image = UPLOAD_FOLDER_URL + user.profile_image
     return jsonify({
         "id": user.id,
         "username": user.username,
         "name": user.name,
-        "profile_image": user.profile_image
+        "profile_image": profile_image
     })
 
 
@@ -277,10 +289,16 @@ def profile_feed():
 @login_required
 def edit_profile():
     user = g.user
-    image = request.json.get("profile_image")
-    name = request.json.get("name")
-    bio = request.json.get("bio")
-    UserRegistration().edit_user_profile(user, image, name ,bio)
+    name = request.form.get("name")
+    bio = request.form.get("bio")
+    file = request.files.get('file')
+    file_name = None
+    if file:
+        from . import app
+        file_name = str(uuid.uuid4()) + '.png'
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name))
+    #DEVELOPMENT
+    UserRegistration().edit_user_profile(user, file_name, name ,bio)
     return jsonify({"response": True})
 
 @main.route("follows_and_followers", methods=["POST"])

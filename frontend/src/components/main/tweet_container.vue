@@ -35,10 +35,9 @@
                     <router-link :to="{name: 'tweet_page', params:{id: tweet.tweet_id}}">
                     <div class="tweet_body">
                         <div class="tweet_text_container" v-if="tweet.body">
-                            <p class="tweet_text">{{ tweet.body }}</p>
+                            <!-- <p class="tweet_text">{{ tweet.body }}</p> -->
                             <!-- TODO hashhtag ve @ leri ayarla -->
-                            <!-- {{ calculate_hashtag(tweet.body) }} -->
-                            <!-- <p><span v-html="tweet_body"></span></p> -->
+                            <p><span v-html="calculate_hashtag(tweet.body)"></span></p>
                         </div>
                         <div class="tweet_image" v-if="tweet.image">
                             <img :src="tweet.image">
@@ -192,18 +191,19 @@ export default {
         },
         
         calculate_hashtag(tweet) {
-            this.tweet_body = tweet
+            let tweet_body = tweet
             if(tweet.includes("#")) {
                 let vocabs = tweet.split(" ")
                 for(let i = 0; i < vocabs.length; i++) {
                     if(vocabs[i].includes("#")) {
                         //TODO hashtag in tweet link it topic
                         //vue warn maximum recursive updates exceeded.
-                        vocabs[i] = `<a>${vocabs[i]}</a>`
-                        this.tweet_body = vocabs.join(" ")
+                        vocabs[i] = `<a href="/topic/${vocabs[i]}"" style="color: #1d9bf0;, z-index=99;">${vocabs[i]}</a>`
+                        tweet_body = vocabs.join(" ")
                     }
                 }
             }
+            return tweet_body
         },
     },
 }
@@ -233,11 +233,12 @@ export default {
 }
 .timeline_tweet_container {
     border-bottom: 1px solid var(--bordergray);
-    padding: .3em 1em;
+    padding: .9em 1em .3em;
 }
 
 .tweet_top_bar {
     display: flex;
+    margin-bottom: .5em;
 }
 
 .tweet_top_bar > p {

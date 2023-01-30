@@ -61,5 +61,3 @@ def send_verfictaion_code_mail(mail_adress, verification_code):
     if result.status_code == 200:
         return True
     return False
-
-

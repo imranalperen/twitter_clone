@@ -42,9 +42,8 @@
 </template>
 
 <script>
-import {
-    edit_profile_request,
-} from '@/requests'
+import { update_profile_request } from '@/requests'
+import { getWeekYearWithOptions } from 'date-fns/fp'
 export default {
     props: ["visited_user"],
 
@@ -55,6 +54,7 @@ export default {
             bio: this.visited_user.biography,
             preview_image: null,
             name: this.visited_user.name,
+            image_file: null,
         }
     },
 
@@ -70,17 +70,18 @@ export default {
         },
 
         upload_image(e){
-            const image = e.target.files[0];
-            const reader = new FileReader();
-            reader.readAsDataURL(image);
-            reader.onload = e =>{
-                //preview_image ll we saved database
-                this.preview_image = e.target.result;
-            };
+            this.image_file = e.target.files[0]
+            //preview
+            const image = e.target.files[0]
+            const reader = new FileReader()
+            reader.readAsDataURL(image)
+            reader.onload = e => {
+                this.preview_image = e.target.result
+            }
         },
 
         async edit_profile() {
-            let response_value = await edit_profile_request(this.preview_image, this.name, this.bio,)
+            let response_value = await update_profile_request(this.image_file, this.name, this.bio)
             if(response_value) {
                 this.$emit("toggle_modal_bool")
             }
@@ -89,7 +90,10 @@ export default {
 
     computed: {
         character_limitor() {
-            if(this.bio.length > 160){
+            // if(this.bio.length > 160){
+            //     this.bio = this.bio.substring(0, 160)
+            // }
+            if(this.bio && this.bio.length > 160) {
                 this.bio = this.bio.substring(0, 160)
             }
         },
