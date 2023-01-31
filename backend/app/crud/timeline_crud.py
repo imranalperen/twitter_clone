@@ -91,7 +91,8 @@ class TrendTopics:
                 Tweets.body,
                 Tweets.id.label("tweet_id"),
                 Tweets.image,
-                Tweets.replied_to
+                Tweets.replied_to,
+                Tweets.is_deleted
             )
             .join(Tweets, Tweets.id == Tags.tweet_id)
             .join(Users, Users.id == Tweets.user_id)
@@ -103,30 +104,32 @@ class TrendTopics:
 
         tweets = []
         for tweet in q:
-            tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
-                tweet_id = tweet.tweet_id,
-                user_id = user.id,
-            )
-            if tweet.image:
-                tweet_image = UPLOAD_FOLDER_URL + tweet.image
-            else:
-                tweet_image = None
-            tweets.append({
-                "tweet_id": tweet.tweet_id,
-                "user_id": tweet.id,
-                "name": tweet.name,
-                "username": tweet.username,
-                "profile_image": UPLOAD_FOLDER_URL + tweet.profile_image,
-                "time_created": tweet.time_created,
-                "body": tweet.body,
-                "image": tweet_image,
-                "like_count": tweet_interactions["like_count"],
-                "retweet_count": tweet_interactions["retweet_count"],
-                "reply_count": tweet_interactions["reply_count"],
-                "replied_to": tweet.replied_to,
-                "is_retweeted": tweet_interactions["is_retweeted"],
-                "is_liked": tweet_interactions["is_liked"]
-            })
+            if not tweet.is_deleted:
+                tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
+                    tweet_id = tweet.tweet_id,
+                    user_id = user.id,
+                )
+                if tweet.image:
+                    tweet_image = UPLOAD_FOLDER_URL + tweet.image
+                else:
+                    tweet_image = None
+                tweets.append({
+                    "tweet_id": tweet.tweet_id,
+                    "user_id": tweet.id,
+                    "name": tweet.name,
+                    "username": tweet.username,
+                    "profile_image": UPLOAD_FOLDER_URL + tweet.profile_image,
+                    "time_created": tweet.time_created,
+                    "body": tweet.body,
+                    "image": tweet_image,
+                    "like_count": tweet_interactions["like_count"],
+                    "retweet_count": tweet_interactions["retweet_count"],
+                    "reply_count": tweet_interactions["reply_count"],
+                    "replied_to": tweet.replied_to,
+                    "is_retweeted": tweet_interactions["is_retweeted"],
+                    "is_liked": tweet_interactions["is_liked"],
+                    "is_deleted": tweet.is_deleted
+                })
         return {"status": True, "tweets": tweets}
 
 
@@ -175,7 +178,8 @@ class TimelineMain:
                 Tweets.body,
                 Tweets.id.label("tweet_id"),
                 Tweets.image,
-                Tweets.replied_to
+                Tweets.replied_to,
+                Tweets.is_deleted
             )
             .join(Tweets, Tweets.user_id == Users.id)
             .join(UsersFollowers, UsersFollowers.following_user_id == Users.id)
@@ -192,7 +196,8 @@ class TimelineMain:
                 Tweets.body,
                 Tweets.id.label("tweet_id"),
                 Tweets.image,
-                Tweets.replied_to
+                Tweets.replied_to,
+                Tweets.is_deleted
             )
             .join(Tweets, Tweets.user_id == Users.id)
             # .join(UsersFollowers, UsersFollowers.main_user_id == Users.id)
@@ -230,30 +235,33 @@ class TimelineMain:
 
         tweets = []
         for tweet in q:
-            tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
-                tweet_id = tweet.tweet_id,
-                user_id = user.id,
-            )
-            if tweet.image:
-                tweet_image = UPLOAD_FOLDER_URL + tweet.image
-            else:
-                tweet_image = None
-            tweets.append({
-                "tweet_id": tweet.tweet_id,
-                "user_id": tweet.id,
-                "name": tweet.name,
-                "username": tweet.username,
-                "profile_image": UPLOAD_FOLDER_URL + tweet.profile_image,
-                "time_created": tweet.time_created,
-                "body": tweet.body,
-                "image": tweet_image,
-                "like_count": tweet_interactions["like_count"],
-                "retweet_count": tweet_interactions["retweet_count"],
-                "reply_count": tweet_interactions["reply_count"],
-                "replied_to": tweet.replied_to,
-                "is_retweeted": tweet_interactions["is_retweeted"],
-                "is_liked": tweet_interactions["is_liked"]
-            })
+            #deleted tweets doesnt feed main timeline
+            if not tweet.is_deleted:
+                tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
+                    tweet_id = tweet.tweet_id,
+                    user_id = user.id,
+                )
+                if tweet.image:
+                    tweet_image = UPLOAD_FOLDER_URL + tweet.image
+                else:
+                    tweet_image = None
+                tweets.append({
+                    "tweet_id": tweet.tweet_id,
+                    "user_id": tweet.id,
+                    "name": tweet.name,
+                    "username": tweet.username,
+                    "profile_image": UPLOAD_FOLDER_URL + tweet.profile_image,
+                    "time_created": tweet.time_created,
+                    "body": tweet.body,
+                    "image": tweet_image,
+                    "like_count": tweet_interactions["like_count"],
+                    "retweet_count": tweet_interactions["retweet_count"],
+                    "reply_count": tweet_interactions["reply_count"],
+                    "replied_to": tweet.replied_to,
+                    "is_retweeted": tweet_interactions["is_retweeted"],
+                    "is_liked": tweet_interactions["is_liked"],
+                    "is_deleted": tweet.is_deleted
+                })
         return {"status": True, "tweets": tweets}
 
 
@@ -293,7 +301,8 @@ class TimelineMain:
                     "reply_count": tweet_interactions["reply_count"],
                     "replied_to": t.replied_to,
                     "is_retweeted": tweet_interactions["is_retweeted"],
-                    "is_liked": tweet_interactions['is_liked']
+                    "is_liked": tweet_interactions['is_liked'],
+                    "is_deleted": t.is_deleted
                 })
         
         return {"status": True, "tweet": tweet}
@@ -347,7 +356,8 @@ class TweetPage:
                 "reply_count": tweet_interactions["reply_count"],
                 "replied_to": parent_tweet_query.replied_to,
                 "is_retweeted": tweet_interactions["is_retweeted"],
-                "is_liked": tweet_interactions["is_liked"]
+                "is_liked": tweet_interactions["is_liked"],
+                "is_deleted": parent_tweet_query.is_deleted
             })
             #now we have parent tweet we can find and return child twets
             #?child tweets
@@ -399,7 +409,8 @@ class TweetPage:
                 "reply_count": tweet_interactions["reply_count"],
                 "replied_to": parent_tweet_query.replied_to,
                 "is_retweeted": tweet_interactions["is_retweeted"],
-                "is_liked": tweet_interactions["is_liked"]
+                "is_liked": tweet_interactions["is_liked"],
+                "is_deleted": parent_tweet_query.is_deleted
             })
             #? replied tweet
             replied_tweet_query = (
@@ -435,7 +446,8 @@ class TweetPage:
                 "reply_count": tweet_interactions["reply_count"],
                 "replied_to": replied_tweet_query.replied_to,
                 "is_retweeted": tweet_interactions["is_retweeted"],
-                "is_liked": tweet_interactions["is_liked"]
+                "is_liked": tweet_interactions["is_liked"],
+                "is_deleted": replied_tweet_query.is_deleted
             })
             #? child tweets
             child_tweets_query = (
@@ -447,36 +459,38 @@ class TweetPage:
 
         
         for tweet in child_tweets_query:
-            user = (
-                session.query(Users)
-                .join(Tweets, Tweets.user_id == Users.id)
-                .where(Tweets.id == tweet.id)
-                .first()
-            )
-            tweet_interactions = TimelineUtils.get_tweet_interactions(self,
-                tweet_id = tweet.id,
-                user_id = user_id,
-            )
-            if tweet.image:
-                tweet_image = UPLOAD_FOLDER_URL + tweet.image
-            else:
-                tweet_image = None
-            child_tweets.append({
-                "tweet_id": tweet.id,
-                "user_id": user.id,
-                "name": user.name,
-                "username": user.username,
-                "profile_image": UPLOAD_FOLDER_URL + user.profile_image,
-                "time_created": tweet.time_created,
-                "body": tweet.body,
-                "image": tweet_image,
-                "like_count": tweet_interactions["like_count"],
-                "retweet_count": tweet_interactions["retweet_count"],
-                "reply_count": tweet_interactions["reply_count"],
-                "replied_to": tweet.replied_to,
-                "is_retweeted": tweet_interactions["is_retweeted"],
-                "is_liked": tweet_interactions["is_liked"]
-            })
+            if not tweet.is_deleted:
+                user = (
+                    session.query(Users)
+                    .join(Tweets, Tweets.user_id == Users.id)
+                    .where(Tweets.id == tweet.id)
+                    .first()
+                )
+                tweet_interactions = TimelineUtils.get_tweet_interactions(self,
+                    tweet_id = tweet.id,
+                    user_id = user_id,
+                )
+                if tweet.image:
+                    tweet_image = UPLOAD_FOLDER_URL + tweet.image
+                else:
+                    tweet_image = None
+                child_tweets.append({
+                    "tweet_id": tweet.id,
+                    "user_id": user.id,
+                    "name": user.name,
+                    "username": user.username,
+                    "profile_image": UPLOAD_FOLDER_URL + user.profile_image,
+                    "time_created": tweet.time_created,
+                    "body": tweet.body,
+                    "image": tweet_image,
+                    "like_count": tweet_interactions["like_count"],
+                    "retweet_count": tweet_interactions["retweet_count"],
+                    "reply_count": tweet_interactions["reply_count"],
+                    "replied_to": tweet.replied_to,
+                    "is_retweeted": tweet_interactions["is_retweeted"],
+                    "is_liked": tweet_interactions["is_liked"],
+                    "is_deleted": tweet.is_deleted
+                })
         
         return {"parent_tweet": parent_tweet, "replied_tweet": replied_tweet, "child_tweets": child_tweets}
     
@@ -495,7 +509,8 @@ class Explore:
                 Tweets.id.label("tweet_id"),
                 Tweets.image,
                 Tweets.replied_to,
-                Tweets.user_id
+                Tweets.user_id,
+                Tweets.is_deleted
             )
             .join(Tweets, Tweets.user_id == Users.id)
             .order_by(func.random())
@@ -505,35 +520,37 @@ class Explore:
 
         tweets = []
         for t in tweets_query:
-            user_query = (
-                session.query(Users)
-                .where(Users.id == t.user_id)
-            )
-            for u in user_query:
-                tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
-                    tweet_id = t.id,
-                    user_id = user_id,
+            if not t.is_deleted:
+                user_query = (
+                    session.query(Users)
+                    .where(Users.id == t.user_id)
                 )
-                if t.image:
-                    tweet_image = UPLOAD_FOLDER_URL + t.image
-                else:
-                    tweet_image = None
-                tweets.append({
-                    "tweet_id": t.tweet_id,
-                    "user_id": u.id,
-                    "name": u.name,
-                    "username": u.username,
-                    "profile_image": UPLOAD_FOLDER_URL + u.profile_image,
-                    "time_created": t.time_created,
-                    "body": t.body,
-                    "image": tweet_image,
-                    "like_count": tweet_interactions["like_count"],
-                    "retweet_count": tweet_interactions["retweet_count"],
-                    "reply_count": tweet_interactions["reply_count"],
-                    "replied_to": t.replied_to,
-                    "is_retweeted": tweet_interactions["is_retweeted"],
-                    "is_liked": tweet_interactions['is_liked']
-                })
+                for u in user_query:
+                    tweet_interactions = TimelineUtils.get_tweet_interactions(self, 
+                        tweet_id = t.id,
+                        user_id = user_id,
+                    )
+                    if t.image:
+                        tweet_image = UPLOAD_FOLDER_URL + t.image
+                    else:
+                        tweet_image = None
+                    tweets.append({
+                        "tweet_id": t.tweet_id,
+                        "user_id": u.id,
+                        "name": u.name,
+                        "username": u.username,
+                        "profile_image": UPLOAD_FOLDER_URL + u.profile_image,
+                        "time_created": t.time_created,
+                        "body": t.body,
+                        "image": tweet_image,
+                        "like_count": tweet_interactions["like_count"],
+                        "retweet_count": tweet_interactions["retweet_count"],
+                        "reply_count": tweet_interactions["reply_count"],
+                        "replied_to": t.replied_to,
+                        "is_retweeted": tweet_interactions["is_retweeted"],
+                        "is_liked": tweet_interactions['is_liked'],
+                        "is_deleted": t.is_deleted
+                    })
 
         return {"status": True, "tweets": tweets}
 
@@ -595,7 +612,8 @@ class UserProfileFeed:
                     Tweets.id.label("tweet_id"),
                     Tweets.image,
                     Tweets.replied_to,
-                    Tweets.user_id
+                    Tweets.user_id,
+                    Tweets.is_deleted
                 )
                 .join(Tweets, Tweets.user_id == Users.id)
                 .where(Users.username == username)
@@ -614,7 +632,8 @@ class UserProfileFeed:
                     Tweets.id.label("tweet_id"),
                     Tweets.image,
                     Tweets.replied_to,
-                    Tweets.user_id
+                    Tweets.user_id,
+                    Tweets.is_deleted
                 )
                 .join(Tweets, Tweets.user_id == Users.id)
                 .where(and_(
@@ -642,7 +661,8 @@ class UserProfileFeed:
                     Tweets.id.label("tweet_id"),
                     Tweets.image,
                     Tweets.replied_to,
-                    Tweets.user_id
+                    Tweets.user_id,
+                    Tweets.is_deleted
                 )
                 # .join(Tweets, Tweets.user_id == Users.id)
                 # .join(TweetsLikes, TweetsLikes.like_user_id == Tweets.id)
@@ -655,29 +675,31 @@ class UserProfileFeed:
         tweets = []
 
         for t in tweets_query:
-            tweet_interaction = TimelineUtils.get_tweet_interactions(
-                self,
-                tweet_id = t.tweet_id,
-                user_id = user_id
-            )
-            if t.image:
-                tweet_image = UPLOAD_FOLDER_URL + t.image
-            else:
-                tweet_image = None
-            tweets.append({
-                "tweet_id": t.tweet_id,
-                "user_id": t.id,
-                "name": t.name,
-                "username": t.username,
-                "profile_image": UPLOAD_FOLDER_URL + t.profile_image,
-                "time_created": t.time_created,
-                "body": t.body,
-                "image": tweet_image,
-                "like_count": tweet_interaction["like_count"],
-                "retweet_count": tweet_interaction["retweet_count"],
-                "reply_count": tweet_interaction["reply_count"],
-                "replied_to": t.replied_to,
-                "is_retweeted": tweet_interaction["is_retweeted"],
-                "is_liked": tweet_interaction["is_liked"],
-            })
+            if not t.is_deleted:
+                tweet_interaction = TimelineUtils.get_tweet_interactions(
+                    self,
+                    tweet_id = t.tweet_id,
+                    user_id = user_id
+                )
+                if t.image:
+                    tweet_image = UPLOAD_FOLDER_URL + t.image
+                else:
+                    tweet_image = None
+                tweets.append({
+                    "tweet_id": t.tweet_id,
+                    "user_id": t.id,
+                    "name": t.name,
+                    "username": t.username,
+                    "profile_image": UPLOAD_FOLDER_URL + t.profile_image,
+                    "time_created": t.time_created,
+                    "body": t.body,
+                    "image": tweet_image,
+                    "like_count": tweet_interaction["like_count"],
+                    "retweet_count": tweet_interaction["retweet_count"],
+                    "reply_count": tweet_interaction["reply_count"],
+                    "replied_to": t.replied_to,
+                    "is_retweeted": tweet_interaction["is_retweeted"],
+                    "is_liked": tweet_interaction["is_liked"],
+                    "is_deleted": t.is_deleted
+                })
         return {"status": True, "tweets": tweets}

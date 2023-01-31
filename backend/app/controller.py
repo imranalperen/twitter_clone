@@ -155,6 +155,14 @@ def tweet():
     return jsonify({"response": tweet_response["error"]})
 
 
+@main.route("delete_tweet", methods=["POST"])
+@login_required
+def delete_tweet():
+    tweet_id = request.json.get("tweet_id")
+    TweetMain().delete_tweet_endpoint(tweet_id)
+    return({"response": True})
+
+
 @main.route("timeline", methods=["GET"])
 @login_required
 def timeline():
@@ -313,4 +321,4 @@ def follows_and_followers():
     response_body = UserFollow().get_user_follows_or_followers(visit_user_id, purpose, user_id)
     return jsonify({"response": response_body})
 
-    
+

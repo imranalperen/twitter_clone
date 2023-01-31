@@ -75,3 +75,12 @@ class TweetMain:
         )
         session.commit()
         
+    def delete_tweet_endpoint(self, tweet_id):
+        (
+            session.query(Tweets)
+            .where(Tweets.id == f"{tweet_id}")
+            .update({
+                "is_deleted": True,
+            })
+        )
+        session.commit()

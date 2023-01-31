@@ -33,6 +33,7 @@ class Tweets(Base):
     body = Column(String(280))
     image = Column(String)
     replied_to = Column(Integer)
+    is_deleted = Column(Boolean, default=False)
 
 
 class UsersFollowers(Base):
@@ -75,5 +76,12 @@ class VerificationCodes(Base):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     verification_code = Column(Integer)
+
+class Mentions(Base):
+    __tablename__ = "mentions"
+
+    id = Column(Integer, primary_key=True)
+    tweet_id = Column(Integer, ForeignKey("tweets.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))
 
 Base.metadata.create_all(engine)

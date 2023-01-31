@@ -463,6 +463,27 @@ function reset_password_request(verify_code, password, mail) {
 
     return fetched_data
 }
+
+function delete_tweet_request(tweet_id) {
+    const access_token = access_token_control()
+    
+    let request_body = {
+        "tweet_id": tweet_id,
+    }
+    console.log(request_body)
+    const fetched_data = fetch(`${API_URL}/delete_tweet`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
 export {
     signup_request,
     login_request,
@@ -489,4 +510,5 @@ export {
     verification_code_request,
     reset_password_request,
     update_profile_request,
+    delete_tweet_request,
 }

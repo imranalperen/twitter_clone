@@ -1,69 +1,79 @@
 <template>
 <div class="tweet_general_container">
     <div class="timeline" v-if="tweets != 2002">
-        <div v-for="tweet in tweets" :key="tweet.tweet_id" class="timeline_tweet_container" :class="{big: is_big == true}" @click="route_click(tweet)">
-            <div class="tweet_top_bar" v-if="tweet.replied_to && !is_tweet_page_reply">
-                <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image_small">
-                <p class="replied_username">{{ tweet.username }} replied</p>
+        <div 
+            v-for="tweet in tweets"
+            :key="tweet.tweet_id"
+            class="timeline_tweet_container"
+            :class="{big: is_big == true}" @click="route_click(tweet)"
+        >
+            <div v-if="!tweet.is_deleted">
+                <div class="tweet_top_bar" v-if="tweet.replied_to && !is_tweet_page_reply">
+                    <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image_small">
+                    <p class="replied_username">{{ tweet.username }} replied</p>
+                </div>
+                <div class="tweet_container_main">
+                    <div class="left">
+                        <div class="tweet_profile_image_container">
+                            <img :src="tweet.profile_image" class="tweet_profile_image" :class="{big_image: is_big == true}">
+                        </div>
+                        <div v-if="is_parent" class="connect_line">
+                        </div>
+                    </div>
+                    <div class="right">
+                        <div class="right_top_bar">
+                            <div class="user_info">
+                                <div class="name_contaienr"><p class="name">{{ tweet.name }}</p></div>
+                                <div class="username_container"><p class="username">@{{ tweet.username }}</p></div>
+                                <!-- TODO time created i duzenle  -->
+                                <!-- <div class="tweet_time"><p>{{ tweet.time_created }}</p></div> -->
+                                <div class="tweet_time"><p>1h</p></div>
+                            </div>
+                            <div class="delete_tweet_container" v-if="tweet.user_id == user.id" @click="delete_tweet(tweet.tweet_id)">
+                                <img src="@/assets/icons8-trash-bin-32.png" class="delete_image">
+                            </div>
+                        </div>
+                        <div class="tweet_body">
+                            <div class="tweet_text_container" v-if="tweet.body">
+                                <p class="tweet_body_text"><span class="tweet_body_text" v-html="calculate_hashtag(tweet.body)"></span></p>
+                            </div>
+                            <div class="tweet_image" v-if="tweet.image">
+                                <img :src="tweet.image" class="tweet_body_image">
+                            </div>
+                        </div>
+                        <div class="interaction_footer">
+                            <div class="comment_container" @click="toggle_reply_container(tweet.tweet_id)">
+                                <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image">
+                                <p class="comment_count">{{ tweet.reply_count }}</p>
+                            </div>
+                            <div class="retweet_container" v-if="tweet.is_retweeted" @click="unretweet(tweet.tweet_id)">
+                                <img src="@/assets/icons8-retweet-24.png" class="unretweet_image">
+                                <p class="retweet_count">{{ tweet.retweet_count }}</p>
+                            </div>
+                            <div class="retweet_container" v-else @click="retweet(tweet.tweet_id)">
+                                <img src="@/assets/icons8-retweet-24.png" class="retweet_image">
+                                <p class="retweet_count">{{ tweet.retweet_count }}</p>
+                            </div>
+                            <div class="like_container" v-if="tweet.is_liked" @click="unlike_tweet(tweet.tweet_id)">
+                                <img src="@/assets/icons8-heart-50.png" class="unlike_image">
+                                <p class="like_count">{{ tweet.like_count }}</p>
+                            </div>
+                            <div class="like_container" v-else @click="like_tweet(tweet.tweet_id)">
+                                <img src="@/assets/icons8-heart-50.png" class="like_image">
+                                <p class="like_count">{{ tweet.like_count }}</p>
+                            </div>
+                        </div>
+                        <div class="reply_component" v-if="tweet.tweet_id == toggle_reply_id">
+                            <reply_tweet
+                                :toggle_reply_id = "toggle_reply_id"
+                                @add_replied_tweet_timeline = add_new_tweet_timeline_emit(tweet.tweet_id)
+                            ></reply_tweet>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="tweet_container_main">
-                <div class="left">
-                    <div class="tweet_profile_image_container">
-                        <img :src="tweet.profile_image" class="tweet_profile_image" :class="{big_image: is_big == true}">
-                    </div>
-                    <div v-if="is_parent" class="connect_line">
-                    </div>
-                </div>
-                <div class="right">
-                    <div class="right_top_bar">
-                        <div class="user_info">
-                            <div class="name_contaienr"><p class="name">{{ tweet.name }}</p></div>
-                            <div class="username_container"><p class="username">@{{ tweet.username }}</p></div>
-                            <!-- TODO time created i duzenle  -->
-                            <!-- <div class="tweet_time"><p>{{ tweet.time_created }}</p></div> -->
-                            <div class="tweet_time"><p>1h</p></div>
-                        </div>
-                        <div class="delete_tweet_container" v-if="tweet.user_id == user.id">
-                            <img src="@/assets/icons8-trash-bin-32.png" class="delete_image">
-                        </div>
-                    </div>
-                    <div class="tweet_body">
-                        <div class="tweet_text_container" v-if="tweet.body">
-                            <p class="tweet_body_text"><span class="tweet_body_text" v-html="calculate_hashtag(tweet.body)"></span></p>
-                        </div>
-                        <div class="tweet_image" v-if="tweet.image">
-                            <img :src="tweet.image" class="tweet_body_image">
-                        </div>
-                    </div>
-                    <div class="interaction_footer">
-                        <div class="comment_container" @click="toggle_reply_container(tweet.tweet_id)">
-                            <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image">
-                            <p class="comment_count">{{ tweet.reply_count }}</p>
-                        </div>
-                        <div class="retweet_container" v-if="tweet.is_retweeted" @click="unretweet(tweet.tweet_id)">
-                            <img src="@/assets/icons8-retweet-24.png" class="unretweet_image">
-                            <p class="retweet_count">{{ tweet.retweet_count }}</p>
-                        </div>
-                        <div class="retweet_container" v-else @click="retweet(tweet.tweet_id)">
-                            <img src="@/assets/icons8-retweet-24.png" class="retweet_image">
-                            <p class="retweet_count">{{ tweet.retweet_count }}</p>
-                        </div>
-                        <div class="like_container" v-if="tweet.is_liked" @click="unlike_tweet(tweet.tweet_id)">
-                            <img src="@/assets/icons8-heart-50.png" class="unlike_image">
-                            <p class="like_count">{{ tweet.like_count }}</p>
-                        </div>
-                        <div class="like_container" v-else @click="like_tweet(tweet.tweet_id)">
-                            <img src="@/assets/icons8-heart-50.png" class="like_image">
-                            <p class="like_count">{{ tweet.like_count }}</p>
-                        </div>
-                    </div>
-                    <div class="reply_component" v-if="tweet.tweet_id == toggle_reply_id">
-                        <reply_tweet
-                            :toggle_reply_id = "toggle_reply_id"
-                            @add_replied_tweet_timeline = add_new_tweet_timeline_emit(tweet.tweet_id)
-                        ></reply_tweet>
-                    </div>
-                </div>
+            <div class="deleted_tweet" v-if="tweet.is_deleted">
+                <deleted_tweet/>
             </div>
         </div>
     </div>
@@ -72,17 +82,20 @@
 
 <script>
 import reply_tweet from '@/components/main/reply_tweet.vue'
+import deleted_tweet from '@/components/main/deleted_tweet.vue'
 
 import {
     like_request,
     unlike_request,
     retweet_request,
     unretweet_request,
+    delete_tweet_request
 } from '@/requests'
 
 export default {
     components: {
-        reply_tweet
+        reply_tweet,
+        deleted_tweet
     },
 
     props: ["tweets", "user", "is_big", "is_tweet_page_reply", "is_parent"],
@@ -94,7 +107,8 @@ export default {
     data() {
         return {
             toggle_reply_id: null,
-            tweet_body: null
+            tweet_body: null,
+            delete_tweet_bool: false
         }
     },
 
@@ -197,10 +211,6 @@ export default {
             return tweet_body
         },
 
-        redirect_page() {
-            let test = event.target
-            console.log(test)
-        },
         route_click(tweet) {
             let e = event.target.className
             let topic_vocab = event.target.innerHTML
@@ -218,6 +228,12 @@ export default {
                 topic_vocab = topic_vocab.split("#")[1]
                 this.$router.push({name: 'topic', params:{string: topic_vocab}})
             }
+        },
+
+        async delete_tweet(tweet_id) {
+            console.log(tweet_id)
+            let response_value = await delete_tweet_request(tweet_id)
+            console.log(response_value)
         }
     },
 }
@@ -256,7 +272,7 @@ export default {
 }
 .timeline_tweet_container {
     border-bottom: 1px solid var(--bordergray);
-    padding: .9em 1em .3em;
+    padding: .6em .6em .5em .6em;
     cursor: pointer;
 }
 
