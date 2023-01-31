@@ -6,7 +6,6 @@ from flask import(
 )
 from app.crud.users_crud import UserFollow, UserRegistration
 from app.crud.tweet_crud import TweetMain
-from app.crud.fake_crud import FakeMain
 from app.crud.timeline_crud import (
     TimelineMain,
     WhoToFollow,
@@ -24,16 +23,6 @@ import os
 
 
 main = Blueprint("main", __name__, url_prefix="/api")
-
-@main.route("create_fake_users", methods=["POST", "GET"])
-def create_fake_user():
-    fake_user_response = (
-        FakeMain().create_fake_users(),
-        FakeMain().follow_fake_users(),
-        FakeMain().create_fake_tweets()
-    )
-    
-    return jsonify({"response": fake_user_response})
 
 @main.route("signup", methods=["POST"])
 def signup():

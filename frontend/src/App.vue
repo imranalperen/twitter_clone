@@ -26,9 +26,13 @@ export default {
 
 
 <style>
-.hashtag_1 {
-    font-size: 3em;
-    background-color: red;
+.hashtag_keyword {
+    color: var(--tweetBtnBg);
+    text-decoration: none;
+}
+
+.hashtag_keyword:hover {
+  text-decoration: underline;
 }
 
 :root {

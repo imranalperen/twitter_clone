@@ -1,17 +1,15 @@
 <template>
 <div class="tweet_general_container">
     <div class="timeline" v-if="tweets != 2002">
-        <div v-for="tweet in tweets" :key="tweet.tweet_id" class="timeline_tweet_container" :class="{big: is_big == true}">
+        <div v-for="tweet in tweets" :key="tweet.tweet_id" class="timeline_tweet_container" :class="{big: is_big == true}" @click="route_click(tweet)">
             <div class="tweet_top_bar" v-if="tweet.replied_to && !is_tweet_page_reply">
                 <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image_small">
-                <p>{{ tweet.username }} replied</p>
+                <p class="replied_username">{{ tweet.username }} replied</p>
             </div>
             <div class="tweet_container_main">
                 <div class="left">
                     <div class="tweet_profile_image_container">
-                        <router-link :to="{name: 'profile', params:{string: tweet.username, profile_tab :null}}">
-                            <img :src="tweet.profile_image" class="tweet_profile_image" :class="{big_image: is_big == true}">
-                        </router-link>
+                        <img :src="tweet.profile_image" class="tweet_profile_image" :class="{big_image: is_big == true}">
                     </div>
                     <div v-if="is_parent" class="connect_line">
                     </div>
@@ -19,31 +17,24 @@
                 <div class="right">
                     <div class="right_top_bar">
                         <div class="user_info">
-                            <router-link :to="{name: 'profile', params:{string: tweet.username, profile_tab :null}}">
-                                <div class="name"><p>{{ tweet.name }}</p></div>
-                                <div class="username"><p>@{{ tweet.username }}</p></div>
-                            </router-link>
-
+                            <div class="name_contaienr"><p class="name">{{ tweet.name }}</p></div>
+                            <div class="username_container"><p class="username">@{{ tweet.username }}</p></div>
                             <!-- TODO time created i duzenle  -->
                             <!-- <div class="tweet_time"><p>{{ tweet.time_created }}</p></div> -->
                             <div class="tweet_time"><p>1h</p></div>
                         </div>
                         <div class="delete_tweet_container" v-if="tweet.user_id == user.id">
-                            <img src="@/assets/icons8-trash-bin-32.png">
+                            <img src="@/assets/icons8-trash-bin-32.png" class="delete_image">
                         </div>
                     </div>
-                    <router-link :to="{name: 'tweet_page', params:{id: tweet.tweet_id}}">
                     <div class="tweet_body">
                         <div class="tweet_text_container" v-if="tweet.body">
-                            <!-- <p class="tweet_text">{{ tweet.body }}</p> -->
-                            <!-- TODO hashhtag ve @ leri ayarla -->
-                            <p><span v-html="calculate_hashtag(tweet.body)"></span></p>
+                            <p class="tweet_body_text"><span class="tweet_body_text" v-html="calculate_hashtag(tweet.body)"></span></p>
                         </div>
                         <div class="tweet_image" v-if="tweet.image">
-                            <img :src="tweet.image">
+                            <img :src="tweet.image" class="tweet_body_image">
                         </div>
                     </div>
-                    </router-link>
                     <div class="interaction_footer">
                         <div class="comment_container" @click="toggle_reply_container(tweet.tweet_id)">
                             <img src="@/assets/icons8-speech-bubble-50.png" class="comment_image">
@@ -198,19 +189,51 @@ export default {
                     if(vocabs[i].includes("#")) {
                         //TODO hashtag in tweet link it topic
                         //vue warn maximum recursive updates exceeded.
-                        vocabs[i] = `<a href="/topic/${vocabs[i]}" style="color: #1d9bf0;" class=hashtag_1>${vocabs[i]}</a>`
+                        vocabs[i] = `<a class=hashtag_keyword>${vocabs[i]}</a>`
                         tweet_body = vocabs.join(" ")
                     }
                 }
             }
             return tweet_body
         },
+
+        redirect_page() {
+            let test = event.target
+            console.log(test)
+        },
+        route_click(tweet) {
+            let e = event.target.className
+            let topic_vocab = event.target.innerHTML
+            e = e.split(" ")[0]
+            //tweet_profile_image, name, username   redirects profile
+            if(e == 'tweet_profile_image' || e == 'name' || e == 'username') {
+                this.$router.push({name: 'profile', params:{string: tweet.username, profile_tab :null}})
+            }
+            //tweet_body_text, interaction_footer, left, timeline_tweet_container redirects tweet_page
+            else if (e == 'timeline_tweet_container' || e == 'tweet_body_text' || e == 'left' || e == 'right_top_bar' || e == 'interaction_footer' || e == 'tweet_top_bar' || e == 'replied_username' || e == 'comment_image_small' || e == 'tweet_body_image') {
+                this.$router.push({name: 'tweet_page', params:{id: tweet.tweet_id}})
+            }
+            //hashtag_keyword redirects topic page
+            else if (e == 'hashtag_keyword') {
+                topic_vocab = topic_vocab.split("#")[1]
+                this.$router.push({name: 'topic', params:{string: topic_vocab}})
+            }
+        }
     },
 }
 
 </script>
 
 <style scoped>
+
+.replied_username {
+    cursor: pointer;
+}
+
+.comment_image_small {
+    cursor: pointer;
+}
+
 .left {
     display: flex;
     flex-direction: column;
@@ -234,6 +257,7 @@ export default {
 .timeline_tweet_container {
     border-bottom: 1px solid var(--bordergray);
     padding: .9em 1em .3em;
+    cursor: pointer;
 }
 
 .tweet_top_bar {
@@ -285,16 +309,19 @@ export default {
     height: 50px;
     border-radius: 50%;
     margin-right: .7em;
+    cursor: pointer;
     /* margin-top: .5em; */
 }
 
-.name > p {
+.name {
     margin-right: .4em;
     font-weight: bold;
+    cursor: pointer;
 }
 
-.username > p {
+.username {
     color: var(--bordergray);
+    cursor: pointer;
 }
 
 .tweet_time > p {

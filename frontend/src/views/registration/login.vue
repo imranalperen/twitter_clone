@@ -21,10 +21,6 @@
         <router-link :to="{name: 'forget_password'}" class="r_link">
             <p class="forget_password">Forget Password</p>
         </router-link>
-        <br>
-        <hr>
-        <br>
-        <button @click="create_fake_users">CREATE FAKE USERS</button>
     </div>
 </div>
 </template>
@@ -78,16 +74,6 @@ export default {
         sign_up() {
             this.$router.push({name: "signup"})
         },
-
-        create_fake_users() {
-            fetch(`${API_URL}/create_fake_users`, {
-                method: "GET",
-                headers: {
-                    "content-type": "application/json",
-                }
-            })
-            .then((response) => response.json())
-        }
     }
 
 }

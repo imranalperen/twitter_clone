@@ -7,7 +7,7 @@
     <div class="header_title">
         <h1 v-if="current_url == 'home'">Home</h1>
         <h1 v-if="current_url == 'tweet_page'">Tweet</h1>
-        <h1 v-if="current_url == 'topic'">#topic</h1>
+        <h1 v-if="current_url == 'topic'">{{ get_topic }}</h1>
         <h1 v-if="current_url == 'explore'">Explore</h1>
     </div>
 </div>
@@ -19,7 +19,8 @@ export default {
 
     data() {
         return {
-            goback: false
+            goback: false,
+            topic: null
         }
     },
 
@@ -37,6 +38,10 @@ export default {
             else {
                 this.goback = false
             }
+        },
+
+        get_topic() {
+            return this.topic = this.$route.fullPath.split("/")[2]
         }
     }
 }

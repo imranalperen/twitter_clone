@@ -107,6 +107,10 @@ class TrendTopics:
                 tweet_id = tweet.tweet_id,
                 user_id = user.id,
             )
+            if tweet.image:
+                tweet_image = UPLOAD_FOLDER_URL + tweet.image
+            else:
+                tweet_image = None
             tweets.append({
                 "tweet_id": tweet.tweet_id,
                 "user_id": tweet.id,
@@ -115,7 +119,7 @@ class TrendTopics:
                 "profile_image": UPLOAD_FOLDER_URL + tweet.profile_image,
                 "time_created": tweet.time_created,
                 "body": tweet.body,
-                "image": UPLOAD_FOLDER_URL + tweet.image,
+                "image": tweet_image,
                 "like_count": tweet_interactions["like_count"],
                 "retweet_count": tweet_interactions["retweet_count"],
                 "reply_count": tweet_interactions["reply_count"],
@@ -143,12 +147,16 @@ class WhoToFollow:
         )
         recommended_users = []
         for user in query:
+            if user.profile_image:
+                profile_image = UPLOAD_FOLDER_URL + user.profile_image
+            else:
+                profile_image = None
             recommended_users.append({
                 "id": user.id,
                 "name": user.name,
                 "username": user.username,
                 "is_following": False,
-                "image": UPLOAD_FOLDER_URL + user.profile_image
+                "image": profile_image
             })
 
         return recommended_users
