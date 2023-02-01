@@ -28,7 +28,6 @@
     
 <script>
 import { login_request } from '@/requests'
-import { API_URL } from '@/locals'
 
 export default {
     data() {

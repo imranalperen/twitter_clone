@@ -32,6 +32,6 @@ pnpm-debug.log*
 
 localsettings.py
 /backend/uploads/*.png
-/backend/notes.md
-/frontend/src/locals.js
-/frontend/notes.md
+/backend/mynotes.md
+/frontend/src/localsettings.js
+/frontend/mynotes.md

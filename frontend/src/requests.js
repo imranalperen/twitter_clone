@@ -1,4 +1,4 @@
-import { API_URL } from "./locals";
+import { API_URL } from "./localsettings";
 
 
 //!signup request
