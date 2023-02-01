@@ -117,6 +117,7 @@ export default {
             this.first_vizit = await true
         }
         this.user = await user_request()
+        this.user = this.user.response[0]
     },
 
 }

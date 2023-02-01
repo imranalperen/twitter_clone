@@ -24,6 +24,8 @@ import os
 
 main = Blueprint("main", __name__, url_prefix="/api")
 
+
+#! REGISTRATION
 @main.route("signup", methods=["POST"])
 def signup():
     name = request.json.get("name")
@@ -93,20 +95,24 @@ def registration_info():
     UserRegistration().update_user_profile_image(user, file_name, bio)
     return jsonify({"response": True})
 
-
+#!GENERAL
 @main.route("user", methods=["POST"])
 @login_required
 def user():
+    # user = g.user
+    # profile_image = None
+    # if user.profile_image:
+    #     profile_image = UPLOAD_FOLDER_URL + user.profile_image
+    # return jsonify({
+    #     "id": user.id,
+    #     "username": user.username,
+    #     "name": user.name,
+    #     "profile_image": profile_image
+    # })
+    # Proxy {id: 1, name: 'imranalperen', profile_image: 'http://127.0.0.1:5000/uploads/f2c64d42-f654-44d2-9d1b-918a5c680ca6.png', username: 'imranalperen'}
     user = g.user
-    profile_image = None
-    if user.profile_image:
-        profile_image = UPLOAD_FOLDER_URL + user.profile_image
-    return jsonify({
-        "id": user.id,
-        "username": user.username,
-        "name": user.name,
-        "profile_image": profile_image
-    })
+    user_information = UserMain().get_user_by_username(user.username)
+    return jsonify({"response": user_information})
 
 
 @main.route("recommend_follow_user", methods=["GET"])
@@ -133,34 +139,6 @@ def unfollow_user():
     unfollowing_user_id = request.headers.get("user-id")
     UserFollow().unfollow_user(main_user, unfollowing_user_id)
     return jsonify({"response": True})
-
-
-@main.route("post_tweet", methods=["POST"])
-@login_required
-def tweet():
-    user = g.user
-    tweet_body = request.form.get("tweet_body")
-    file = request.files.get("file")
-    file_name = None
-    replied_to_id = None
-    if file:
-        #DEVELOPMENT
-        from . import app
-        file_name = str(uuid.uuid4()) + '.png'
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name))
-    tweet_response = TweetMain().add_tweet(user.id, tweet_body, file_name, replied_to_id)
-    if tweet_response["status"]:
-        return jsonify({"response": True})
-    
-    return jsonify({"response": tweet_response["error"]})
-
-
-@main.route("delete_tweet", methods=["POST"])
-@login_required
-def delete_tweet():
-    tweet_id = request.json.get("tweet_id")
-    TweetMain().delete_tweet_endpoint(tweet_id)
-    return({"response": True})
 
 
 @main.route("timeline", methods=["GET"])
@@ -213,7 +191,35 @@ def user_last_tweet():
     user = g.user.id
     last_tweet = TimelineMain().last_tweet(user)
     return jsonify({"response": last_tweet["tweet"]})
+
+
+#! TWEET CRUD
+@main.route("post_tweet", methods=["POST"])
+@login_required
+def tweet():
+    user = g.user
+    tweet_body = request.form.get("tweet_body")
+    file = request.files.get("file")
+    file_name = None
+    replied_to_id = None
+    if file:
+        #DEVELOPMENT
+        from . import app
+        file_name = str(uuid.uuid4()) + '.png'
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file_name))
+    tweet_response = TweetMain().add_tweet(user.id, tweet_body, file_name, replied_to_id)
+    if tweet_response["status"]:
+        return jsonify({"response": True})
     
+    return jsonify({"response": tweet_response["error"]})
+
+
+@main.route("delete_tweet", methods=["POST"])
+@login_required
+def delete_tweet():
+    tweet_id = request.json.get("tweet_id")
+    TweetMain().delete_tweet_endpoint(tweet_id)
+    return({"response": True})
 
 @main.route("add_replied_tweet", methods=["POST"])
 @login_required
@@ -234,7 +240,6 @@ def add_replied_tweet():
     
     return jsonify({"response": tweet_response["error"]})
 
-
 #!TWEET PAGE
 @main.route("tweet_page", methods=["POST"])
 @login_required
@@ -243,6 +248,7 @@ def tweet_page():
     tweet_id = request.json.get("tweet_id")
     tweet_page_response = TweetPage().create_tweet_page(user.id, tweet_id)
     return jsonify({"response": tweet_page_response})
+
 
 #!TRENDS
 @main.route("trend_topics", methods=["POST"])
@@ -322,9 +328,27 @@ def follows_and_followers():
     return jsonify({"response": response_body})
 
 
+#! MESSAGES
 @main.route("user_profile_image", methods=["POST"])
 @login_required 
 def user_profile_image():
     username = request.json.get("username")
-    profile_image = UserMain().get_profile_image_by_username(username)
+    profile_image = UserMain().get_user_by_username(username)
+    profile_image = profile_image[0]["profile_image"]
+    # return jsonify({"response": profile_image.profile_image})
     return jsonify({"response": profile_image})
+
+
+@main.route("chat_history", methods=["POST"])
+@login_required
+def chat_history_endpoint():
+    main_user = g.user
+    target_username = request.json.get("target_username")
+    chat_history = #daha once chatleri varmi yokmu bak yoksa olustur varsa bayla
+    
+
+
+# @main.route("post_message", methods=["POST"])
+# @login_required
+# def post_message():
+#     user = g.user

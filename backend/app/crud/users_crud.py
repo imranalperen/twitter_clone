@@ -6,7 +6,7 @@ from config import UPLOAD_FOLDER_URL
 
 
 class UserMain:
-    def get_profile_image_by_username(self,     username):
+    def get_profile_image_by_username(self, username):
         q = (
             session.query(Users)
             .where(Users.username == username)
@@ -14,6 +14,21 @@ class UserMain:
         )
         profile_image = UPLOAD_FOLDER_URL + q.profile_image
         return profile_image
+
+    def get_user_by_username(self, username):
+        q = (
+            session.query(Users)
+            .where(Users.username == username)
+            .first()
+        )
+        user = []
+        user.append({
+            "id": q.id,
+            "name": q.name,
+            "username": q.username,
+            "profile_image": UPLOAD_FOLDER_URL + q.profile_image,
+        })
+        return user
 
 class UserRegistration:
     def signup(self, name, username, email, password):

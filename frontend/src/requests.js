@@ -1,7 +1,5 @@
 import { API_URL } from "./localsettings";
 
-
-//!signup request
 function signup_request(request_body) {
     const fetched_data = fetch(`${API_URL}/signup`, {
         method: "POST",
@@ -16,7 +14,6 @@ function signup_request(request_body) {
 }
 
 
-//!login request
 function login_request(request_body) {
     const fetched_data = fetch(`${API_URL}/login`, {
         method: "POST",
@@ -43,7 +40,7 @@ function access_token_control() {
     }
 }
 
-//! standart user request
+
 function user_request() {
     const access_token = access_token_control()
 
@@ -60,25 +57,6 @@ function user_request() {
 }
 
 
-//! add tweet request
-// function add_tweet_request(request_body) {
-//     const access_token = access_token_control()
-
-//     const fetched_data = fetch(`${API_URL}/post_tweet`, {
-//         method: "POST",
-//         headers: {
-//             "content-type": "application/json",
-//             "access-token": access_token
-//         },
-//         body: JSON.stringify(request_body)
-//     })
-//     .then((response) => response.json())
-
-//     return fetched_data
-// }
-
-
-//! recommend user request
 function recommend_user_request() {
     const access_token = access_token_control()
 
@@ -96,7 +74,6 @@ function recommend_user_request() {
 }
 
 
-//! follow user request
 function follow_request(user_id) {
     const access_token = access_token_control()
 
@@ -114,7 +91,6 @@ function follow_request(user_id) {
 }
 
 
-//! unfollow user request
 function unfollow_request(user_id) {
     const access_token = access_token_control()
 
@@ -131,7 +107,7 @@ function unfollow_request(user_id) {
     return fetched_data
 }
 
-//! timeline request
+
 function timeline_request() {
     const access_token = access_token_control()
 
@@ -147,7 +123,7 @@ function timeline_request() {
     return fetched_data
 }
 
-//! registration_info_request
+
 function registration_info_request(profile_image, bio) {
     const access_token = access_token_control()
 
@@ -166,7 +142,7 @@ function registration_info_request(profile_image, bio) {
     return fetched_data
 }
 
-//!like request
+
 function like_request(request_body) {
     const access_token = access_token_control()
 
@@ -182,6 +158,7 @@ function like_request(request_body) {
 
     return fetched_data
 }
+
 
 function unlike_request(request_body) {
     const access_token = access_token_control()
@@ -199,6 +176,7 @@ function unlike_request(request_body) {
     return fetched_data
 }
 
+
 function retweet_request(request_body) {
     const access_token = access_token_control()
 
@@ -214,6 +192,7 @@ function retweet_request(request_body) {
 
     return fetched_data
 }
+
 
 function unretweet_request(request_body) {
     const access_token = access_token_control()
@@ -231,6 +210,7 @@ function unretweet_request(request_body) {
     return fetched_data
 }
 
+
 function last_tweet_of_user_request() {
     const access_token = access_token_control()
 
@@ -245,6 +225,7 @@ function last_tweet_of_user_request() {
 
     return fetched_data
 }
+
 
 function add_replied_tweet_request(tweet_body, image, reply_id) {
     const access_token = access_token_control()
@@ -265,6 +246,7 @@ function add_replied_tweet_request(tweet_body, image, reply_id) {
     return fetched_data
 }
 
+
 function tweet_page_request(request_body) {
     const access_token = access_token_control()
 
@@ -280,6 +262,7 @@ function tweet_page_request(request_body) {
 
     return fetched_data
 }
+
 
 function trend_topics_request() {
     const access_token = access_token_control()
@@ -329,6 +312,7 @@ function explore_timeline_request() {
     return fetched_data
 }
 
+
 function profile_request(username) {
     const access_token = access_token_control()
 
@@ -348,6 +332,7 @@ function profile_request(username) {
 
     return fetched_data
 }
+
 
 function profile_tweets_request(username, profile_tab) {
     const access_token = access_token_control()
@@ -369,6 +354,7 @@ function profile_tweets_request(username, profile_tab) {
 
     return fetched_data
 }
+
 
 function update_profile_request(profile_image, name, bio) {
     const access_token = access_token_control()
@@ -429,6 +415,7 @@ function user_follows_request(visit_user_id, purpose) {
     return fetched_data
 }
 
+
 function verification_code_request(mail_adress) {    
     let request_body = {
         "mail_adress": mail_adress
@@ -444,6 +431,7 @@ function verification_code_request(mail_adress) {
 
     return fetched_data
 }
+
 
 function reset_password_request(verify_code, password, mail) {
     let request_body = {
@@ -463,6 +451,7 @@ function reset_password_request(verify_code, password, mail) {
 
     return fetched_data
 }
+
 
 function delete_tweet_request(tweet_id) {
     const access_token = access_token_control()
@@ -503,6 +492,27 @@ function user_profile_image_request(username) {
     return fetched_data
 }
 
+
+function chat_history_request(target_username) {
+    const access_token = access_token_control()
+    
+    let request_body = {
+        "target_username": target_username,
+    }
+    const fetched_data = fetch(`${API_URL}/chat_history`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+
 export {
     signup_request,
     login_request,
@@ -530,5 +540,6 @@ export {
     reset_password_request,
     update_profile_request,
     delete_tweet_request,
-    user_profile_image_request
+    user_profile_image_request,
+    chat_history_request
 }
