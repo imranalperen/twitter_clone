@@ -7,6 +7,7 @@ import router from './router'
 import Datepicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 
+
 // createApp(App).use(router).mount('#app')
 const app = createApp(App)
 app.use(router)

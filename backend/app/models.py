@@ -77,11 +77,4 @@ class VerificationCodes(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     verification_code = Column(Integer)
 
-class Mentions(Base):
-    __tablename__ = "mentions"
-
-    id = Column(Integer, primary_key=True)
-    tweet_id = Column(Integer, ForeignKey("tweets.id"))
-    user_id = Column(Integer, ForeignKey("users.id"))
-
 Base.metadata.create_all(engine)
