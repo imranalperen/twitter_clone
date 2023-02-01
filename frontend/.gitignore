@@ -23,5 +23,5 @@ pnpm-debug.log*
 *.sw?
 
 
-locals.js
+src/locals.js
 notes.md

@@ -31,6 +31,7 @@ pnpm-debug.log*
 .vercel
 
 localsettings.py
-notes.md
-
 /backend/uploads/*.png
+/backend/notes.md
+/frontend/src/locals.js
+/frontend/notes.md
