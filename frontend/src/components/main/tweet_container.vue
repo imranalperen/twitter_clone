@@ -231,9 +231,7 @@ export default {
         },
 
         async delete_tweet(tweet_id) {
-            console.log(tweet_id)
             let response_value = await delete_tweet_request(tweet_id)
-            console.log(response_value)
         }
     },
 }

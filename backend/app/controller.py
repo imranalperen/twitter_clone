@@ -4,7 +4,7 @@ from flask import(
     jsonify,
     g
 )
-from app.crud.users_crud import UserFollow, UserRegistration
+from app.crud.users_crud import UserFollow, UserRegistration, UserMain
 from app.crud.tweet_crud import TweetMain
 from app.crud.timeline_crud import (
     TimelineMain,
@@ -322,3 +322,9 @@ def follows_and_followers():
     return jsonify({"response": response_body})
 
 
+@main.route("user_profile_image", methods=["POST"])
+@login_required 
+def user_profile_image():
+    username = request.json.get("username")
+    profile_image = UserMain().get_profile_image_by_username(username)
+    return jsonify({"response": profile_image})

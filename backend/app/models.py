@@ -77,4 +77,21 @@ class VerificationCodes(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     verification_code = Column(Integer)
 
+
+class Messages(Base):
+    __tablename__ = "messages"
+
+    id = Column(Integer, primary_key=True)
+    sender_id = Column(Integer, ForeignKey("users.id"))
+    message = Column(String(500), nullable=False)
+    date = Column(DateTime(timezone=True), server_default=func.now())
+
+class MessageContacts(Base):
+    __tablename__ = "message_contacts"
+
+    id = Column(Integer, primary_key=True)
+    user_a_id = Column(Integer, ForeignKey("users.id"))
+    user_b_id = Column(Integer, ForeignKey("users.id"))
+    chat_id = Column(Integer, ForeignKey("messages.id"))
+
 Base.metadata.create_all(engine)

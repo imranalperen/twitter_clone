@@ -4,6 +4,17 @@ from app.utils import password_hasher
 from sqlalchemy.sql import and_
 from config import UPLOAD_FOLDER_URL
 
+
+class UserMain:
+    def get_profile_image_by_username(self,     username):
+        q = (
+            session.query(Users)
+            .where(Users.username == username)
+            .first()
+        )
+        profile_image = UPLOAD_FOLDER_URL + q.profile_image
+        return profile_image
+
 class UserRegistration:
     def signup(self, name, username, email, password):
         user_username = (

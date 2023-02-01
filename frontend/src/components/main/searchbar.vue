@@ -1,7 +1,7 @@
 <template>
 <div class="main_searchbar">
     <div class="input">
-        <input id="searchbar_input" type="text" placeholder="Search Clone" @focus="">
+        <input id="searchbar_input" type="text" placeholder="Search Clone">
     </div>
 </div>
 </template>

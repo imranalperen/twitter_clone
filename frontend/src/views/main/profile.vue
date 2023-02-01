@@ -6,7 +6,9 @@
         </div>
         <div class="buttons_container">
             <div class="dm_container" v-if="visited_user.following_situation != 'edit_profile'">
+                <router-link :to="{name: 'message_page', params:{target_username: visited_user.username}}">
                 <img src="@/assets/mail-outline.svg" class="message_image">
+                </router-link>
             </div>
             <div class="follow_container">
                 <button

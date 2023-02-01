@@ -8,7 +8,7 @@
     </div>
     <div class="follow_users" v-if="following_users != ''">
         <div class="user" v-for="user in following_users" :key="user.id">
-            <div class="left">
+            <div class="left" @click="visit_profile(user.username)">
                 <div class="image">
                     <img :src="user.image">
                 </div>
@@ -71,6 +71,9 @@ export default {
             if(response) {
                 user.is_following = false
             }
+        },
+        visit_profile(username) {
+            this.$router.push({name: 'profile', params: {string: `${username}`, profile_tab: null}})
         }
     }
 }
@@ -176,5 +179,7 @@ export default {
     letter-spacing: 2px;
     padding: 1em 2em 2em 2em;
 }
-
+.follow_users {
+    cursor: pointer;
+}
 </style>

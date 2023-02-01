@@ -470,8 +470,27 @@ function delete_tweet_request(tweet_id) {
     let request_body = {
         "tweet_id": tweet_id,
     }
-    console.log(request_body)
     const fetched_data = fetch(`${API_URL}/delete_tweet`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+
+function user_profile_image_request(username) {
+    const access_token = access_token_control()
+    
+    let request_body = {
+        "username": username,
+    }
+    const fetched_data = fetch(`${API_URL}/user_profile_image`, {
         method: "POST",
         headers: {
             "content-type": "application/json",
@@ -511,4 +530,5 @@ export {
     reset_password_request,
     update_profile_request,
     delete_tweet_request,
+    user_profile_image_request
 }

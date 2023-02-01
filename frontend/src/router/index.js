@@ -9,7 +9,9 @@ import home from '@/views/main/home.vue'
 import tweet_page from '@/views/main/tweet_page.vue'
 import topic_page from '@/views/main/topic_page.vue'
 import explore from '@/views/main/explore.vue'
-import profile from '@/views/main/profile.vue';
+import profile from '@/views/main/profile.vue'
+import messages from '@/views/main/messages.vue'
+import message_page from '@/views/main/message_page.vue'
 
 const routes = [
   {
@@ -59,6 +61,16 @@ const routes = [
         path: '/profile/:string/:profile_tab?',
         name: 'profile',
         component: profile
+      },
+      {
+        path: '/messages',
+        name: 'messages',
+        componrnet: messages
+      },
+      {
+        path: '/message_page/:target_username',
+        name: 'message_page',
+        component: message_page
       }
     ]
   }

@@ -26,7 +26,7 @@
             <p class="menu_text">Notifications</p>
         </router-link>
 
-        <router-link class="menu_element" :to="{name: 'home'}">
+        <router-link class="menu_element" :to="{name: 'messages'}">
             <div class="menu_image">
                 <img class="icon" src="@/assets/mail-outline.svg">
             </div>
@@ -53,15 +53,17 @@
     </div>
 
     <div class="user_info_bottom" v-if="user">
-        <div class="user_info_left">
-            <div class="user_info_image">
-                <img :src="user.profile_image" alt="">
+        <router-link :to="{name: 'profile', params:{string: user.username, profile_tab :null}}" class="r_link">
+            <div class="user_info_left">
+                <div class="user_info_image">
+                    <img :src="user.profile_image" alt="">
+                </div>
+                <div class="user_info_right">
+                    <p id="name">{{ user.name }}</p>
+                    <p id="username">@{{ user.username }}</p>
+                </div>
             </div>
-            <div class="user_info_right">
-                <p id="name">{{ user.name }}</p>
-                <p id="username">@{{ user.username }}</p>
-            </div>
-        </div>
+        </router-link>
         <div class="user_info_right_image" @click="logout">
             <img class="icon" src="@/assets/log-out-outline.svg">
         </div>
@@ -196,5 +198,9 @@ export default {
     background-color: red;
     border-radius: 25px;
     background-color: var(--itemBackground);
+}
+
+.r_link {
+    text-decoration: none;
 }
 </style>

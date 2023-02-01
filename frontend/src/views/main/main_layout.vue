@@ -40,6 +40,13 @@
                 v-if="current_url == 'profile'"
                 :user = user
             ></profile>
+            <messages
+                v-if="current_url == 'messages'"
+            ></messages>
+            <message_page
+                v-if="current_url == 'message_page'"
+                :main_user = user
+            ></message_page>
         </div>
     </div>
 
@@ -63,17 +70,19 @@
     
 <script>
 import registration_info from '@/components/registration/registration_info.vue'
-import main_menu from '@/components/main/main_menu.vue';
-import main_trends from '@/components/main/main_trends.vue';
-import who_to_follow from '@/components/main/who_to_follow.vue';
+import main_menu from '@/components/main/main_menu.vue'
+import main_trends from '@/components/main/main_trends.vue'
+import who_to_follow from '@/components/main/who_to_follow.vue'
 import searchbar from '@/components/main/searchbar.vue'
 import main_header from '@/components/main/main_header.vue'
 
 import home from '@/views/main/home.vue'
 import tweet_page from '@/views/main/tweet_page.vue'
-import topic_page from '@/views/main/topic_page.vue';
+import topic_page from '@/views/main/topic_page.vue'
 import explore from '@/views/main/explore.vue'
-import profile from '@/views/main/profile.vue';
+import profile from '@/views/main/profile.vue'
+import messages from '@/views/main/messages.vue'
+import message_page from './message_page.vue'
 
 import { user_request } from '@/requests'
     
@@ -91,7 +100,9 @@ export default {
         tweet_page,
         topic_page,
         explore,
-        profile
+        profile,
+        messages,
+        message_page
     },
 
     data() {
