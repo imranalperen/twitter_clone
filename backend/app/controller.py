@@ -16,7 +16,7 @@ from app.crud.timeline_crud import (
 )
 from app.crud.messages_crud import MessagesMain
 from app.utils import create_access_token
-from app.decorators import login_required
+from app.decorators import login_required, target_user_required
 from app.utils import create_verification_code, send_verfictaion_code_mail
 from config import UPLOAD_FOLDER_URL
 import uuid
@@ -100,17 +100,6 @@ def registration_info():
 @main.route("user", methods=["POST"])
 @login_required
 def user():
-    # user = g.user
-    # profile_image = None
-    # if user.profile_image:
-    #     profile_image = UPLOAD_FOLDER_URL + user.profile_image
-    # return jsonify({
-    #     "id": user.id,
-    #     "username": user.username,
-    #     "name": user.name,
-    #     "profile_image": profile_image
-    # })
-    # Proxy {id: 1, name: 'imranalperen', profile_image: 'http://127.0.0.1:5000/uploads/f2c64d42-f654-44d2-9d1b-918a5c680ca6.png', username: 'imranalperen'}
     user = g.user
     user_information = UserMain().get_user_by_username(user.username)
     return jsonify({"response": user_information})
@@ -331,29 +320,30 @@ def follows_and_followers():
 
 #! MESSAGES
 @main.route("user_profile_image", methods=["POST"])
-@login_required 
+@login_required
+@target_user_required
 def user_profile_image():
-    username = request.json.get("username")
-    profile_image = UserMain().get_user_by_username(username)
-    profile_image = profile_image[0]["profile_image"]
+    profile_image = g.target_user.profile_image
     # return jsonify({"response": profile_image.profile_image})
     return jsonify({"response": profile_image})
 
 
 @main.route("chat_history", methods=["POST"])
 @login_required
+@target_user_required
 def chat_history_endpoint():
     main_user = g.user
-    target_username = request.json.get("target_username")
-    target_user = UserMain().get_user_by_username(target_username)
-    target_user = target_user[0]
+    target_user = g.target_user
     chat_history = MessagesMain().get_chat_history(main_user, target_user)
     return jsonify({"response": chat_history})
 
-    
-
-
-# @main.route("post_message", methods=["POST"])
-# @login_required
-# def post_message():
-#     user = g.user
+@main.route("post_message", methods=["POST"])
+@login_required
+@target_user_required
+def post_message_endpoint():
+    main_user = g.user
+    target_user = g.target_user
+    message_body = request.json.get("message_body")
+    chat_id = MessagesMain().get_chat_id(main_user, target_user)
+    MessagesMain().post_message(main_user, chat_id, message_body)
+    return jsonify({"response": 1})

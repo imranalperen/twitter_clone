@@ -3,6 +3,7 @@ from app.models import Tweets, TweetsLikes, Retweets, Tags
 from app.crud.timeline_crud import TimelineMain
 from sqlalchemy.sql import and_, desc
 from app.utils import hashtag_finder
+from config import UPLOAD_FOLDER_URL
 
 
 class TweetMain:
@@ -11,6 +12,9 @@ class TweetMain:
             if(len(tweet_body) > 280 or len(tweet_body) < 1):
                 return {"status": False, "error": 2001}
         
+        if tweet_image:
+            tweet_image = UPLOAD_FOLDER_URL + tweet_image
+            
         tweet = Tweets(
             user_id = user_id,
             body = tweet_body,

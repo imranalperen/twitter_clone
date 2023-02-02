@@ -4,27 +4,11 @@ from sqlalchemy.sql import and_
 
 class MessagesMain:
     def get_chat_history(self, main_user, target_user):
-        # if main_user.id % 2 == 0:
-        #     user_a = main_user.id
-        #     user_b = target_user["id"]
-        #     contact_query = (
-        #         session.query(MessageContacts)
-        #         .where(MessageContacts.user_a_id == user_a)
-        #         .first()
-        #     )
-        # else:
-        #     user_b = main_user.id
-        #     user_a = target_user["id"]
-        #     contact_query = (
-        #         session.query(MessageContacts)
-        #         .where(MessageContacts.user_a_id == user_a)
-        #         .first()
-        #     )
         contact_query = (
             session.query(MessageContacts)
             .where(and_(
                 MessageContacts.user_a_id == main_user.id,
-                MessageContacts.user_b_id == target_user["id"]
+                MessageContacts.user_b_id == target_user.id
             ))
             .first()
         )
@@ -32,7 +16,7 @@ class MessagesMain:
             contact_query = (
                 session.query(MessageContacts)
                 .where(and_(
-                    MessageContacts.user_a_id == target_user["id"],
+                    MessageContacts.user_a_id == target_user.id,
                     MessageContacts.user_b_id == main_user.id
                 ))
                 .first()
@@ -41,14 +25,14 @@ class MessagesMain:
             #it means there is no contact create a new contact
             contact = MessageContacts(
                 user_a_id = main_user.id,
-                user_b_id = target_user["id"]
+                user_b_id = target_user.id
             )
             session.add(contact)
             session.commit()
             return {"status": "new_chat"}
         
         else:
-            #if there is q.id it means there is a chat contact check for messages
+            #if there is contact_query it means there is a chat contact check for messages
             main_user_messages_query = (
                 session.query(Messages)
                 .where(and_(
@@ -61,7 +45,7 @@ class MessagesMain:
             target_user_messages_query = (
                 session.query(Messages)
                 .where(and_(
-                    Messages.sender_id == target_user["id"],
+                    Messages.sender_id == target_user.id,
                     Messages.chat_id == contact_query.id
                 ))
                 .order_by(Messages.date.desc())
@@ -85,7 +69,32 @@ class MessagesMain:
                     "chat_id": i.chat_id
                 })
             return {"main_user_messages": main_user_messages, "target_user_messages": target_user_messages}
-            
+    
+    def get_chat_id(self, main_user, target_user):
+        chat_query = (
+            session.query(MessageContacts)
+            .where(and_(
+                MessageContacts.user_a_id == main_user.id,
+                MessageContacts.user_b_id == target_user.id
+            ))
+            .first()
+        )
+        if not chat_query:
+            chat_query = (
+                session.query(MessageContacts)
+                .where(and_(
+                    MessageContacts.user_b_id == main_user.id,
+                    MessageContacts.user_a_id == target_user.id
+                ))
+                .first()
+            )
+        return chat_query.id
 
-
-
+    def post_message(self, user, chat_id, message_body):
+        message = Messages(
+            sender_id = user.id,
+            message = message_body,
+            chat_id = chat_id
+        )
+        session.add(message)
+        session.commit()

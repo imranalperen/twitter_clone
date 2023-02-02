@@ -12,7 +12,7 @@ class UserMain:
             .where(Users.username == username)
             .first()
         )
-        profile_image = UPLOAD_FOLDER_URL + q.profile_image
+        profile_image = q.profile_image
         return profile_image
 
     def get_user_by_username(self, username):
@@ -26,8 +26,16 @@ class UserMain:
             "id": q.id,
             "name": q.name,
             "username": q.username,
-            "profile_image": UPLOAD_FOLDER_URL + q.profile_image,
+            "profile_image": q.profile_image,
         })
+        return user
+    
+    def get_user_query_by_username(self, username):
+        user = (
+            session.query(Users)
+            .where(Users.username == username)
+            .first()
+        )
         return user
 
 class UserRegistration:
@@ -101,23 +109,15 @@ class UserRegistration:
     
 
     def update_user_profile_image(self, user, profile_image, bio):
-        # (
-        #     session.query(Users)
-        #     .where(Users.id == user.id)
-        #     .update({
-        #         "profile_image": image,
-        #         "biography": bio
-        #     })
-        # )
         if profile_image:
-            user.profile_image = profile_image
+            user.profile_image = UPLOAD_FOLDER_URL + profile_image
         if bio:
             user.biography = bio
         session.commit()
 
     def edit_user_profile(self, user, image, name, bio):
         if image:
-            user.profile_image = image
+            user.profile_image = UPLOAD_FOLDER_URL + image
         if name:
             user.name = name
         user.biography = bio
@@ -233,7 +233,7 @@ class UserFollow:
                         "id": user.id,
                         "name": user.name,
                         "username": user.username,
-                        "image": UPLOAD_FOLDER_URL + user.profile_image,
+                        "image": user.profile_image,
                         "is_following": is_following
                     })
 
@@ -264,7 +264,7 @@ class UserFollow:
                         "id": user.id,
                         "name": user.name,
                         "username": user.username,
-                        "image": UPLOAD_FOLDER_URL + user.profile_image,
+                        "image": user.profile_image,
                         "is_following": is_following
                     })
         

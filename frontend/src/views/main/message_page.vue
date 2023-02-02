@@ -14,11 +14,11 @@
             <textarea
                 id="message_input"
                 placeholder="Type your message..."
-                v-model="message_text"
+                v-model="message_body"
             ></textarea>
         </div>
         <div class="send_message_container">
-            <img src="@/assets/icons8-sent-26.png" id="sent_message_image">
+            <img src="@/assets/icons8-sent-26.png" id="sent_message_image" @click="validate_message()">
         </div>
     </div>
 
@@ -26,7 +26,10 @@
 </template>
 
 <script>
-import { chat_history_request } from '@/requests'
+import {
+    chat_history_request,
+    send_message_request
+} from '@/requests'
 import chat_banner from '@/components/main/chat_banner.vue'
 export default {
     components: {
@@ -35,25 +38,39 @@ export default {
 
     data() {
         return {
-            message_text: '',
+            message_body: '',
+            main_user_messages: null,
+            target_user_messages: null,
+            target_username: null
         }
     },
     
 
     async beforeCreate() {
-        let target_username = this.$route.fullPath.split("/")[2]
-        let chat_history = await chat_history_request(target_username)
-        console.log(chat_history.response)
+        this.target_username = this.$route.fullPath.split("/")[2]
+        let chat_history = await chat_history_request(this.target_username)
+        this.main_user_messages = chat_history.response["main_user_messages"]
+        this.target_user_messages = chat_history.response["target_user_messages"]
+        console.log(this.main_user_messages)
+        console.log(this.target_user_messages)
     },
 
     methods: {
+        validate_message() {
+            this.send_message()
+        },
 
+        async send_message() {
+            this.target_username = this.$route.fullPath.split("/")[2]
+            let send_message_response = await send_message_request(this.target_username, this.message_body)
+            console.log(send_message_response)
+        }
     },
 
     computed: {
         character_limitor() {
-            if(this.message_text.length > 500){
-                this.message_text = this.message_text.substring(0, 500)
+            if(this.message_body.length > 500){
+                this.message_body = this.message_body.substring(0, 500)
             }
         }
     },

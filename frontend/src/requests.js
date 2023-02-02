@@ -477,7 +477,7 @@ function user_profile_image_request(username) {
     const access_token = access_token_control()
     
     let request_body = {
-        "username": username,
+        "target_username": username,
     }
     const fetched_data = fetch(`${API_URL}/user_profile_image`, {
         method: "POST",
@@ -495,7 +495,6 @@ function user_profile_image_request(username) {
 
 function chat_history_request(target_username) {
     const access_token = access_token_control()
-    
     let request_body = {
         "target_username": target_username,
     }
@@ -510,6 +509,25 @@ function chat_history_request(target_username) {
     .then((response) => response.json())
 
     return fetched_data
+}
+
+function send_message_request(target_username, message_body) {
+    const access_token = access_token_control()
+    let request_body = {
+        "target_username": target_username,
+        "message_body": message_body
+    }
+    const fetched_data = fetch(`${API_URL}/post_message`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data    
 }
 
 
@@ -541,5 +559,6 @@ export {
     update_profile_request,
     delete_tweet_request,
     user_profile_image_request,
-    chat_history_request
+    chat_history_request,
+    send_message_request
 }
