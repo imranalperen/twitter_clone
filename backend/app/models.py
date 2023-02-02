@@ -85,6 +85,7 @@ class Messages(Base):
     sender_id = Column(Integer, ForeignKey("users.id"))
     message = Column(String(500), nullable=False)
     date = Column(DateTime(timezone=True), server_default=func.now())
+    chat_id = Column(Integer, ForeignKey("messages.id"))
 
 class MessageContacts(Base):
     __tablename__ = "message_contacts"
@@ -92,6 +93,5 @@ class MessageContacts(Base):
     id = Column(Integer, primary_key=True)
     user_a_id = Column(Integer, ForeignKey("users.id"))
     user_b_id = Column(Integer, ForeignKey("users.id"))
-    chat_id = Column(Integer, ForeignKey("messages.id"))
 
 Base.metadata.create_all(engine)

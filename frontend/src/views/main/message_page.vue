@@ -42,8 +42,8 @@ export default {
 
     async beforeCreate() {
         let target_username = this.$route.fullPath.split("/")[2]
-        // let chat_history = await chat_history_request(target_username)
-        // console.log(chat_history)
+        let chat_history = await chat_history_request(target_username)
+        console.log(chat_history.response)
     },
 
     methods: {

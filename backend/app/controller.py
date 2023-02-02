@@ -14,6 +14,7 @@ from app.crud.timeline_crud import (
     Explore,
     UserProfileFeed
 )
+from app.crud.messages_crud import MessagesMain
 from app.utils import create_access_token
 from app.decorators import login_required
 from app.utils import create_verification_code, send_verfictaion_code_mail
@@ -344,7 +345,11 @@ def user_profile_image():
 def chat_history_endpoint():
     main_user = g.user
     target_username = request.json.get("target_username")
-    chat_history = #daha once chatleri varmi yokmu bak yoksa olustur varsa bayla
+    target_user = UserMain().get_user_by_username(target_username)
+    target_user = target_user[0]
+    chat_history = MessagesMain().get_chat_history(main_user, target_user)
+    return jsonify({"response": chat_history})
+
     
 
 
