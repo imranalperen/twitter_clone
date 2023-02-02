@@ -39,8 +39,7 @@ class MessagesMain:
                     Messages.sender_id == main_user.id,
                     Messages.chat_id == contact_query.id
                 ))
-                .order_by(Messages.date.desc())
-                .all()
+                # .all()
             )
             target_user_messages_query = (
                 session.query(Messages)
@@ -48,27 +47,39 @@ class MessagesMain:
                     Messages.sender_id == target_user.id,
                     Messages.chat_id == contact_query.id
                 ))
-                .order_by(Messages.date.desc())
-                .all()
+                # .all()
             )
-
-            main_user_messages = []
-            for i in main_user_messages_query:
-                main_user_messages.append({
-                    "message": i.message,
-                    "date": i.date,
-                    "sender_id": i.sender_id,
-                    "chat_id": i.chat_id
+            messages_query = (
+                main_user_messages_query.union(target_user_messages_query)
+                .order_by(Messages.date).all()
+            )
+            messages = []
+            for message in messages_query:
+                messages.append({
+                    "id": message.id,
+                    "message": message.message,
+                    "date": message.date,
+                    "sender_id": message.sender_id,
+                    "chat_id": message.chat_id
                 })
-            target_user_messages = []
-            for i in target_user_messages_query:
-                target_user_messages.append({
-                    "message": i.message,
-                    "date": i.date,
-                    "sender_id": i.sender_id,
-                    "chat_id": i.chat_id
-                })
-            return {"main_user_messages": main_user_messages, "target_user_messages": target_user_messages}
+            return messages
+            # main_user_messages = []
+            # for i in main_user_messages_query:
+            #     main_user_messages.append({
+            #         "message": i.message,
+            #         "date": i.date,
+            #         "sender_id": i.sender_id,
+            #         "chat_id": i.chat_id
+            #     })
+            # target_user_messages = []
+            # for i in target_user_messages_query:
+            #     target_user_messages.append({
+            #         "message": i.message,
+            #         "date": i.date,
+            #         "sender_id": i.sender_id,
+            #         "chat_id": i.chat_id
+            #     })
+            # return {"main_user_messages": main_user_messages, "target_user_messages": target_user_messages}
     
     def get_chat_id(self, main_user, target_user):
         chat_query = (
