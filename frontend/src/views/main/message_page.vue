@@ -1,92 +1,11 @@
-<style scoped>
-.chat_page_general_container {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-    height: 100vh;
-    padding: .5em;
-}
-
-.chat_banner_container {
-    position: -webkit-sticky;
-    position: sticky;
-    top: 0;
-    background-color: rgba(21, 32, 43, .9);
-    padding: 0 .2em .2em .2em;
-}
-
-.text_message_container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.message_text_container {
-    padding-bottom: .5em;
-    background-color: rgba(21, 32, 43, .9);
-}
-
-#message_input {
-    background-color: var(--searchbarBG);
-    border-style: none;
-    padding: .7em;
-    font-size: 1em;
-    border-radius: 25px;
-    margin-top: .3em;
-    text-indent: 10px;
-    outline: none;
-    resize: none;
-}
-
-::placeholder {
-    color: var(--itemBackground);
-    font-size: 1em;
-    font-weight: 300;
-}
-
-#message_input:focus::placeholder {
-  color: transparent;
-}
-
-#sent_message_image {
-    width: 29px;
-    height: 28px;
-    filter: invert(52%) sepia(53%) saturate(3711%) hue-rotate(179deg) brightness(99%) contrast(90%);
-    cursor: pointer;
-}
-
-.main_user_message_container {
-    display: flex;
-    justify-content: end;
-}
-
-.target_user_message_container {
-    display: flex;
-}
-
-.main_user_message_body {
-    background-color: var(--tweetBtnBg);
-}
-
-.target_user_message_body {
-    background-color: var(--itemBackground);
-}
-.main_user_message_body, .target_user_message_body {
-    display: inline;
-    padding: .7em;
-    max-width: 80%;
-    margin: .5em;
-    border-radius: 15px;
-}
-</style>
 <template>
 <div class="chat_page_general_container">
     <div class="chat_container">
         <div class="chat_banner_container">
             <chat_banner/>
         </div>
-        <div class="messages">
-            <div class="message" v-for="message in chat_history" :key="message.id">
+        <div class="messages" v-if="main_user">
+            <div class="message" v-for="message in chat_history">
                 <div class="main_user_message_container" v-if="message.sender_id == main_user.id">
                     <div class="main_user_message_body">
                         <p class="main_user_message_text">
@@ -113,6 +32,16 @@
                 placeholder="Type your message..."
                 v-model="message_body"
             ></textarea>
+        </div>
+        <div class="send_image_container">
+            <!-- <div class="icon_container">
+                    <input type="file"
+                    id="selected_file"
+                    style="display: none;"
+                    @change="validate_image_size"
+                /> -->
+            <img class="icon" src="@/assets/image-outline.svg">
+            <!-- </div> -->
         </div>
         <div class="send_message_container">
             <img src="@/assets/icons8-sent-26.png" id="sent_message_image" @click="validate_message()">
@@ -171,3 +100,102 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+.chat_page_general_container {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 100vh;
+    padding: .5em;
+}
+
+.chat_banner_container {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    background-color: rgba(21, 32, 43, .9);
+    padding: 0 .2em .2em .2em;
+}
+
+.text_message_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.message_text_container {
+    padding-bottom: .5em;
+    background-color: rgba(21, 32, 43, .9);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+#message_input {
+    background-color: var(--searchbarBG);
+    border-style: none;
+    padding: .7em;
+    font-size: 1em;
+    border-radius: 25px;
+    margin-top: .3em;
+    text-indent: 10px;
+    outline: none;
+    resize: none;
+}
+
+::placeholder {
+    color: var(--itemBackground);
+    font-size: 1em;
+    font-weight: 300;
+}
+
+#message_input:focus::placeholder {
+  color: transparent;
+}
+
+#sent_message_image {
+    width: 29px;
+    height: 28px;
+    filter: invert(52%) sepia(53%) saturate(3711%) hue-rotate(179deg) brightness(99%) contrast(90%);
+    cursor: pointer;
+}
+
+.main_user_message_container {
+    display: flex;
+    justify-content: end;
+}
+
+.target_user_message_container {
+    display: flex;
+}
+
+.main_user_message_body {
+    background-color: var(--tweetBtnBg);
+}
+
+.target_user_message_body {
+    background-color: var(--itemBackground);
+}
+.main_user_message_body, .target_user_message_body {
+    display: inline;
+    padding: .7em;
+    max-width: 80%;
+    margin: .5em;
+    border-radius: 15px;
+}
+
+.icon {
+    width: 45px;
+    filter: invert(45%) sepia(100%) saturate(662%) hue-rotate(173deg) brightness(94%) contrast(100%);
+    padding: .5em;
+    margin: 0 .5em 0 .5em;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+.icon:hover {
+    transition: .1s;
+    background: var(--itemBackground);
+}
+</style>

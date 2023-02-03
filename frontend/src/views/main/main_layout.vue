@@ -42,6 +42,7 @@
             ></profile>
             <messages
                 v-if="current_url == 'messages'"
+                :main_user = user
             ></messages>
             <message_page
                 v-if="current_url == 'message_page'"

@@ -347,3 +347,11 @@ def post_message_endpoint():
     chat_id = MessagesMain().get_chat_id(main_user, target_user)
     MessagesMain().post_message(main_user, chat_id, message_body)
     return jsonify({"response": 1})
+
+
+@main.route("chat_contacts", methods=["POST"])
+@login_required
+def chat_contacts_endpoint():
+    user = g.user
+    chat_contacts = MessagesMain().get_user_chat_contacts(user)
+    return jsonify({"response": chat_contacts})

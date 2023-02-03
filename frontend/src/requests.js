@@ -527,7 +527,23 @@ function send_message_request(target_username, message_body) {
     })
     .then((response) => response.json())
 
-    return fetched_data    
+    return fetched_data
+}
+
+
+function chat_contacts_request() {
+    const access_token = access_token_control()
+
+    const fetched_data = fetch(`${API_URL}/chat_contacts`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        }
+    })
+    .then((response) => response.json())
+
+    return fetched_data
 }
 
 
@@ -560,5 +576,6 @@ export {
     delete_tweet_request,
     user_profile_image_request,
     chat_history_request,
-    send_message_request
+    send_message_request,
+    chat_contacts_request
 }

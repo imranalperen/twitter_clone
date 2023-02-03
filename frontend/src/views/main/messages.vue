@@ -15,8 +15,22 @@
 </template>
 
 <script>
+import { chat_contacts_request } from '@/requests'
 export default {
-    props: ["user"]
+    props: ["main_user"],
+
+    data() {
+        return {
+            chat_contacts: null
+        }
+    },
+
+    async beforeCreate() {
+        let chat_contacts = await chat_contacts_request()
+        console.log(chat_contacts)
+    }
+
+    
 }
 
 </script>

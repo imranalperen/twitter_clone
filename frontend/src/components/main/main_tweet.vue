@@ -200,6 +200,7 @@ export default {
     margin-left: 1em;
     padding: 3px;
     border-radius: 50%;
+    cursor: pointer;
 }
 
 .icon:hover {

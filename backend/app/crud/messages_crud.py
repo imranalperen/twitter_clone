@@ -109,3 +109,65 @@ class MessagesMain:
         )
         session.add(message)
         session.commit()
+
+
+    def get_user_chat_contacts(self, user):
+        #check as user a
+        q1 = (
+            session.query(MessageContacts)
+            .where(MessageContacts.user_a_id == user.id)
+        )
+        #check as user b
+        q2 = (
+            session.query(MessageContacts)
+            .where(MessageContacts.user_b_id == user.id)
+        )
+
+        q = q1.union(q2).all()
+        
+        chat_ids = []
+        for i in q:
+            chat_ids.append({
+                "id": i.id
+            })
+        # now we can check users and messages which ids = chat_ids
+        last_messages = []
+        for i in chat_ids:
+            message_query = (
+                session.query(Messages)
+                .where(Messages.chat_id == i["id"])
+                .order_by(Messages.date.desc())
+                .limit(1)
+                .first()
+            )
+            #we need user image and name
+            if message_query.sender_id == user.id:
+                temp_q = (
+                    session.query(MessageContacts)
+                    .where(MessageContacts.id == message_query.chat_id)
+                    .first()
+                )
+                if temp_q.user_a_id == message_query.sender_id:
+                    target_user_id = temp_q.user_b_id
+                else:
+                    target_user_id = temp_q.user_a_id
+            else:
+                target_user_id = message_query.sender_id
+            
+            user_query = (
+                session.query(Users)
+                .where(Users.id == target_user_id)
+                .first()
+            )
+
+            last_messages.append({
+                "user_id": user_query.id,
+                "name": user_query.name,
+                "username": user_query.username,
+                "profile_image": user_query.profile_image,
+                "message": message_query.message,
+                "sender_id": message_query.sender_id,
+                "date": message_query.date
+            })
+        
+        return last_messages
