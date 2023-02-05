@@ -462,6 +462,54 @@ class TweetPage:
         
         return {"parent_tweet": parent_tweet, "replied_tweet": replied_tweet, "child_tweets": child_tweets}
     
+    def last_reply_of_tweet(self, user_id, tweet_id):
+        q = (
+            session.query(
+                Tweets.id,
+                Tweets.time_created,
+                Tweets.image,
+                Tweets.body,
+                Tweets.replied_to,
+                Tweets.is_deleted,
+                Users.id.label("user_id"),
+                Users.name,
+                Users.username,
+                Users.profile_image,
+            )
+            .join(Users, Users.id == Tweets.user_id)
+            .where(and_(
+                Tweets.replied_to == tweet_id,
+                Tweets.user_id == user_id
+            ))
+            .order_by(desc(Tweets.time_created))
+            .first()
+        )
+        
+        tweet_interactions = TimelineUtils.get_tweet_interactions(self,
+                                                                  tweet_id = q.id,
+                                                                  user_id = user_id)
+        print(q.body)
+        tweet = []
+        tweet.append({
+            "tweet_id": q.id,
+            "user_id": q.user_id,
+            "name": q.name,
+            "username": q.username,
+            "profile_image": q.profile_image,
+            "time_created": q.time_created,
+            "body": q.body,
+            "image": q.image,
+            "like_count": tweet_interactions["like_count"],
+            "retweet_count": tweet_interactions["retweet_count"],
+            "reply_count": tweet_interactions["reply_count"],
+            "replied_to": q.replied_to,
+            "is_retweeted": tweet_interactions["is_retweeted"],
+            "is_liked": tweet_interactions['is_liked'],
+            "is_deleted": q.is_deleted
+        })
+        
+        return {"status": True, "tweet": tweet}
+    
     
 class Explore:
     def create_explore_timeline(self, user_id):

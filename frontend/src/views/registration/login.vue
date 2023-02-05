@@ -44,6 +44,14 @@ export default {
         }
     },
 
+    mounted() {
+        window.addEventListener("keydown", function(e) {
+            if(e.code == "Enter" && !e.shiftKey) {
+                document.getElementById("login_btn").click()
+            }
+        })
+    },
+
     methods: {
         async login() {
             if(this.username == '' || this.password == '') {

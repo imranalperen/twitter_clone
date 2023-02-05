@@ -579,10 +579,26 @@ function mark_as_read_message_request(chat_id) {
     })
     .then((response) => response.json())
 
-    return fetched_data    
+    return fetched_data
 }
 
+function last_reply_of_tweet_request(tweet_id) {
+    const access_token = access_token_control()
+    let request_body = {
+        "tweet_id": tweet_id,
+    }
+    const fetched_data = fetch(`${API_URL}/last_reply_of_user`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
 
+    return fetched_data
+}
 
 export {
     signup_request,
@@ -616,5 +632,6 @@ export {
     send_message_request,
     chat_contacts_request,
     get_chat_id_request,
-    mark_as_read_message_request
+    mark_as_read_message_request,
+    last_reply_of_tweet_request
 }

@@ -51,6 +51,14 @@ export default {
         }
     },
 
+    mounted() {
+        window.addEventListener("keydown", function(e) {
+            if(e.code == "Enter" && !e.shiftKey) {
+                document.getElementById("signup_btn").click()
+            }
+        })
+    },
+
     methods: {
         validate_form() {
             if( this.name == '' || this.username == '' || this.email == '' || this.password == '' || this.verify_password == '') {

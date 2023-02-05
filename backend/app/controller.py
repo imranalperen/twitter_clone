@@ -241,6 +241,15 @@ def tweet_page():
     return jsonify({"response": tweet_page_response})
 
 
+@main.route("last_reply_of_user", methods=["POST"])
+@login_required
+def last_reply():
+    user = g.user
+    tweet_id = request.json.get("tweet_id")
+    tweet_page_response = TweetPage().last_reply_of_tweet(user.id, tweet_id)
+    return jsonify({"response": tweet_page_response})
+
+
 #!TRENDS
 @main.route("trend_topics", methods=["POST"])
 @login_required

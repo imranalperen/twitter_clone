@@ -1,5 +1,5 @@
 <template>
-    <div class="reply_tweet_container">
+    <div class="reply_tweet_container" id="reply_tweet_container_general">
         <div class="image_container" v-if="preview_image">
             <img :src="preview_image" class="image_preview"/>
             <img id="clear_image_btn" src="@/assets/icons8-xbox-x-50.png" @click="clear_preview_image">
@@ -43,6 +43,14 @@ export default {
             preview_image: null,
             image_file: null,
         }
+    },
+
+    mounted() {
+        document.getElementById("reply_tweet_container_general").addEventListener("keydown", function(e) {
+            if(e.code == "Enter" && !e.shiftKey) {
+                document.getElementById("tweet_reply_btn").click()
+            }
+        })
     },
 
     methods: {
@@ -139,6 +147,7 @@ export default {
 .footer {
     display: flex;
     justify-content: space-between;
+    padding-bottom: .3em;
 }
 
 #tweet_reply_btn {

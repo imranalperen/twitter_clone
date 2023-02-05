@@ -6,7 +6,7 @@
             <tweet_container
                 :user="user"
                 :tweets="parent_tweet"
-                @add_new_tweet_timeline_emit = "add_new_tweet_timeline(tweet_id)"
+                @add_new_tweet_timeline_emit = "add_new_tweet_timeline()"
                 :is_big="true"
                 :is_parent="is_parent"
             />
@@ -16,7 +16,7 @@
             <tweet_container
                 :user="user"
                 :tweets="replied_tweet"
-                @add_new_tweet_timeline_emit = "add_new_tweet_timeline(tweet_id)"
+                @add_new_tweet_timeline_emit = "add_new_tweet_timeline()"
                 :is_big="true"
                 :is_tweet_page_reply = "true"
             />
@@ -27,14 +27,13 @@
         <tweet_container
             :user="user"
             :tweets="child_tweets"
-            @add_new_tweet_timeline_emit = "add_new_tweet_timeline(tweet_id)"
         />
     </div>
 </div>
 </template>
 
 <script>
-import { tweet_page_request } from '@/requests'
+import { tweet_page_request, last_reply_of_tweet_request } from '@/requests'
 import tweet_container from '@/components/main/tweet_container.vue'
 import css_test from '@/components/css_test.vue'
 
@@ -68,8 +67,13 @@ export default {
     },
 
     methods: {
-        add_new_tweet_timeline(e) {
-            console.log(e)
+        async add_new_tweet_timeline() {
+            // let new_tweet_object = await last_tweet_of_user_request()
+            // this.timeline_elements = [new_tweet_object.response[0]].concat(this.timeline_elements)
+            const tweet_id = this.$route.fullPath.split("/")[2]
+            let new_tweet_object = await last_reply_of_tweet_request(tweet_id)
+            // console.log(new_tweet_object.response.tweet[0])
+            this.child_tweets = [new_tweet_object.response.tweet[0]].concat(this.child_tweets)
         }
     },
 }

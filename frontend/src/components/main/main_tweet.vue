@@ -1,5 +1,5 @@
 <template>
-<div class="tweet_container">
+<div class="tweet_container" id="tweet_container_general">
     <div class="left">
         <div class="profile_image" v-if="user">
             <img :src="user.profile_image">
@@ -73,6 +73,14 @@ export default {
             preview_image: null,
             image_file: null,
         }
+    },
+
+    mounted() {
+        document.getElementById("tweet_container_general").addEventListener("keydown", function(e) {
+            if(e.code == "Enter" && !e.shiftKey) {
+                document.getElementById("tweet_btn").click()
+            }
+        })
     },
 
     methods: {
