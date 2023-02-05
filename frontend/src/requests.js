@@ -546,6 +546,43 @@ function chat_contacts_request() {
     return fetched_data
 }
 
+function get_chat_id_request(target_username) {
+    const access_token = access_token_control()
+    let request_body = {
+        "target_username": target_username,
+    }
+    const fetched_data = fetch(`${API_URL}/get_chat_id`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+function mark_as_read_message_request(chat_id) {
+    const access_token = access_token_control()
+    let request_body = {
+        "chat_id": chat_id,
+    }
+    const fetched_data = fetch(`${API_URL}/mark_as_read`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data    
+}
+
+
 
 export {
     signup_request,
@@ -577,5 +614,7 @@ export {
     user_profile_image_request,
     chat_history_request,
     send_message_request,
-    chat_contacts_request
+    chat_contacts_request,
+    get_chat_id_request,
+    mark_as_read_message_request
 }

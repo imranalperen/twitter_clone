@@ -70,7 +70,7 @@ const routes = [
       {
         path: '/message_page/:target_username',
         name: 'message_page',
-        component: message_page
+        component: message_page,
       }
     ]
   }

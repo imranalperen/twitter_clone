@@ -4,7 +4,7 @@
         <div class="chat_banner_container">
             <chat_banner/>
         </div>
-        <div class="messages" v-if="main_user">
+        <div id="messages" v-if="main_user">
             <div class="message" v-for="message in chat_history">
                 <div class="main_user_message_container" v-if="message.sender_id == main_user.id">
                     <div class="main_user_message_body">
@@ -14,7 +14,7 @@
                     </div>
                 </div>
                 <div class="target_user_message_container" v-if="message.sender_id != main_user.id">
-                    <div class="target_user_message_body">
+                    <div class="target_user_message_body" v-if="message.message">
                         <p class="target_user_message_text">
                             {{ message.message }}
                         </p>
@@ -54,9 +54,13 @@
 <script>
 import {
     chat_history_request,
-    send_message_request
+    send_message_request,
+    get_chat_id_request,
+    mark_as_read_message_request
 } from '@/requests'
 import chat_banner from '@/components/main/chat_banner.vue'
+import { ABLY_API_KEY } from '@/localsettings'
+import Ably from 'ably'
 export default {
     components: {
         chat_banner
@@ -67,27 +71,60 @@ export default {
     data() {
         return {
             message_body: '',
+            message_body_temp: null,
             target_username: null,
             chat_history: null,
+            chat_id: null,
+            ably_channel: null
         }
     },
     
 
     async beforeCreate() {
         this.target_username = this.$route.fullPath.split("/")[2]
+        this.chat_id = await get_chat_id_request(this.target_username)
+        this.chat_id = this.chat_id.response
+
+        this.target_username = this.$route.fullPath.split("/")[2]
         this.chat_history = await chat_history_request(this.target_username)
         this.chat_history = this.chat_history.response
+
+        mark_as_read_message_request(this.chat_id)
+
+        const ably = new Ably.Realtime.Promise(`${ABLY_API_KEY}`)
+        this.ably_channel = ably.channels.get(`${this.chat_id}`)
+        await ably.connection.once('connected');
+        await this.ably_channel.subscribe(`${this.chat_id}`, (message) => {
+            //last message add as first element of chat history
+            const msg_data = message.data
+            const msg = {
+                "chat_id": msg_data.chat_id,
+                "date": msg_data.date,
+                "message": msg_data.message,
+                "sender_id": msg_data.sender_id,
+            }
+            this.chat_history = [msg].concat(this.chat_history)
+        });
+    },
+
+    mounted() {
+        document.getElementById("message_input").addEventListener('keyup', function(e) {
+            if(e.code == "Enter") {
+                document.getElementById("sent_message_image").click()
+            }
+        });
     },
 
     methods: {
         validate_message() {
+            this.message_body_temp = this.message_body
+            this.message_body = ''
             this.send_message()
         },
 
         async send_message() {
             this.target_username = this.$route.fullPath.split("/")[2]
-            let send_message_response = await send_message_request(this.target_username, this.message_body)
-            console.log(send_message_response)
+            await send_message_request(this.target_username, this.message_body_temp)
         }
     },
 
@@ -106,7 +143,8 @@ export default {
     display: flex;
     justify-content: space-between;
     flex-direction: column;
-    height: 100vh;
+
+    /* height: 100vh; */
     padding: .5em;
 }
 
@@ -197,5 +235,16 @@ export default {
 .icon:hover {
     transition: .1s;
     background: var(--itemBackground);
+}
+#messages {
+    overflow: scroll;
+    display: flex;
+    flex-direction: column-reverse;
+    height: 82vh;
+}
+
+.chat_container {
+    height: 90vh;
+    /* development */
 }
 </style>

@@ -17,10 +17,11 @@ from app.crud.timeline_crud import (
 from app.crud.messages_crud import MessagesMain
 from app.utils import create_access_token
 from app.decorators import login_required, target_user_required
-from app.utils import create_verification_code, send_verfictaion_code_mail
+from app.utils import create_verification_code, send_verfictaion_code_mail, publish_message
 from config import UPLOAD_FOLDER_URL
 import uuid
 import os
+import asyncio
 
 
 main = Blueprint("main", __name__, url_prefix="/api")
@@ -337,6 +338,16 @@ def chat_history_endpoint():
     chat_history = MessagesMain().get_chat_history(main_user, target_user)
     return jsonify({"response": chat_history})
 
+@main.route("get_chat_id", methods=["POST"])
+@login_required
+@target_user_required
+def get_chat_id_endpoint():
+    main_user = g.user
+    target_user = g.target_user
+    chat_id = MessagesMain().get_chat_id(main_user, target_user)
+    return jsonify({"response": chat_id})
+
+
 @main.route("post_message", methods=["POST"])
 @login_required
 @target_user_required
@@ -346,6 +357,7 @@ def post_message_endpoint():
     message_body = request.json.get("message_body")
     chat_id = MessagesMain().get_chat_id(main_user, target_user)
     MessagesMain().post_message(main_user, chat_id, message_body)
+    asyncio.run(publish_message(main_user, chat_id, message_body))
     return jsonify({"response": 1})
 
 
@@ -355,3 +367,12 @@ def chat_contacts_endpoint():
     user = g.user
     chat_contacts = MessagesMain().get_user_chat_contacts(user)
     return jsonify({"response": chat_contacts})
+
+
+@main.route("mark_as_read", methods=["POST"])
+@login_required
+def mark_as_read_endpoint():
+    user = g.user
+    chat_id = request.json.get("chat_id")
+    MessagesMain().mark_as_read(user, chat_id)
+    return jsonify({"response": 1})

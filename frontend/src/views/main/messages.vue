@@ -1,15 +1,15 @@
 <template>
-<div class="messages_list_general_container">
+<div class="messages_list_general_container" v-if="filtered_chat_contacts && main_user">
     <div class="messages_list_search_box">
         <input
             id="search_box"
             type="text"
-            placeholder="Search Name, Username or Message"
+            placeholder="Search By Username"
             v-model="serach_input"
             @input="filter_chats">
     </div>
-    <div class="users_list" v-if="filtered_chat_contacts">
-        <div class="user" v-for="chat in filtered_chat_contacts" @click="push_message_page(chat.username)" :key="chat.id">
+    <div class="users_list">
+        <div class="user" v-for="chat in filtered_chat_contacts.slice().reverse()" @click="push_message_page(chat.username)" :key="chat.id">
             <div class="left">
                 <div class="profile_image_container">
                     <img class="prifle_image" :src="chat.profile_image">
@@ -27,17 +27,14 @@
                 <div class="middle_middle">
                     <p class="you" v-if="chat.sender_id == main_user.id">You: </p>
                     <p class="you" v-else>{{ chat.name }}:</p>
-                    <!-- <p class="message_preview">{{ chat.message }}</p> -->
                     <p class="message_preview">{{ chat_message_length_calculator(chat.message) }}</p>
                 </div>
                 <div class="middle_bottom">
-                    <!--TODO mesaj saatinin gorunumunu ayarla  -->
-                    <p>{{ chat.date }}</p>
-                    <!-- <p>15:37</p> -->
+                    <p class="date">{{ chat.date }}</p>
                 </div>
             </div>
             <div class="right">
-                <p class="notification">1</p>
+                <p class="notification" v-if="chat.message_count">{{ chat.message_count }}</p>
             </div>
         </div>
     </div>
@@ -46,6 +43,7 @@
 
 <script>
 import { chat_contacts_request } from '@/requests'
+
 export default {
     props: ["main_user"],
 
@@ -81,7 +79,7 @@ export default {
             }
             else {
                 this.filtered_chat_contacts = this.chat_contacts.filter(chat => {
-                    return (chat.username && chat.name && chat.message).toLowerCase().includes(this.serach_input.toLowerCase())
+                    return (chat.username).toLowerCase().includes(this.serach_input.toLowerCase())
                 })                
             }
         }
@@ -140,27 +138,11 @@ export default {
     transition: .2s;
 }
 
-/* .user {
-    display: flex;
-    flex-direction: row;
-}
-
-.left {
-    flex: 1;
-}
-
-.middle {
-    flex: 4;
-}
-
-.right {
-    flex: 1;
-} */
-
 .notification {
     display: flex;
     justify-content: center;
     background-color: var(--tweetBtnBg);
+    border-radius: 35px;
 }
 
 .prifle_image {

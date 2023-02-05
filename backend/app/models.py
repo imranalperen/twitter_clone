@@ -8,6 +8,7 @@ from sqlalchemy import (
     ForeignKey,
     Boolean
 )
+from sqlalchemy.orm import relationship
 
 
 class Users(Base):
@@ -77,8 +78,8 @@ class VerificationCodes(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
     verification_code = Column(Integer)
 
-class MessageContacts(Base):
-    __tablename__ = "message_contacts"
+class Chats(Base):
+    __tablename__ = "chats"
 
     id = Column(Integer, primary_key=True)
     user_a_id = Column(Integer, ForeignKey("users.id"))
@@ -91,6 +92,7 @@ class Messages(Base):
     sender_id = Column(Integer, ForeignKey("users.id"))
     message = Column(String(500), nullable=False)
     date = Column(DateTime(timezone=True), server_default=func.now())
-    chat_id = Column(Integer, ForeignKey("message_contacts.id"))
+    chat_id = Column(Integer, ForeignKey("chats.id"))
+    is_readed = Column(Boolean, default=False)
 
 Base.metadata.create_all(engine)

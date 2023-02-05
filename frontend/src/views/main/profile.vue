@@ -78,7 +78,6 @@
             :tweets="tweets"
         />
     </div>
-
     <div class="modal_container" v-if="modal_bool">
         <div class="sticky_container">
             <div v-if="active_modal == 'edit_profile'" class="sticky_modal">
@@ -105,6 +104,7 @@
             </div>
         </div>
     </div>
+
 </div>
 </template>
 
@@ -134,7 +134,7 @@ export default {
             tab_name: null,
             tweets: null,
             modal_bool: false,
-            active_modal: ''
+            active_modal: '',
         }
     },
 
@@ -235,9 +235,7 @@ export default {
     align-items: center;
     background-color: rgba(52, 64, 77, .5);
     z-index: 10;
-
 }
-
 /* PROFILE */
 .profile_page_general_container {
     display: flex;

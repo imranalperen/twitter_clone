@@ -1,29 +1,29 @@
 from app.db import session
-from app.models import MessageContacts, Messages, Users
-from sqlalchemy.sql import and_
+from app.models import Chats, Messages, Users
+from sqlalchemy.sql import and_, or_
 
 class MessagesMain:
     def get_chat_history(self, main_user, target_user):
         contact_query = (
-            session.query(MessageContacts)
+            session.query(Chats)
             .where(and_(
-                MessageContacts.user_a_id == main_user.id,
-                MessageContacts.user_b_id == target_user.id
+                Chats.user_a_id == main_user.id,
+                Chats.user_b_id == target_user.id
             ))
             .first()
         )
         if not contact_query:
             contact_query = (
-                session.query(MessageContacts)
+                session.query(Chats)
                 .where(and_(
-                    MessageContacts.user_a_id == target_user.id,
-                    MessageContacts.user_b_id == main_user.id
+                    Chats.user_a_id == target_user.id,
+                    Chats.user_b_id == main_user.id
                 ))
                 .first()
             )
         if not contact_query:
             #it means there is no contact create a new contact
-            contact = MessageContacts(
+            contact = Chats(
                 user_a_id = main_user.id,
                 user_b_id = target_user.id
             )
@@ -51,54 +51,38 @@ class MessagesMain:
             )
             messages_query = (
                 main_user_messages_query.union(target_user_messages_query)
-                .order_by(Messages.date).all()
+                .order_by(Messages.date.desc()).all()
             )
             messages = []
             for message in messages_query:
                 messages.append({
-                    "id": message.id,
                     "message": message.message,
                     "date": message.date,
                     "sender_id": message.sender_id,
                     "chat_id": message.chat_id
                 })
             return messages
-            # main_user_messages = []
-            # for i in main_user_messages_query:
-            #     main_user_messages.append({
-            #         "message": i.message,
-            #         "date": i.date,
-            #         "sender_id": i.sender_id,
-            #         "chat_id": i.chat_id
-            #     })
-            # target_user_messages = []
-            # for i in target_user_messages_query:
-            #     target_user_messages.append({
-            #         "message": i.message,
-            #         "date": i.date,
-            #         "sender_id": i.sender_id,
-            #         "chat_id": i.chat_id
-            #     })
-            # return {"main_user_messages": main_user_messages, "target_user_messages": target_user_messages}
     
     def get_chat_id(self, main_user, target_user):
         chat_query = (
-            session.query(MessageContacts)
+            session.query(Chats)
             .where(and_(
-                MessageContacts.user_a_id == main_user.id,
-                MessageContacts.user_b_id == target_user.id
+                Chats.user_a_id == main_user.id,
+                Chats.user_b_id == target_user.id
             ))
             .first()
         )
         if not chat_query:
             chat_query = (
-                session.query(MessageContacts)
+                session.query(Chats)
                 .where(and_(
-                    MessageContacts.user_b_id == main_user.id,
-                    MessageContacts.user_a_id == target_user.id
+                    Chats.user_b_id == main_user.id,
+                    Chats.user_a_id == target_user.id
                 ))
                 .first()
             )
+        if not chat_query:
+            return None
         return chat_query.id
 
     def post_message(self, user, chat_id, message_body):
@@ -113,17 +97,14 @@ class MessagesMain:
 
     def get_user_chat_contacts(self, user):
         #check as user a
-        q1 = (
-            session.query(MessageContacts)
-            .where(MessageContacts.user_a_id == user.id)
+        q = (
+            session.query(Chats)
+            .where(
+            or_(
+                Chats.user_a_id == user.id,
+                Chats.user_b_id == user.id))
+            .all()
         )
-        #check as user b
-        q2 = (
-            session.query(MessageContacts)
-            .where(MessageContacts.user_b_id == user.id)
-        )
-
-        q = q1.union(q2).all()
         
         chat_ids = []
         for i in q:
@@ -136,15 +117,15 @@ class MessagesMain:
             message_query = (
                 session.query(Messages)
                 .where(Messages.chat_id == i["id"])
+                #chat id si bu olan sender id si diger taraf olan okunmamis mesajlarin sayisin ibildirim olarak bas
                 .order_by(Messages.date.desc())
-                .limit(1)
                 .first()
             )
             #we need user image and name
             if message_query.sender_id == user.id:
                 temp_q = (
-                    session.query(MessageContacts)
-                    .where(MessageContacts.id == message_query.chat_id)
+                    session.query(Chats)
+                    .where(Chats.id == message_query.chat_id)
                     .first()
                 )
                 if temp_q.user_a_id == message_query.sender_id:
@@ -160,6 +141,16 @@ class MessagesMain:
                 .first()
             )
 
+            message_count = (
+                session.query(Messages)
+                .where(and_(
+                    Messages.chat_id == i["id"],
+                    Messages.sender_id != user.id,
+                    Messages.is_readed == False
+                ))
+                .count()
+            )
+
             last_messages.append({
                 "user_id": user_query.id,
                 "name": user_query.name,
@@ -167,7 +158,36 @@ class MessagesMain:
                 "profile_image": user_query.profile_image,
                 "message": message_query.message,
                 "sender_id": message_query.sender_id,
-                "date": message_query.date
+                "date": message_query.date,
+                "message_count": message_count
             })
         
+        #sort oldest to newest using bubble sorting alghoritm
+        n = len(last_messages)
+        for i in range(n):
+            for j in range(0, n - i - 1):
+                if last_messages[j]["date"] > last_messages[j + 1]["date"]:
+                    last_messages[j], last_messages[j + 1] = last_messages[j + 1], last_messages[j]
+        
+        
         return last_messages
+
+    def mark_as_read(self, user, chat_id):
+        q = (
+            session.query(Messages)
+            .where(and_(
+                Messages.chat_id == chat_id,
+                Messages.sender_id != user.id
+            ))
+            .all()
+        )
+        for i in q:
+            if not i.is_readed:
+                (
+                    session.query(Messages)
+                    .where(Messages.id == i.id)
+                    .update({
+                        "is_readed": True
+                    })
+                )
+                session.commit()

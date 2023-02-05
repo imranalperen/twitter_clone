@@ -1,9 +1,11 @@
 import hashlib
 import uuid
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 import random
-from localsettings import MAILJET_API_KEY, MAILJET_SECRET_KEY
+from localsettings import MAILJET_API_KEY, MAILJET_SECRET_KEY, ABLY_API_KEY
 from mailjet_rest import Client
+from ably import AblyRest
+import json
 
 def password_hasher(string, salt):
     text = str(string) + str(salt)
@@ -61,3 +63,17 @@ def send_verfictaion_code_mail(mail_adress, verification_code):
     if result.status_code == 200:
         return True
     return False
+
+
+async def publish_message(main_user, chat_id, message_body):
+        ably = AblyRest(f'{ABLY_API_KEY}')
+        channel = ably.channels.get(f'{chat_id}')
+        date_now = str(datetime.now())
+        publish_message = {
+            "message": message_body,
+            "date": date_now,
+            "sender_id": main_user.id,
+            "chat_id": chat_id
+        }
+        await channel.publish(f'{chat_id}', publish_message)
+        
