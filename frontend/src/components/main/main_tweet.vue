@@ -24,6 +24,7 @@
                 <div class="icon_container">
                     <input type="file"
                     id="selected_file"
+                    accept="image/png, image/jpeg"
                     style="display: none;"
                     @change="validate_image_size"
                 />

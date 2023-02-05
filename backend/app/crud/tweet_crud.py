@@ -1,7 +1,7 @@
 from app.db import session
 from app.models import Tweets, TweetsLikes, Retweets, Tags
 from app.crud.timeline_crud import TimelineMain
-from sqlalchemy.sql import and_, desc
+from sqlalchemy.sql import and_
 from app.utils import hashtag_finder
 from config import UPLOAD_FOLDER_URL
 

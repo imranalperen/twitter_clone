@@ -11,6 +11,7 @@
                 <input type="file"
                     id="selected_file"
                     style="display: none;"
+                    accept="image/png, image/jpeg"
                     @change="validate_image_size"
                 />
                 <!-- input type file shows file name to ignore this we can do: -->

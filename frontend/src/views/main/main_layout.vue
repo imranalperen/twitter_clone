@@ -48,6 +48,10 @@
                 v-if="current_url == 'message_page'"
                 :main_user = user
             ></message_page>
+            <notifications
+                v-if="current_url == 'notifications'"
+                :user = user
+            ></notifications>
         </div>
     </div>
 
@@ -83,7 +87,8 @@ import topic_page from '@/views/main/topic_page.vue'
 import explore from '@/views/main/explore.vue'
 import profile from '@/views/main/profile.vue'
 import messages from '@/views/main/messages.vue'
-import message_page from './message_page.vue'
+import message_page from '@/views/main/message_page.vue'
+import notifications from '@/views/main/notifications.vue'
 
 import { user_request } from '@/requests'
     
@@ -103,7 +108,8 @@ export default {
         explore,
         profile,
         messages,
-        message_page
+        message_page,
+        notifications
     },
 
     data() {

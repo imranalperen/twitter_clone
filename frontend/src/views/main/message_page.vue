@@ -38,6 +38,7 @@
                     <input type="file"
                     id="selected_file"
                     style="display: none;"
+                    accept="image/png, image/jpeg"
                     @change="validate_image_size"
                 /> -->
             <img class="icon" src="@/assets/image-outline.svg">

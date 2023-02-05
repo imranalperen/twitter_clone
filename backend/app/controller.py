@@ -18,7 +18,6 @@ from app.crud.messages_crud import MessagesMain
 from app.utils import create_access_token
 from app.decorators import login_required, target_user_required
 from app.utils import create_verification_code, send_verfictaion_code_mail, publish_message
-from config import UPLOAD_FOLDER_URL
 import uuid
 import os
 import asyncio

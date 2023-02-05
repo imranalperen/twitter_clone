@@ -19,6 +19,7 @@
                     <input type="file"
                     id="reply_selected_file"
                     style="display: none;"
+                    accept="image/png, image/jpeg"
                     @change="validate_image_size"
                 />
                 <img class="reply_icon" src="@/assets/image-outline.svg" onclick="document.getElementById('reply_selected_file').click();">

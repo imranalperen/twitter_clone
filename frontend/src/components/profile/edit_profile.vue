@@ -12,6 +12,7 @@
             <input type="file"
                     id="selected_file"
                     style="display: none;"
+                    accept="image/png, image/jpeg"
                     @change="validate_image_size"
                 />
                 <input id="add_image"

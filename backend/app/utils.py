@@ -5,7 +5,6 @@ import random
 from localsettings import MAILJET_API_KEY, MAILJET_SECRET_KEY, ABLY_API_KEY
 from mailjet_rest import Client
 from ably import AblyRest
-import json
 
 def password_hasher(string, salt):
     text = str(string) + str(salt)
@@ -76,4 +75,3 @@ async def publish_message(main_user, chat_id, message_body):
             "chat_id": chat_id
         }
         await channel.publish(f'{chat_id}', publish_message)
-        

@@ -19,7 +19,7 @@
             <p class="menu_text">Explore</p>
         </router-link>
 
-        <router-link class="menu_element" :to="{name: 'home'}">
+        <router-link class="menu_element" :to="{name: 'notifications'}">
             <div class="menu_image">
                 <img class="icon" src="@/assets/notifications-outline.svg">
             </div>

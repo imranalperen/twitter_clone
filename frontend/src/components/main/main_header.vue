@@ -10,6 +10,7 @@
         <h1 v-if="current_url == 'topic'">{{ get_topic }}</h1>
         <h1 v-if="current_url == 'explore'">Explore</h1>
         <h1 v-if="current_url == 'messages'">Messages</h1>
+        <h1 v-if="current_url == 'notifications'">Notifications</h1>
     </div>
 </div>
 </template>
