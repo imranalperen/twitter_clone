@@ -108,18 +108,21 @@ export default {
     },
 
     mounted() {
-        document.getElementById("message_input").addEventListener('keyup', function(e) {
-            if(e.code == "Enter") {
+        document.getElementById("message_input").addEventListener("keydown", function(e) {
+            if(e.code == "Enter" && !e.shiftKey) {
+                e.preventDefault()
                 document.getElementById("sent_message_image").click()
             }
-        });
+        })
     },
 
     methods: {
         validate_message() {
             this.message_body_temp = this.message_body
             this.message_body = ''
-            this.send_message()
+            if(this.message_body_temp.length > 1) {
+                this.send_message()
+            }
         },
 
         async send_message() {
