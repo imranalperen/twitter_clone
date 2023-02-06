@@ -600,6 +600,55 @@ function last_reply_of_tweet_request(tweet_id) {
     return fetched_data
 }
 
+
+function mark_as_read_notifications_request() {
+    const access_token = access_token_control()
+   
+    const fetched_data = fetch(`${API_URL}/mark_as_read_notifications`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+
+function notification_count_request() {
+    const access_token = access_token_control()
+   
+    const fetched_data = fetch(`${API_URL}/notification_counts`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+function notifications_request() {
+    const access_token = access_token_control()
+   
+    const fetched_data = fetch(`${API_URL}/notifications`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
+
+
 export {
     signup_request,
     login_request,
@@ -633,5 +682,8 @@ export {
     chat_contacts_request,
     get_chat_id_request,
     mark_as_read_message_request,
-    last_reply_of_tweet_request
+    last_reply_of_tweet_request,
+    mark_as_read_notifications_request,
+    notification_count_request,
+    notifications_request
 }

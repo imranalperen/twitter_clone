@@ -8,6 +8,7 @@
         <div class="menu_container">
             <main_menu
                 :user="user"
+                :notification_count = notification_count
             />
         </div>
     </div>
@@ -48,6 +49,7 @@
                 v-if="current_url == 'message_page'"
                 :main_user = user
             ></message_page>
+            {{ reset_notifications_count }}
             <notifications
                 v-if="current_url == 'notifications'"
                 :user = user
@@ -90,7 +92,10 @@ import messages from '@/views/main/messages.vue'
 import message_page from '@/views/main/message_page.vue'
 import notifications from '@/views/main/notifications.vue'
 
-import { user_request } from '@/requests'
+import { user_request, notification_count_request } from '@/requests'
+
+import { ABLY_API_KEY } from '@/localsettings'
+import Ably from 'ably'
     
 export default {
     props: ["current_url"],
@@ -116,6 +121,8 @@ export default {
         return {
             first_vizit: null,
             user: null,
+            notification_count: 0,
+            message_count: 0,
         }
     },
 
@@ -125,7 +132,27 @@ export default {
         }
         this.user = await user_request()
         this.user = this.user.response[0]
+
+        this.notification_count = await notification_count_request()
+        this.notification_count = this.notification_count.response
+        const ably = new Ably.Realtime.Promise(`${ABLY_API_KEY}`)
+        const channel_id = Math.PI * this.user.id
+        this.ably_channel = ably.channels.get(`${channel_id}`)
+        await ably.connection.once('connected');
+        await this.ably_channel.subscribe(`${this.user.id}`, (notification) => {
+            if(notification) {
+                this.notification_count += 1
+            }
+        });
     },
+
+    computed: {
+        reset_notifications_count() {
+            if(this.current_url == "notifications") {
+                this.notification_count = 0
+            }
+        }
+    }
 
 }
     

@@ -1,8 +1,9 @@
 from app.db import session
-from app.models import Users, UsersFollowers, VerificationCodes
+from app.models import Users, UsersFollowers, VerificationCodes, Notificatons, Tweets
 from app.utils import password_hasher
 from sqlalchemy.sql import and_
 from config import UPLOAD_FOLDER_URL
+from datetime import datetime
 
 
 class UserMain:
@@ -37,6 +38,73 @@ class UserMain:
             .first()
         )
         return user
+    
+
+    def user_notifications(self, user_id):
+        q = (
+            session.query(Notificatons)
+            .where(Notificatons.target_user_id == user_id)
+            .order_by(Notificatons.date.desc())
+            .limit(40)
+            .all()
+        )
+        notifications_list = []
+        if q:
+            for i in q:
+                user_query = (
+                    session.query(Users)
+                    .where(Users.id == i.user_id)
+                    .first()
+                )
+                tweet_query = (
+                    session.query(Tweets)
+                    .where(Tweets.id == i.tweet_id)
+                    .first()
+                )
+                date_now = str(datetime.now())
+                notifications_list.append({
+                    "user_id": user_query.id,
+                    "name": user_query.name,
+                    "username": user_query.username,
+                    "profile_image": user_query.profile_image,
+                    "tweet_id": tweet_query.id,
+                    "tweet_body": tweet_query.body,
+                    "tweet_image": tweet_query.image,
+                    "date": date_now,
+                    "event": i.event
+                })
+        return notifications_list
+
+    def notifications_count(self, user_id):
+        q = (
+            session.query(Notificatons)
+            .where(and_(
+                Notificatons.target_user_id == user_id,
+                Notificatons.is_readed == False
+            ))
+            .count()
+        )
+        return q
+    
+    def mark_as_read_notifications(self, user_id):
+        q = (
+            session.query(Notificatons)
+            .where(and_(
+                Notificatons.target_user_id == user_id,
+                Notificatons.is_readed == False
+            ))
+            .all()
+        )
+        if q:
+            (
+                session.query(Notificatons)
+                .where(Notificatons.is_readed == False)
+                .update({
+                    "is_readed": True
+                })
+            )
+            session.commit()
+
 
 class UserRegistration:
     def signup(self, name, username, email, password):
@@ -179,8 +247,6 @@ class UserRegistration:
             })
         )
         session.commit()
-
-        
 
 
 class UserFollow: 

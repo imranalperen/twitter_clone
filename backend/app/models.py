@@ -95,4 +95,17 @@ class Messages(Base):
     chat_id = Column(Integer, ForeignKey("chats.id"))
     is_readed = Column(Boolean, default=False)
 
+class Notificatons(Base):
+    __tablename__ = "notificatons"
+
+    id = Column(Integer, primary_key=True)
+    event = Column(String)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    target_user_id = Column(Integer, ForeignKey("users.id"))
+    tweet_id = Column(Integer, ForeignKey("tweets.id"))
+    date = Column(DateTime(timezone=True), server_default=func.now())
+    reply_tweet_id = Column(Integer, ForeignKey("tweets.id"))
+    is_readed = Column(Boolean, default=False)
+
+
 Base.metadata.create_all(engine)

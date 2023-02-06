@@ -24,6 +24,7 @@
                 <img class="icon" src="@/assets/notifications-outline.svg">
             </div>
             <p class="menu_text">Notifications</p>
+            <p class="notification_count" v-if="notification_count != 0">{{ notification_count }}</p>
         </router-link>
 
         <router-link class="menu_element" :to="{name: 'messages'}">
@@ -75,7 +76,7 @@
 
 <script>
 export default {
-    props: ["user"],
+    props: ["user", "notification_count"],
 
     methods: {
         logout() {
@@ -202,5 +203,11 @@ export default {
 
 .r_link {
     text-decoration: none;
+}
+
+.notification_count {
+    background-color: var(--tweetBtnBg);
+    border-radius: 15px;
+    padding: .5em;
 }
 </style>

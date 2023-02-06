@@ -117,6 +117,10 @@ export default {
         })
     },
 
+    async beforeUnmount() {
+        mark_as_read_message_request(this.chat_id)
+    },
+
     methods: {
         validate_message() {
             this.message_body_temp = this.message_body

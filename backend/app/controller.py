@@ -145,6 +145,8 @@ def like_tweet():
     user_id = g.user.id
     tweet_id = request.json.get("tweet_id")
     TweetMain().tweet_like(user_id, tweet_id)
+    event = 'like'
+    TweetMain().send_notification(user_id, tweet_id, event)
     return jsonify({"response": True})
 
 
@@ -154,6 +156,8 @@ def unlike_tweet():
     user_id = g.user.id
     tweet_id = request.json.get("tweet_id")
     TweetMain().unlike_tweet(user_id, tweet_id)
+    event = 'like'
+    TweetMain().delete_notification(user_id, tweet_id, event)
     return jsonify({"resposne": True})
 
 
@@ -163,6 +167,8 @@ def retweet():
     user_id = g.user.id
     tweet_id = request.json.get("tweet_id")
     TweetMain().retweet_tweet(user_id, tweet_id)
+    event = 'retweet'
+    TweetMain().send_notification(user_id, tweet_id, event)
     return jsonify({"response": True})
 
 
@@ -172,6 +178,8 @@ def unretweet():
     user_id = g.user.id
     tweet_id = request.json.get("tweet_id")
     TweetMain().unretweet_tweet(user_id, tweet_id)
+    event = 'retweet'
+    TweetMain().delete_notification(user_id, tweet_id, event)
     return jsonify({"response": True})
 
 
@@ -226,6 +234,8 @@ def add_replied_tweet():
     replied_to_id = request.form.get("reply_id")
     tweet_response = TweetMain().add_tweet(user.id, tweet_body, file_name, replied_to_id)
     if tweet_response["status"]:
+        event = 'reply'
+        TweetMain().send_notification(user.id, replied_to_id, event)
         return jsonify({"response": True})
     
     return jsonify({"response": tweet_response["error"]})
@@ -384,3 +394,25 @@ def mark_as_read_endpoint():
     chat_id = request.json.get("chat_id")
     MessagesMain().mark_as_read(user, chat_id)
     return jsonify({"response": 1})
+
+@main.route("mark_as_read_notifications", methods=["POST"])
+@login_required
+def mark_as_read_notifications_endpoint():
+    user = g.user
+    UserMain().mark_as_read_notifications(user.id)
+    return jsonify({"response": 1})
+
+#! notifications
+@main.route("notifications", methods=["POST"])
+@login_required
+def notifications_endpoint():
+    user = g.user
+    notifications = UserMain().user_notifications(user.id)
+    return jsonify({"response": notifications})
+
+@main.route("notification_counts", methods=["POST"])
+@login_required
+def notification_count_endpoint():
+    user = g.user
+    notification_count = UserMain().notifications_count(user.id)
+    return jsonify({"response": notification_count})

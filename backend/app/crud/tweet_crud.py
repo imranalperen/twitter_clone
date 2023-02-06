@@ -1,9 +1,13 @@
 from app.db import session
-from app.models import Tweets, TweetsLikes, Retweets, Tags
+from app.models import Tweets, TweetsLikes, Retweets, Tags, Notificatons, Users
 from app.crud.timeline_crud import TimelineMain
 from sqlalchemy.sql import and_
 from app.utils import hashtag_finder
 from config import UPLOAD_FOLDER_URL
+import asyncio
+from app.utils import (
+    send_notification_endpoint
+)
 
 
 class TweetMain:
@@ -88,3 +92,109 @@ class TweetMain:
             })
         )
         session.commit()
+
+    def like_notification(self, user_id, tweet_id):
+        event = 'like'
+        target_user_id = (
+            session.query(Tweets)
+            .where(Tweets.id == tweet_id)
+            .first()
+        )
+        target_user_id = target_user_id.user_id
+        notification = Notificatons(
+            event = event,
+            user_id = user_id,
+            target_user_id = target_user_id,
+            tweet_id = tweet_id
+        )
+        session.add(notification)
+        session.commit()
+        user_query = (
+            session.query(Users)
+            .where(Users.id == user_id)
+            .first()
+        )
+        tweet_query = (
+            session.query(Tweets)
+            .where(Tweets.id == tweet_id)
+            .first()
+        )
+        asyncio.run(send_notification_endpoint(user_query, target_user_id, tweet_query, event))
+
+    def retweet_notification(self, user_id, tweet_id):
+        event = 'retweet'
+        target_user_id = (
+            session.query(Tweets)
+            .where(Tweets.id == tweet_id)
+            .first()
+        )
+        target_user_id = target_user_id.user_id
+        notification = Notificatons(
+            event = event,
+            user_id = user_id,
+            target_user_id = target_user_id,
+            tweet_id = tweet_id
+        )
+        session.add(notification)
+        session.commit()
+        user_query = (
+            session.query(Users)
+            .where(Users.id == user_id)
+            .first()
+        )
+        tweet_query = (
+            session.query(Tweets)
+            .where(Tweets.id == tweet_id)
+            .first()
+        )
+        asyncio.run(send_notification_endpoint(user_query, target_user_id, tweet_query, event))
+
+    
+    def send_notification(self, user_id, tweet_id, event):
+        target_user_id = (
+            session.query(Tweets)
+            .where(Tweets.id == tweet_id)
+            .first()
+        )
+        target_user_id = target_user_id.user_id
+        notification = Notificatons(
+            event = event,
+            user_id = user_id,
+            target_user_id = target_user_id,
+            tweet_id = tweet_id
+        )
+        session.add(notification)
+        session.commit()
+        user_query = (
+            session.query(Users)
+            .where(Users.id == user_id)
+            .first()
+        )
+        tweet_query = (
+            session.query(Tweets)
+            .where(Tweets.id == tweet_id)
+            .first()
+        )
+        asyncio.run(send_notification_endpoint(user_query, target_user_id, tweet_query, event))
+
+    def delete_notification(self, user_id, tweet_id, event):
+        (
+            session.query(Notificatons)
+            .where(and_(
+                Notificatons.user_id == user_id,
+                Notificatons.tweet_id == tweet_id,
+                Notificatons.event == event
+            ))
+            .delete()
+        )
+        session.commit()
+        
+        #         (
+        #     session.query(Retweets)
+        #     .where(and_(
+        #         Retweets.rt_user_id == user_id,
+        #         Retweets.tweet_id == tweet_id
+        #     ))
+        #     .delete()
+        # )
+        # session.commit()
