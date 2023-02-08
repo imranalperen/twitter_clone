@@ -35,9 +35,9 @@ backend is ready.
 ```
 npm install
 ```
-5. create localsettings.js in frontend/src/
+5. create localsettings.js in twitter_clone/frontend/src/
 ```
-frontend/src/localsettings.js/
+twitter_clone/frontend/src/localsettings.js/
 
 const API_URL = "http://127.0.0.1:5000/api"
 
@@ -52,7 +52,7 @@ frontend is ready.
 ```
 npm run serve
 ```
-7. twitter_clone/backend//
+7. twitter_clone/backend/
 you can run in debug mode or
 ```
 FLASK_APP=run.py
