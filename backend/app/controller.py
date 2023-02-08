@@ -376,7 +376,7 @@ def post_message_endpoint():
     chat_id = MessagesMain().get_chat_id(main_user, target_user)
     MessagesMain().post_message(main_user, chat_id, message_body)
     asyncio.run(publish_message(main_user, chat_id, message_body))
-    return jsonify({"response": 1})
+    return jsonify({"response": "1"})
 
 
 @main.route("chat_contacts", methods=["POST"])
@@ -416,3 +416,12 @@ def notification_count_endpoint():
     user = g.user
     notification_count = UserMain().notifications_count(user.id)
     return jsonify({"response": notification_count})
+
+
+#! SEARCH ENGINE
+@main.route("search_users", methods=["POST"])
+@login_required
+def search_users_endpoint():
+    keyword = request.json.get("keyword")
+    search_results = UserMain().search_users(keyword)
+    return jsonify({"response": search_results})

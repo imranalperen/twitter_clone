@@ -648,6 +648,24 @@ function notifications_request() {
 }
 
 
+function search_users_request(keyword) {
+    const access_token = access_token_control()
+    let request_body = {
+        "keyword": keyword,
+    }
+    const fetched_data = fetch(`${API_URL}/search_users`, {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "access-token": access_token
+        },
+        body: JSON.stringify(request_body)
+    })
+    .then((response) => response.json())
+
+    return fetched_data
+}
+
 
 export {
     signup_request,
@@ -685,5 +703,6 @@ export {
     last_reply_of_tweet_request,
     mark_as_read_notifications_request,
     notification_count_request,
-    notifications_request
+    notifications_request,
+    search_users_request
 }

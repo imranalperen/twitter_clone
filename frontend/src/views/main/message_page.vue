@@ -33,17 +33,6 @@
                 v-model="message_body"
             ></textarea>
         </div>
-        <div class="send_image_container">
-            <!-- <div class="icon_container">
-                    <input type="file"
-                    id="selected_file"
-                    style="display: none;"
-                    accept="image/png, image/jpeg"
-                    @change="validate_image_size"
-                /> -->
-            <img class="icon" src="@/assets/image-outline.svg">
-            <!-- </div> -->
-        </div>
         <div class="send_message_container">
             <img src="@/assets/icons8-sent-26.png" id="sent_message_image" @click="validate_message()">
         </div>
@@ -83,12 +72,12 @@ export default {
 
     async beforeCreate() {
         this.target_username = this.$route.fullPath.split("/")[2]
-        this.chat_id = await get_chat_id_request(this.target_username)
-        this.chat_id = this.chat_id.response
-
-        this.target_username = this.$route.fullPath.split("/")[2]
         this.chat_history = await chat_history_request(this.target_username)
         this.chat_history = this.chat_history.response
+
+        this.target_username = this.$route.fullPath.split("/")[2]
+        this.chat_id = await get_chat_id_request(this.target_username)
+        this.chat_id = this.chat_id.response
 
         mark_as_read_message_request(this.chat_id)
 
@@ -205,6 +194,7 @@ export default {
     height: 28px;
     filter: invert(52%) sepia(53%) saturate(3711%) hue-rotate(179deg) brightness(99%) contrast(90%);
     cursor: pointer;
+    margin-left: .5em;
 }
 
 .main_user_message_container {

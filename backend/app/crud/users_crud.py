@@ -105,6 +105,25 @@ class UserMain:
             )
             session.commit()
 
+    def search_users(self, keyword):
+        # Post.query.filter(Post.tags.like(search)).all()
+        q = (
+            session.query(Users)
+            .where(Users.username.like(keyword))
+            .all()
+        )
+        users = []
+        for i in q:
+            users.append({
+                "id": i.id,
+                "username":i.username,
+                "name": i.name,
+                "profile_image": i.profile_image,
+            })
+        return users
+
+
+
 
 class UserRegistration:
     def signup(self, name, username, email, password):
