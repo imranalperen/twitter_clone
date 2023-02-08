@@ -16,7 +16,6 @@
 </template>
 
 <script>
-import { user_profile_image_request } from '@/requests'
 export default {
     props: ["current_url"],
 

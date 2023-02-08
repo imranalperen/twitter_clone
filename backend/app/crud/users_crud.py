@@ -107,9 +107,10 @@ class UserMain:
 
     def search_users(self, keyword):
         # Post.query.filter(Post.tags.like(search)).all()
+        search = f"%{keyword}%"
         q = (
             session.query(Users)
-            .where(Users.username.like(keyword))
+            .where(Users.username.like(search))
             .all()
         )
         users = []

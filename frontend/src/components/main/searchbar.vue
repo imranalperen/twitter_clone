@@ -1,19 +1,26 @@
 <template>
 <div class="main_searchbar">
     <div class="input">
-        <input id="searchbar_input" type="text" placeholder="Search Clone" v-model="keyword" @input="search">
+        <input
+            id="searchbar_input"
+            type="text"
+            placeholder="Search Clone"
+            v-model="keyword"
+            @input="search"
+            @focusout="clear_users"
+        >
     </div>
-    <div class="results">
-        <div class="user">
+    <div class="results" v-if="users">
+        <div class="user" v-for="user in users" @click="redirect_user_profile(user.username)">
             <div class="user_image_container">
-                image
+                <img :src="user.profile_image" class="profile_image">
             </div>
             <div class="name_container">
                 <div class="name">
-                    <p class="name_text">imran alperen bayram</p>
+                    <p class="name_text">{{ user.name }}</p>
                 </div>
                 <div class="username">
-                    <p class="username_text">@alperen</p>
+                    <p class="username_text">@{{ user.username }}</p>
                 </div>
             </div>
         </div>
@@ -35,10 +42,24 @@ export default {
 
     methods: {
         async search() {
-            this.users = await search_users_request(this.keyword)
-            console.log(this.users)
-        }
-    }
+            if(this.keyword == '') {
+                this.users = null
+            }
+            else {
+                this.users = await search_users_request(this.keyword)
+                this.users = this.users.response
+            }
+        },
+
+        redirect_user_profile(username) {
+            this.$router.push({name: 'profile', params: {string: `${username}`, profile_tab: null}})
+        },
+
+        clear_users() {
+            this.users = null
+            this.keyword = ''
+        },
+    },
 }
 
 </script>
@@ -84,17 +105,34 @@ export default {
     border-bottom: 1px solid var(--bordergray);
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
-    padding: 1em;
 }
 
 .user {
     display: flex;
     flex-direction: row;
+    padding: .4em 1em .4em 1em;
+    cursor: pointer;
+}
+
+.user:hover {
+    background-color: var(--itemBackground);
 }
 
 .name_container {
     display: flex;
     flex-direction: column;
+    padding-left: .5em;
+}
+
+.profile_image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid white;
+}
+
+.username_text {
+    color: var(--gray);
 }
 
 </style>
