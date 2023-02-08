@@ -85,7 +85,28 @@ export default {
     max-height: 80vh;
     padding: 1em 2em 0 2em;
     overflow: scroll;
+    overflow-x: hidden;
     border-radius: 25px;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--itemBackground); 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }
 
 .close_modal > img {

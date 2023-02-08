@@ -56,6 +56,10 @@ export default {
         },
 
         clear_users() {
+            setTimeout(this.clear_users_endpoint, 500)
+        },
+
+        clear_users_endpoint() {
             this.users = null
             this.keyword = ''
         },
@@ -100,11 +104,30 @@ export default {
     background-color: var(--primaryBG);
     max-height: 50vh;
     overflow: scroll;
+    overflow-x: hidden;
     border-left: 1px solid var(--bordergray);
     border-right: 1px solid var(--bordergray);
     border-bottom: 1px solid var(--bordergray);
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+}
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--itemBackground); 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }
 
 .user {

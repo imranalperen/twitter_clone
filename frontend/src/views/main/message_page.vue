@@ -236,6 +236,7 @@ export default {
 }
 #messages {
     overflow: scroll;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column-reverse;
     height: 82vh;
@@ -244,5 +245,25 @@ export default {
 .chat_container {
     height: 90vh;
     /* development */
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--itemBackground); 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }
 </style>
